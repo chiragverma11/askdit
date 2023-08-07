@@ -4,10 +4,14 @@ import { FcGoogle } from "react-icons/fc";
 import { Button } from "./ui/Button";
 import { signIn } from "next-auth/react";
 
-interface SignInFormProps {}
+interface UserAuthFormProps {
+  authType: "sign-in" | "sign-up";
+}
 
-const SignInForm: FC<SignInFormProps> = ({}) => {
+const UserAuthForm: FC<UserAuthFormProps> = ({ authType }) => {
   const [loading, setLoading] = useState<boolean>(false);
+
+  const authTerm = authType === "sign-in" ? "Sign in" : "Sign up";
 
   const loginWithGoogle = async () => {
     setLoading(true);
@@ -15,8 +19,6 @@ const SignInForm: FC<SignInFormProps> = ({}) => {
       await signIn("google");
     } catch (error) {
       console.log(error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -25,13 +27,14 @@ const SignInForm: FC<SignInFormProps> = ({}) => {
       <Button
         onClick={loginWithGoogle}
         variant={"outline"}
-        className="bg-transparent px-10 font-semibold ring-1 ring-zinc-300 hover:bg-zinc-200/40"
+        className="bg-transparent px-10 font-semibold ring-1 ring-zinc-300 hover:bg-zinc-200/40 active:scale-100"
         isLoading={loading}
       >
-        <FcGoogle className="mr-2 h-6 w-6 rounded-lg" /> Sign in with Google
+        {loading ? null : <FcGoogle className="mr-2 h-6 w-6 rounded-lg" />}
+        {authTerm} with Google
       </Button>
     </div>
   );
 };
 
-export default SignInForm;
+export default UserAuthForm;

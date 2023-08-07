@@ -1,6 +1,9 @@
 "use client";
 
+import { LogOut, Settings } from "lucide-react";
 import { User } from "next-auth";
+import { signOut } from "next-auth/react";
+import Link from "next/link";
 import { FC } from "react";
 import UserAvatar from "./UserAvatar";
 import {
@@ -10,9 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/DropdownMenu";
-import Link from "next/link";
-import { signOut } from "next-auth/react";
-import { LogOut, Settings } from "lucide-react";
+import ThemeSwitch from "./ThemeSwitch";
 
 interface UserProfileNavProps {
   user: Pick<User, "name" | "image" | "email">;
@@ -21,10 +22,14 @@ interface UserProfileNavProps {
 const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+      <DropdownMenuTrigger className="rounded-full transition hover:outline hover:outline-offset-2 hover:outline-red-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
         <UserAvatar user={user} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent
+        align="end"
+        onCloseAutoFocus={(e) => e.preventDefault()}
+        sideOffset={10}
+      >
         <div className="flex items-center justify-center p-2">
           <div className="flex flex-col gap-1">
             {user.name && <p className="font-medium">{user.name}</p>}
@@ -36,8 +41,17 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
           </div>
         </div>
         <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="flex items-center justify-between"
+          onSelect={(event) => {
+            event.preventDefault();
+          }}
+        >
+          <ThemeSwitch />
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Settings className="mr-1 h-4 w-4" />
+          <Settings className="mr-2 h-4 w-4" />
           <Link href={"/settings"}>Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -49,7 +63,7 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
             });
           }}
         >
-          <LogOut className="mr-1 h-4 w-4" />
+          <LogOut className="mr-2 h-4 w-4" />
           Sign Out
         </DropdownMenuItem>
       </DropdownMenuContent>

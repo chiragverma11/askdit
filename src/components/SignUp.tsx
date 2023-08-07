@@ -3,29 +3,29 @@ import { Icons } from "./Icons";
 import Link from "next/link";
 import UserAuthForm from "./UserAuthForm";
 
-interface SignInProps {}
+interface SignUpProps {}
 
-const SignIn: FC<SignInProps> = ({}) => {
+const SignUp: FC<SignUpProps> = ({}) => {
   return (
     <div className="container mx-auto flex flex-col justify-center gap-10">
       <div className="flex flex-col items-center gap-6">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-radial from-red-200 to-zinc-200 drop-shadow backdrop-blur">
           <Icons.logo className="h-10 w-10" />
         </div>
-        <h1 className="text-2xl font-semibold">Welcome back</h1>
+        <h1 className="text-2xl font-semibold">Sign Up</h1>
       </div>
-      <UserAuthForm authType="sign-in" />
+      <UserAuthForm authType="sign-up" />
       <p className="text-center text-sm">
-        Don&apos;t have an account yet?{" "}
+        Already have an account?{" "}
         <Link
-          href={"/sign-up"}
+          href={"/sign-in"}
           className="font-semibold text-zinc-900 hover:underline hover:underline-offset-2"
         >
-          Sign Up
+          Sign In
         </Link>
       </p>
     </div>
   );
 };
 
-export default SignIn;
+export default SignUp;

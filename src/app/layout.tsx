@@ -20,15 +20,13 @@ export default function RootLayout({
   authModal: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
+          <div className="fixed inset-0 z-[-10] max-h-screen bg-gradient-to-b from-red-600/30 from-10% to-zinc-100 to-40%"></div>
           <Navbar />
           {authModal}
-
-          <div className="h-full min-h-screen bg-gradient-to-b from-red-600/30 from-10% to-zinc-100 to-40% px-2 pt-12">
-            {children}
-          </div>
+          {children}
         </Providers>
       </body>
     </html>
