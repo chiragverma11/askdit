@@ -4,6 +4,50 @@
 
 @layer base {
   :root {
+    /* background */
+
+    --askdit-bg: 0 0% 96%;
+
+    --askdit-bg-emphasis: #e5e7eb;
+    --askdit-bg-subtle: #f3f4f6;
+    --askdit-bg-muted: #f9fafb;
+    --askdit-bg-inverted: #111827;
+
+    /* background -> components*/
+    --askdit-bg-info: #dee9fc;
+    --askdit-bg-success: #e2fbe8;
+    --askdit-bg-attention: #fceed8;
+    --askdit-bg-error: #f9e3e2;
+    --askdit-bg-dark-error: #752522;
+
+    /* Borders */
+    --askdit-border-emphasis: #9ca3af;
+    --askdit-border: #d1d5db;
+    --askdit-border-subtle: #e5e7eb;
+    --askdit-border-booker: #e5e7eb;
+    --askdit-border-muted: #f3f4f6;
+    --askdit-border-error: #aa2e26;
+
+    /* Content/Text */
+    --askdit-text: 240 10% 3.9%;
+
+    --askdit-text-emphasis: #111827;
+    --askdit-text-subtle: #6b7280;
+    --askdit-text-muted: #9ca3af;
+    --askdit-text-inverted: white;
+
+    /* Content/Text -> components */
+    --askdit-text-info: #253985;
+    --askdit-text-success: #285231;
+    --askdit-text-attention: #73321b;
+    --askdit-text-error: #752522;
+
+    /* Brand Colors */
+    --askdit-brand: 0 82% 58%;
+    --askdit-brand-text: 240 5% 26%;
+
+    --askdit-brand-emphasis: #101010;
+
     /* 
       Shadcn's Variables 
     */
@@ -41,6 +85,51 @@
   }
 
   .dark {
+    /* background */
+
+    --askdit-bg: 0 0% 10%;
+    --askdit-bg-subtle: 0 0% 13%;
+    --askdit-bg-emphasis: 0 0% 16%;
+
+    --askdit-bg-muted: #f9fafb;
+    --askdit-bg-inverted: #111827;
+
+    /* background -> components*/
+    --askdit-bg-info: #dee9fc;
+    --askdit-bg-success: #e2fbe8;
+    --askdit-bg-attention: #fceed8;
+    --askdit-bg-error: #f9e3e2;
+    --askdit-bg-dark-error: #752522;
+
+    /* Borders */
+    --askdit-border: 0 0% 47%;
+
+    --askdit-border-emphasis: #9ca3af;
+    --askdit-border-subtle: #e5e7eb;
+    --askdit-border-booker: #e5e7eb;
+    --askdit-border-muted: #f3f4f6;
+    --askdit-border-error: #aa2e26;
+
+    /* Content/Text */
+    --askdit-text: 0 0% 100%;
+    --askdit-text-subtle: 0 0% 47%;
+
+    --askdit-text-emphasis: #111827;
+    --askdit-text-muted: #9ca3af;
+    --askdit-text-inverted: white;
+
+    /* Content/Text -> components */
+    --askdit-text-info: #253985;
+    --askdit-text-success: #285231;
+    --askdit-text-attention: #73321b;
+    --askdit-text-error: #752522;
+
+    /* Brand Colors */
+    --askdit-brand: 0 82% 58%;
+    --askdit-brand-text: white;
+
+    --askdit-brand-emphasis: #101010;
+
     /* Shadcn's Variables */
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
@@ -48,13 +137,13 @@
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
 
-    --popover: 240 10% 3.9%;
+    --popover: var(--askdit-bg-emphasis); /*240 10% 3.9%*/
     --popover-foreground: 0 0% 98%;
 
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 15.9%;
+    --border: hsl(240 3.7% 15.9%);
     --input: 240 3.7% 15.9%;
 
     --primary: 0 0% 98%;
@@ -78,6 +167,6 @@
     @apply border-border;
   }
   body {
-    @apply scroll-smooth bg-background text-foreground;
+    @apply bg-default text-foreground;
   }
 }

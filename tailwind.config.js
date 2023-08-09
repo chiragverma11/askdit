@@ -20,13 +20,21 @@ module.exports = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
       },
       colors: {
+        default: "hsl(var(--askdit-bg) / <alpha-value>)",
+        subtle: "hsl(var(--askdit-bg-subtle) / <alpha-value>)",
+        emphasis: "hsl(var(--askdit-bg-emphasis) / <alpha-value>)",
+        brand: {
+          default: "hsl(var(--askdit-brand) / <alpha-value>)",
+          text: "hsl(var(--askdit-brand-text) / <alpha-value>)",
+        },
+
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "hsl(var(--askdit-brand) / <alpha-value>)",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -53,6 +61,13 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      textColor: {
+        default: "hsl(var(--askdit-text) / <alpha-value>)",
+        subtle: "hsl(var(--askdit-text-subtle) / <alpha-value>)",
+      },
+      borderColor: {
+        default: "hsl(var(--askdit-border) / <alpha-value>)",
       },
       borderRadius: {
         lg: "var(--radius)",

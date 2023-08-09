@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
-          <div className="fixed inset-0 z-[-10] max-h-screen bg-gradient-to-b from-red-600/30 from-10% to-zinc-100 to-40%"></div>
+          <div className="fixed inset-0 z-[-10] max-h-screen bg-gradient-to-b from-brand-default/30 from-0% to-30% dark:from-brand-default/20 "></div>
           <Navbar />
           {authModal}
           {children}

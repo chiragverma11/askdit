@@ -21,14 +21,15 @@ interface UserProfileNavProps {
 
 const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className="rounded-full transition hover:outline hover:outline-offset-2 hover:outline-red-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger className="rounded-full outline outline-offset-2 outline-brand-default/50 transition hover:outline-red-500/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
         <UserAvatar user={user} />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
         onCloseAutoFocus={(e) => e.preventDefault()}
         sideOffset={10}
+        className="border-default/40"
       >
         <div className="flex items-center justify-center p-2">
           <div className="flex flex-col gap-1">
