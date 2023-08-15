@@ -6,7 +6,6 @@ import CreatePostInput from "@/components/CreatePostInput";
 import { buttonVariants } from "@/components/ui/Button";
 import { getAuthSession } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import React from "react";
 
 const page = async () => {
   const session = await getAuthSession();
@@ -18,10 +17,10 @@ const page = async () => {
           {session?.user ? <CreatePostInput session={session} /> : null}
           <div className="my-4 space-y-3">
             <Post />
-        <Post />
-        <Post />
-        <Post />
-      </div>
+            <Post />
+            <Post />
+            <Post />
+          </div>
           <SideLink />
         </div>
       </div>
