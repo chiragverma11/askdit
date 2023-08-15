@@ -24,9 +24,12 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <div className="fixed inset-0 z-[-10] max-h-screen bg-gradient-to-b from-brand-default/30 from-0% to-30% dark:from-brand-default/20 "></div>
-          <Navbar />
+          <header className="sticky inset-x-0 top-0 z-[10]">
+            <Navbar />
+          </header>
+
           {authModal}
-          {children}
+          <main>{children}</main>
         </Providers>
       </body>
     </html>
