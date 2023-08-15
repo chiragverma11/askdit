@@ -16,7 +16,7 @@ import UserProfileNav from "./UserProfileNav";
 const Navbar = async () => {
   const session = await getAuthSession();
   return (
-    <div className="sticky inset-x-0 top-0 z-[10] h-fit bg-transparent py-2 backdrop-blur-xl">
+    <div className="h-fit bg-transparent py-2 backdrop-blur-xl">
       <TooltipProvider>
         <div className="container mx-auto flex h-full items-center justify-between gap-2">
           <Link
@@ -29,7 +29,7 @@ const Navbar = async () => {
             <Icons.logo className="h-8 w-8 lg:hidden lg:h-6 lg:w-6" />
             <Icons.logoWithText className="hidden h-8 w-full lg:block lg:h-6" />
           </Link>
-          <div className="flex w-3/4 items-center justify-end lg:justify-around">
+          <nav className="flex w-3/4 items-center justify-end lg:justify-around">
             <SearchBar className="hidden lg:inline-flex" />
 
             <Tooltip>
@@ -86,7 +86,7 @@ const Navbar = async () => {
                 Sign In
               </Link>
             )}
-          </div>
+          </nav>
         </div>
       </TooltipProvider>
     </div>
