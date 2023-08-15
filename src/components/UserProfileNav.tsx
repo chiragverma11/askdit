@@ -1,10 +1,11 @@
 "use client";
 
-import { LogOut, Settings } from "lucide-react";
 import { User } from "next-auth";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { FC } from "react";
+import { LogOut, Settings } from "lucide-react";
+import { HiOutlineUserGroup } from "react-icons/hi";
 import UserAvatar from "./UserAvatar";
 import {
   DropdownMenu,
@@ -29,7 +30,7 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
         align="end"
         onCloseAutoFocus={(e) => e.preventDefault()}
         sideOffset={10}
-        className="border-default/40"
+        className="border-default/40 bg-subtle"
       >
         <div className="flex items-center justify-center p-2">
           <div className="flex flex-col gap-1">
@@ -42,6 +43,19 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
           </div>
         </div>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href={"/r/create"}>
+            <HiOutlineUserGroup className="mr-2 h-4 w-4" />
+            Create Community
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={"/settings"}>
+            <Settings className="mr-2 h-4 w-4" />
+            Settings
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem
           className="flex items-center justify-between"
           onSelect={(event) => {
@@ -50,11 +64,7 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
         >
           <ThemeSwitch />
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Settings className="mr-2 h-4 w-4" />
-          <Link href={"/settings"}>Settings</Link>
-        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onSelect={(event) => {
