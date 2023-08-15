@@ -26,7 +26,8 @@ model Account {
   scope             String?
   id_token          String? @db.Text
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -35,8 +36,8 @@ model Account {
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
-  expires      DateTime
   userId       String
+  expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -58,7 +59,7 @@ model User {
   commentVote       CommentVote[]
   createdSubreddits Subreddit[]    @relation("CreatedBy")
   subscriptions     Subscription[]
-  Vote              Vote[]
+  votes             Vote[]
 }
 
 model VerificationToken {
@@ -70,7 +71,7 @@ model VerificationToken {
 }
 
 model Subreddit {
-  id        String   @id
+  id        String   @id @default(cuid())
   name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -96,7 +97,7 @@ model Subscription {
 }
 
 model Post {
-  id          String    @id
+  id          String    @id @default(cuid())
   title       String
   content     Json?
   createdAt   DateTime  @default(now())
@@ -113,7 +114,7 @@ model Post {
 }
 
 model Comment {
-  id        String   @id
+  id        String   @id @default(cuid())
   text      String
   createdAt DateTime @default(now())
   author    User     @relation(fields: [authorId], references: [id])
