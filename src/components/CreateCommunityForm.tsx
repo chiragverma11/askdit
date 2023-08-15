@@ -107,6 +107,7 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
                   <Input
                     {...field}
                     className="mb-2 mt-6 bg-subtle pl-6 focus-visible:bg-default"
+                    autoComplete="off"
                   />
                 </div>
               </FormControl>
