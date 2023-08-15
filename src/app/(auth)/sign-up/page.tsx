@@ -15,7 +15,7 @@ const page: FC<pageProps> = ({}) => {
           href={"/"}
           className={cn(
             buttonVariants({ variant: "ghost" }),
-            "-mt-20 self-start hover:bg-zinc-200/75",
+            "-mt-20 self-start hover:bg-zinc-200/75 dark:hover:bg-emphasis/50 dark:hover:ring dark:hover:ring-emphasis/60",
           )}
         >
           <IoArrowBack className="mr-2 h-4 w-4" />
