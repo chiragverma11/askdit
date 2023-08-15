@@ -1,5 +1,9 @@
+import Link from "next/link";
+import React from "react";
+
 import AsideBar from "@/components/AsideBar";
 import CreatePostInput from "@/components/CreatePostInput";
+import { buttonVariants } from "@/components/ui/Button";
 import { getAuthSession } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import React from "react";
@@ -18,6 +22,9 @@ const page = async () => {
         <Post />
         <Post />
       </div>
+          <SideLink />
+        </div>
+      </div>
     </>
   );
 };
@@ -35,6 +42,36 @@ const Post = ({ className, ...props }: PostProps) => {
     >
       <div className="px-6 py-8">
         <p className="text-xl font-semibold">This is a Post!</p>
+      </div>
+    </div>
+  );
+};
+
+const SideLink = () => {
+  return (
+    <div className="absolute right-[-18rem] top-0 hidden justify-self-end xl:block">
+      <div className="flex flex-col gap-4 rounded-xl border border-default/25 px-4 py-4">
+        <div>
+          <p className="text-lg font-semibold">Home</p>
+        </div>
+        <div className="flex flex-col items-center gap-4">
+          <p className="w-56 text-sm">
+            Your personal Askdit homepage. Come here to check in with your
+            favourite communities.
+          </p>
+          <Link
+            href="/submit"
+            className={cn(buttonVariants(), "w-full text-white")}
+          >
+            Create a Post
+          </Link>
+          <Link
+            href="/r/create"
+            className={cn(buttonVariants({ variant: "outline" }), "w-full")}
+          >
+            Create a Community
+          </Link>
+        </div>
       </div>
     </div>
   );
