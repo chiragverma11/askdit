@@ -4,14 +4,27 @@ import UserAvatar from "@/components/UserAvatar";
 import { FC } from "react";
 import { Button } from "./ui/Button";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
-interface CreatePostInputProps {
+interface CreatePostInputProps extends React.HTMLAttributes<HTMLDivElement> {
   session: Session;
+  href?: String;
 }
 
-const CreatePostInput: FC<CreatePostInputProps> = ({ session }) => {
+const CreatePostInput: FC<CreatePostInputProps> = ({
+  className,
+  session,
+  href,
+  ...props
+}) => {
   return (
-    <div className="mx-auto flex h-16 w-full items-center rounded-xl border border-default/25 bg-emphasis transition">
+    <div
+      className={cn(
+        "mx-auto flex h-16 w-full items-center rounded-xl border border-default/25 bg-emphasis transition",
+        className,
+      )}
+      {...props}
+    >
       <div className="flex w-full items-center gap-3 px-4">
         <div className="relative">
           <UserAvatar user={session.user} />
@@ -23,11 +36,21 @@ const CreatePostInput: FC<CreatePostInputProps> = ({ session }) => {
             "inline-flex w-full items-center gap-2 rounded-lg border border-default/25 bg-subtle px-6 text-sm text-subtle backdrop-blur-xl transition focus-within:border-default/90 focus-within:bg-default hover:border-default/90",
           )}
         >
-          <input
-            type="text"
-            className="w-full bg-transparent py-2.5 font-semibold placeholder:text-subtle focus-visible:outline-none"
-            placeholder="Create Post"
-          />
+          {href ? (
+            <Link href={`${href}`} className="w-full">
+              <input
+                type="text"
+                className="w-full bg-transparent py-2.5 font-semibold placeholder:text-subtle focus-visible:outline-none"
+                placeholder="Create Post"
+              />
+            </Link>
+          ) : (
+            <input
+              type="text"
+              className="w-full bg-transparent py-2.5 font-semibold placeholder:text-subtle focus-visible:outline-none"
+              placeholder="Create Post"
+            />
+          )}
         </div>
         <div className="hidden sm:flex sm:items-center">
           <Button
