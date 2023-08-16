@@ -9,7 +9,7 @@ const Modal: FC<ModalProps> = ({ children, className, ...props }) => {
   return (
     <div
       className={cn(
-        "fixed inset-0 z-10 bg-zinc-900/25 backdrop-blur",
+        "fixed inset-0 z-20 bg-zinc-900/25 backdrop-blur",
         className,
       )}
       {...props}
