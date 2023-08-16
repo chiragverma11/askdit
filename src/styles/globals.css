@@ -113,10 +113,10 @@
     /* Content/Text */
     --askdit-text: 0 0% 100%;
     --askdit-text-subtle: 0 0% 47%;
+    --askdit-text-inverted: 0 0% 2%;
 
     --askdit-text-emphasis: #111827;
     --askdit-text-muted: #9ca3af;
-    --askdit-text-inverted: white;
 
     /* Content/Text -> components */
     --askdit-text-info: #253985;
@@ -138,7 +138,7 @@
     --muted-foreground: 240 5% 64.9%;
 
     --popover: 0 0% 90%;
-    --popover-foreground: 0 0% 2%;
+    --popover-foreground: 0 0% 98%;
 
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
