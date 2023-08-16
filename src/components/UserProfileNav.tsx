@@ -1,11 +1,12 @@
 "use client";
 
+import { LogOut, Settings, User as UserIcon } from "lucide-react";
 import { User } from "next-auth";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { FC } from "react";
-import { LogOut, Settings } from "lucide-react";
 import { HiOutlineUserGroup } from "react-icons/hi";
+import ThemeSwitch from "./ThemeSwitch";
 import UserAvatar from "./UserAvatar";
 import {
   DropdownMenu,
@@ -14,10 +15,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/DropdownMenu";
-import ThemeSwitch from "./ThemeSwitch";
 
+interface CustomUser extends User {
+  username: String;
+}
 interface UserProfileNavProps {
-  user: Pick<User, "name" | "image" | "email">;
+  user: Pick<CustomUser, "name" | "image" | "email" | "username">;
 }
 
 const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
@@ -43,6 +46,12 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
           </div>
         </div>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href={`/u/${user.username}`}>
+            <UserIcon className="mr-2 h-4 w-4" />
+            Profile
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href={"/r/create"}>
             <HiOutlineUserGroup className="mr-2 h-4 w-4" />
