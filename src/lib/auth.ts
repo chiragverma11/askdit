@@ -48,7 +48,9 @@ export const authOptions: NextAuthOptions = {
             id: dbUser.id,
           },
           data: {
-            username: nanoid(10),
+            username: `${dbUser.name?.split(" ")[0].toLowerCase()}_${nanoid(
+              5,
+            )}`,
           },
         });
       }
