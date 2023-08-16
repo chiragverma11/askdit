@@ -65,6 +65,7 @@ module.exports = {
       textColor: {
         default: "hsl(var(--askdit-text) / <alpha-value>)",
         subtle: "hsl(var(--askdit-text-subtle) / <alpha-value>)",
+        inverted: "hsl(var(--askdit-text-inverted) / <alpha-value>)",
       },
       borderColor: {
         default: "hsl(var(--askdit-border) / <alpha-value>)",
