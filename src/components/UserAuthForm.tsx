@@ -27,7 +27,7 @@ const UserAuthForm: FC<UserAuthFormProps> = ({ authType }) => {
       <Button
         onClick={loginWithGoogle}
         variant={"outline"}
-        className="bg-transparent px-10 font-semibold ring-1 ring-zinc-300 hover:bg-zinc-200/40 active:scale-100"
+        className="bg-transparent px-6 font-semibold ring-1 ring-zinc-300 hover:bg-zinc-200/40 active:scale-100 lg:px-10"
         isLoading={loading}
       >
         {loading ? null : <FcGoogle className="mr-2 h-6 w-6 rounded-lg" />}
