@@ -3,6 +3,8 @@ import "../styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Navbar from "@/components/Navbar";
+import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/Toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={cn("antialiased", inter.className)}>
         <Providers>
           <div className="fixed inset-0 z-[-10] max-h-screen bg-gradient-to-b from-brand-default/30 from-0% to-30% dark:from-brand-default/20 "></div>
           <header className="sticky inset-x-0 top-0 z-[10]">
@@ -31,6 +33,7 @@ export default function RootLayout({
           {authModal}
           <main>{children}</main>
         </Providers>
+        <Toaster />
       </body>
     </html>
   );
