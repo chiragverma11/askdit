@@ -1,9 +1,9 @@
 import { FC } from "react";
 
-interface pageProps {}
+interface CreatePostSubredditProps {}
 
-const page: FC<pageProps> = ({}) => {
-  return <div>page</div>;
+const CreatePostSubreddit: FC<CreatePostSubredditProps> = ({}) => {
+  return <div>CreatePostSubreddit</div>;
 };
 
-export default page;
+export default CreatePostSubreddit;

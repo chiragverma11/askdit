@@ -2,7 +2,7 @@ import CloseModal from "@/components/CloseModal";
 import Modal from "@/components/Modal";
 import SignIn from "@/components/SignIn";
 
-const page = () => {
+const SignInModal = () => {
   return (
     <Modal>
       <div className="container mx-auto flex h-full max-w-lg items-center">
@@ -18,4 +18,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default SignInModal;

@@ -8,7 +8,7 @@ import { getAuthSession } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import Post from "@/components/Post";
 
-const page = async () => {
+const IndexPage = async () => {
   const session = await getAuthSession();
   return (
     <>
@@ -65,4 +65,4 @@ const SideLink = () => {
   );
 };
 
-export default page;
+export default IndexPage;

@@ -5,9 +5,9 @@ import Link from "next/link";
 import { FC } from "react";
 import { IoArrowBack } from "react-icons/io5";
 
-interface pageProps {}
+interface SignInPageProps {}
 
-const page: FC<pageProps> = ({}) => {
+const SignInPage: FC<SignInPageProps> = ({}) => {
   return (
     <div className="mx-auto flex h-full max-w-2xl flex-col items-center gap-10 px-4 pt-4">
       <Link
@@ -25,4 +25,4 @@ const page: FC<pageProps> = ({}) => {
   );
 };
 
-export default page;
+export default SignInPage;

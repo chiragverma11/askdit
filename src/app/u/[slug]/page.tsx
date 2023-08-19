@@ -1,9 +1,9 @@
 import { FC } from "react";
 
-interface pageProps {}
+interface UserProfilePageProps {}
 
-const page: FC<pageProps> = ({}) => {
-  return <div>page</div>;
+const UserProfilePage: FC<UserProfilePageProps> = ({}) => {
+  return <div>UserProfilePage</div>;
 };
 
-export default page;
+export default UserProfilePage;

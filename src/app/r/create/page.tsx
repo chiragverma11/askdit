@@ -5,9 +5,9 @@ import Link from "next/link";
 import { FC } from "react";
 import { IoArrowBack } from "react-icons/io5";
 
-interface pageProps {}
+interface CreateCommunityProps {}
 
-const page: FC<pageProps> = ({}) => {
+const CreateCommunity: FC<CreateCommunityProps> = ({}) => {
   return (
     <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-10 py-6 pt-4">
       <Link
@@ -30,4 +30,4 @@ const page: FC<pageProps> = ({}) => {
   );
 };
 
-export default page;
+export default CreateCommunity;
