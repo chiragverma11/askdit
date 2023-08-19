@@ -1,8 +1,9 @@
 "use client";
+import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import { FC, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Button } from "./ui/Button";
-import { signIn } from "next-auth/react";
 
 interface UserAuthFormProps {
   authType: "sign-in" | "sign-up";
@@ -11,12 +12,15 @@ interface UserAuthFormProps {
 const UserAuthForm: FC<UserAuthFormProps> = ({ authType }) => {
   const [loading, setLoading] = useState<boolean>(false);
 
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/";
+
   const authTerm = authType === "sign-in" ? "Sign in" : "Sign up";
 
   const loginWithGoogle = async () => {
     setLoading(true);
     try {
-      await signIn("google");
+      await signIn("google", { callbackUrl: callbackUrl });
     } catch (error) {
       console.log(error);
     }
