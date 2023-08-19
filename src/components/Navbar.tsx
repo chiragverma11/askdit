@@ -1,22 +1,23 @@
-import { getAuthSession } from "@/lib/auth";
-import { cn } from "@/lib/utils";
-import { Bell, Plus } from "lucide-react";
-import Link from "next/link";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
+import { getAuthSession } from "@/lib/auth";
+import { cn } from "@/lib/utils";
+import { Bell, Plus } from "lucide-react";
+import Link from "next/link";
+import AuthLink from "./AuthLink";
 import { Icons } from "./Icons";
 import SearchBar from "./SearchBar";
-import { Button, buttonVariants } from "./ui/Button";
 import UserProfileNav from "./UserProfileNav";
+import { Button, buttonVariants } from "./ui/Button";
 
 const Navbar = async () => {
   const session = await getAuthSession();
   return (
-    <div className="h-fit bg-transparent py-2 backdrop-blur-xl">
+    <div className="h-fit bg-transparent py-2 backdrop-blur-md">
       <TooltipProvider>
         <div className="container mx-auto flex h-full items-center justify-between gap-2">
           <Link
@@ -76,15 +77,15 @@ const Navbar = async () => {
             {session?.user ? (
               <UserProfileNav user={session.user} />
             ) : (
-              <Link
-                href={"/sign-in"}
+              <AuthLink
+                href="/sign-in"
                 className={cn(
                   buttonVariants({ variant: "ghost", size: "sm" }),
                   "border-2 border-brand-default/50 font-semibold text-default hover:border-brand-default/75 hover:bg-zinc-200/50 dark:hover:bg-transparent",
                 )}
               >
                 Sign In
-              </Link>
+              </AuthLink>
             )}
           </nav>
         </div>
