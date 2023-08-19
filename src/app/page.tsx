@@ -13,8 +13,8 @@ const page = async () => {
   return (
     <>
       <AsideBar />
-      <div className="container flex w-full justify-center py-6 pt-4">
-        <div className="relative lg:w-[600px]">
+      <div className="flex w-full justify-center px-4 py-6 pt-4">
+        <div className="relative w-full lg:w-[600px]">
           {session?.user ? (
             <CreatePostInput
               session={session}
@@ -22,7 +22,7 @@ const page = async () => {
               href="/submit"
             />
           ) : null}
-          <div className="space-y-3">
+          <div className="space-y-3 pb-16">
             <Post />
             <Post />
             <Post />
