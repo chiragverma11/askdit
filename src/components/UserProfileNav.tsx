@@ -4,6 +4,7 @@ import { LogOut, Settings, User as UserIcon } from "lucide-react";
 import { User } from "next-auth";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FC } from "react";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import ThemeSwitch from "./ThemeSwitch";
@@ -24,6 +25,8 @@ interface UserProfileNavProps {
 }
 
 const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
+  const pathname = usePathname();
+
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger className="rounded-full outline outline-offset-2 outline-brand-default/50 transition hover:outline-red-500/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
@@ -78,9 +81,7 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
         <DropdownMenuItem
           onSelect={(event) => {
             event.preventDefault();
-            signOut({
-              callbackUrl: `${window.location.origin}/sign-in`,
-            });
+            signOut({ callbackUrl: pathname });
           }}
         >
           <LogOut className="mr-2 h-4 w-4" />
