@@ -27,8 +27,17 @@ const ThemeSwitch = () => {
 
   return (
     <>
-      <label htmlFor="themeSwitch" className="w-full">
-        Dark Mode
+      <label
+        htmlFor="themeSwitch"
+        className="mr-4 inline-flex w-full items-center justify-between"
+      >
+        <span>Dark Mode</span>
+        {theme ? (
+          <span className="text-zinc-500">
+            {/* &bull; */}
+            {theme[0]?.toUpperCase() + theme.slice(1)}
+          </span>
+        ) : null}
       </label>
       <Switch
         name="themeSwitch"
