@@ -22,7 +22,24 @@ const ThemeSwitch = () => {
   }, [theme]);
 
   if (!mounted) {
-    return null;
+    return (
+      <>
+        <label
+          htmlFor="themeSwitch"
+          className="mr-4 inline-flex w-full items-center justify-between"
+        >
+          <span>Dark Mode</span>
+        </label>
+        <Switch
+          name="themeSwitch"
+          id="themeSwitch"
+          checked={isDark}
+          onCheckedChange={() => {
+            setTheme(isDark === true ? "light" : "dark");
+          }}
+        />
+      </>
+    );
   }
 
   return (
