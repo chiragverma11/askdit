@@ -1,11 +1,9 @@
 "use client";
 
-import { FC } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { FC } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import * as z from "zod";
 
 import { Button } from "@/components/ui/Button";
 import {
@@ -25,13 +23,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
-import { Axis3dIcon, Info } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-const communityNameRegex = /^[a-zA-Z0-9_]{3,21}$/;
+import { useToast } from "../hooks/use-toast";
+import AuthLink from "./AuthLink";
+import { ToastAction } from "./ui/Toast";
+import { COMMUNITY_NAME_REGEX } from "@/lib/config";
 
 const createCommunityFormSchema = z.object({
-  communityName: z.string().regex(communityNameRegex, {
+  communityName: z.string().regex(COMMUNITY_NAME_REGEX, {
     message:
       "Community names must be between 3–21 characters, and can only contain letters, numbers, or underscores.",
   }),
@@ -41,6 +42,7 @@ interface CreateCommunityFormProps {}
 
 const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
   const router = useRouter();
+  const { toast, dismiss } = useToast();
 
   const form = useForm<z.infer<typeof createCommunityFormSchema>>({
     resolver: zodResolver(createCommunityFormSchema),
@@ -50,15 +52,41 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
     mode: "all",
   });
 
-  const { mutate: createCommunity, isLoading } = useMutation({
-    mutationFn: async (payload: { communityName: string }) => {
-      const { data } = await axios.post("/api/subreddit", payload);
-      return data as string;
-    },
-    onSuccess: (data) => {
-      router.push(`/r/${data}`);
-    },
-  });
+  const { mutate: createCommunity, isLoading } =
+    trpc.community.createCommunity.useMutation({
+      onSuccess: (data) => {
+        toast({ description: "Community created Successfully" });
+        router.push(`/r/${data}`);
+      },
+      onError: (error) => {
+        if (error.data?.httpStatus === 401) {
+          toast({
+            variant: "destructive",
+            title: "Can't create community.",
+            description: "Login to create community.",
+            action: (
+              <ToastAction altText="Try again">
+                <AuthLink href="/sign-in" onClick={() => dismiss()}>
+                  Login
+                </AuthLink>
+              </ToastAction>
+            ),
+          });
+        } else if (error.data?.httpStatus === 409) {
+          toast({
+            variant: "destructive",
+            title: "Can't create community.",
+            description: "Community with this name already exists.",
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "Please try again later.",
+          });
+        }
+      },
+    });
 
   function onSubmit(values: z.infer<typeof createCommunityFormSchema>) {
     createCommunity(values);
@@ -108,6 +136,7 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
                     {...field}
                     className="mb-2 mt-6 bg-subtle pl-6 focus-visible:bg-default"
                     autoComplete="off"
+                    spellCheck="false"
                   />
                 </div>
               </FormControl>
@@ -124,6 +153,7 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
               event.preventDefault();
               router.back();
             }}
+            disabled={isLoading}
           >
             Cancel
           </Button>
@@ -132,6 +162,7 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
             size={"sm"}
             form="createCommunity"
             role="Create Community"
+            isLoading={isLoading}
           >
             Create Community
           </Button>
