@@ -2,16 +2,12 @@
 import { useEffect, useState } from "react";
 import { Switch } from "./ui/Switch";
 import { useTheme } from "next-themes";
+import { useMounted } from "@/hooks/use-mounted";
 
 const ThemeSwitch = () => {
-  const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const { theme, setTheme } = useTheme();
-
-  // useEffect only runs on the client, so now we can safely show the UI
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   useEffect(() => {
     if (theme === "dark") {
