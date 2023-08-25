@@ -1,29 +1,27 @@
 import AsideBar from "@/components/AsideBar";
 import Post from "@/components/Post";
-import { Button, buttonVariants } from "@/components/ui/Button";
+import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
+import { buttonVariants } from "@/components/ui/Button";
+import { Separator } from "@/components/ui/Separator";
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { cn } from "@/lib/utils";
-import { Subreddit } from "@prisma/client";
+import { cn, getDefaultCommunityBg } from "@/lib/utils";
+import { Session } from "next-auth";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FC } from "react";
 import { MdOutlinePostAdd } from "react-icons/md";
 
-interface PageProps {
+interface SubredditPageProps {
   params: {
     slug: string;
   };
 }
 
-const page: FC<PageProps> = async ({ params }) => {
-  const { slug } = params;
-
-  const session = await getAuthSession();
-
+async function getCommunity(communityName: string) {
   const subreddit = await db.subreddit.findFirst({
     where: {
-      name: slug,
+      name: communityName,
     },
     include: {
       _count: {
@@ -46,9 +44,49 @@ const page: FC<PageProps> = async ({ params }) => {
     },
   });
 
-  if (!subreddit) return notFound();
+  return subreddit;
+}
 
-  const isSubscribed = session?.user.id === subreddit.creatorId ? true : false;
+const getSubscription = async ({
+  communityName,
+  userId,
+}: {
+  communityName: string;
+  userId: string;
+}) => {
+  const subscription = await db.subscription.findFirst({
+    where: {
+      Subreddit: { name: communityName },
+      user: {
+        id: userId,
+      },
+    },
+  });
+
+  return subscription;
+};
+
+const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
+  const { slug } = params;
+
+  const session = await getAuthSession();
+
+  const community = await getCommunity(slug);
+
+  const subscription = session
+    ? await getSubscription({
+        communityName: slug,
+        userId: session?.user.id,
+      })
+    : null;
+
+  const isSubscribed = !!subscription;
+
+  if (!community) return notFound();
+
+  const defaultProfileBg = getDefaultCommunityBg({
+    communityName: community?.name,
+  });
 
   return (
     <>
@@ -58,30 +96,42 @@ const page: FC<PageProps> = async ({ params }) => {
           <div className="mb-3 flex w-full flex-col justify-between gap-4 lg:mb-4 lg:flex-row">
             <div className="flex items-center justify-between px-4">
               <div className="flex items-center gap-3">
-                <span className="flex aspect-square h-10 w-10 items-center justify-center rounded-full bg-amber-400 text-2xl font-bold text-zinc-950">
+                <span
+                  className={cn(
+                    "flex aspect-square h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-zinc-950",
+                    defaultProfileBg,
+                  )}
+                >
                   r/
                 </span>
                 <div className="flex flex-col">
                   <h1 className="text-lg font-semibold md:text-xl">
-                    r/{subreddit.name}
+                    r/{community.name}
                   </h1>
                   <p className="text-xs text-subtle lg:hidden">
-                    {subreddit._count.subscribers}{" "}
-                    {subreddit._count.subscribers > 1 ? "members" : "member"}
+                    {community._count.subscribers}{" "}
+                    {community._count.subscribers > 1 ? "members" : "member"}
                   </p>
                 </div>
               </div>
-              <Button size={"sm"} className="lg:hidden">
-                {isSubscribed ? "Joined" : "Join"}
-              </Button>
+              {/* {session?.user.id !== community.creatorId ? ( */}
+              <SubscribeLeaveToggle
+                isSubscribed={isSubscribed}
+                subredditId={community?.id}
+                subredditName={community?.name}
+                session={session}
+                className="lg:hidden"
+                disabled={session?.user.id === community?.creatorId}
+              />
+              {/* ) : null} */}
             </div>
 
             {session?.user ? (
               <Link
-                href={`/r/${subreddit.name}/submit`}
+                href={`/r/${community.name}/submit`}
                 className={cn(
                   buttonVariants({ variant: "ghost", size: "sm" }),
-                  "flex w-fit items-center rounded-3xl  font-semibold",
+                  "flex w-fit items-center rounded-3xl border-2 border-transparent font-semibold hover:border-default/50 hover:bg-transparent",
                 )}
               >
                 <MdOutlinePostAdd className="mr-2 h-6 w-6" />
@@ -89,47 +139,72 @@ const page: FC<PageProps> = async ({ params }) => {
               </Link>
             ) : null}
           </div>
-          <div className="space-y-3">
+          <div className="space-y-3 pb-16 lg:pb-0">
             <Post />
             <Post />
             <Post />
             <Post />
           </div>
-          <SideLink subreddit={subreddit} />
+          <SideMenu
+            isSubscribed={isSubscribed}
+            session={session}
+            community={community}
+          />
         </div>
       </div>
     </>
   );
 };
 
-const SideLink = ({ subreddit }: { subreddit: Subreddit }) => {
+const SideMenu = ({
+  isSubscribed,
+  session,
+  community,
+}: {
+  isSubscribed: boolean;
+  session: Session | null;
+  community: Awaited<ReturnType<typeof getCommunity>>;
+}) => {
+  if (!community) return null;
+
   return (
-    <div className="fixed right-[-18rem] top-0 xl:block">
+    <div className="absolute right-[-18rem] top-0 hidden justify-self-end xl:block">
       <div className="flex flex-col gap-4 rounded-xl border border-default/25 px-4 py-4">
-        <div>
-          <p className="text-lg font-semibold">About r/{subreddit.name}</p>
-        </div>
-        <div className="flex flex-col items-center gap-4">
-          <p className="w-56 text-sm">
-            Your personal Askdit homepage. Come here to check in with your
-            favourite communities.
-          </p>
-          <Link
-            href="/submit"
-            className={cn(buttonVariants(), "w-full text-white")}
-          >
-            Create a Post
-          </Link>
-          <Link
-            href="/r/create"
-            className={cn(buttonVariants({ variant: "outline" }), "w-full")}
-          >
-            Create a Community
-          </Link>
+        <div className="flex w-56 flex-col gap-6">
+          <div className="flex items-center justify-between">
+            <p className="text-lg font-bold">r/{community?.name}</p>
+            <SubscribeLeaveToggle
+              isSubscribed={isSubscribed}
+              subredditId={community?.id}
+              subredditName={community?.name}
+              session={session}
+              className="hidden lg:inline-flex"
+              disabled={session?.user.id === community?.creatorId}
+            />
+          </div>
+          <div className="flex w-full flex-col items-center gap-4">
+            <div className="flex w-full items-center justify-between">
+              <p className="text-sm">Members</p>
+              <p className="text-sm">{community._count.subscribers}</p>
+            </div>
+            <div className="flex w-full items-center justify-between">
+              <p className="text-sm">Created</p>
+              <p className="text-sm">
+                {new Date(community.createdAt).toDateString()}
+              </p>
+            </div>
+            <Separator />
+            <Link
+              href={`/r/${community.name}/submit`}
+              className={cn(buttonVariants(), "w-full text-white")}
+            >
+              Create a Post
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default page;
+export default SubredditPage;
