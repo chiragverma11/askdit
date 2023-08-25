@@ -76,7 +76,9 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
           toast({
             variant: "destructive",
             title: "Can't create community.",
-            description: "Community with this name already exists.",
+            description: `Sorry, community r/${form.getValues(
+              "communityName",
+            )} already exists.`,
           });
         } else {
           toast({
@@ -132,12 +134,15 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
               </FormDescription>
               <FormControl>
                 <div>
-                  <Input
-                    {...field}
-                    className="mb-2 mt-6 bg-subtle pl-6 focus-visible:bg-default"
-                    autoComplete="off"
-                    spellCheck="false"
-                  />
+                  <div className="relative mb-2 mt-6 flex items-center">
+                    <p className="absolute left-4 text-default/75">r/</p>
+                    <Input
+                      {...field}
+                      className="bg-subtle pl-7 focus-visible:bg-default"
+                      autoComplete="off"
+                      spellCheck="false"
+                    />
+                  </div>
                 </div>
               </FormControl>
               <FormMessage className="text-xs" />
