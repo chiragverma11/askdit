@@ -1,6 +1,6 @@
 import { FC } from "react";
+import AuthLink from "./AuthLink";
 import { Icons } from "./Icons";
-import Link from "next/link";
 import UserAuthForm from "./UserAuthForm";
 
 interface SignInProps {}
@@ -17,12 +17,13 @@ const SignIn: FC<SignInProps> = ({}) => {
       <UserAuthForm authType="sign-in" />
       <p className="text-center text-sm">
         Don&apos;t have an account yet?{" "}
-        <Link
-          href={"/sign-up"}
-          className="font-medium text-default hover:underline hover:underline-offset-2"
+        <AuthLink
+          href="/sign-up"
+          paramsAsCallback={true}
+          className="font-medium text-sky-600 hover:underline hover:underline-offset-2"
         >
           Sign Up
-        </Link>
+        </AuthLink>
       </p>
     </div>
   );
