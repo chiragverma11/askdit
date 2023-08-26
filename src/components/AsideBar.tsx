@@ -10,10 +10,11 @@ import { cn } from "@/lib/utils";
 import { Flame, Home } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { LuEdit } from "react-icons/lu";
 import { buttonVariants } from "./ui/Button";
+import { motion } from "framer-motion";
 
 const navItems = [
   { path: "/", name: "Home" },
@@ -33,6 +34,7 @@ interface AsideBarProps {}
 
 const AsideBar: FC<AsideBarProps> = ({}) => {
   const pathname = usePathname() || "/";
+  const [hoveredPath, setHoveredPath] = useState(pathname);
 
   return (
     <nav className="container fixed inset-x-0 bottom-0 z-10 flex h-[4.25rem] w-full items-center justify-center bg-subtle py-8 shadow-inner ring ring-zinc-300/50 backdrop-blur transition-colors dark:ring-0 sm:h-20 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-16 lg:my-auto lg:h-[calc(100vh-15%)] lg:w-[10%] lg:rounded-3xl lg:bg-emphasis/80">
@@ -43,13 +45,13 @@ const AsideBar: FC<AsideBarProps> = ({}) => {
 
             const IconComponent =
               item.name === Items.Home ? (
-                <Home className="h-6 w-6 text-default" />
+                <Home className="h-6 w-6 text-inherit" />
               ) : item.name === Items.Popular ? (
-                <Flame className="h-6 w-6 text-default" />
+                <Flame className="h-6 w-6 text-inherit" />
               ) : item.name === Items.Answer ? (
-                <LuEdit className="h-6 w-6 text-default" />
+                <LuEdit className="h-6 w-6 text-inherit" />
               ) : item.name === Items.Communities ? (
-                <HiOutlineUserGroup className="h-6 w-6 text-default" />
+                <HiOutlineUserGroup className="h-6 w-6 text-inherit" />
               ) : null;
 
             return (
@@ -60,13 +62,27 @@ const AsideBar: FC<AsideBarProps> = ({}) => {
                       href={item.path}
                       className={cn(
                         buttonVariants({ size: "icon" }),
-                        "w-14",
+                        "relative w-14 bg-transparent hover:bg-transparent",
                         isActive
-                          ? "hover:bg-primary/75"
-                          : "bg-transparent hover:bg-transparent lg:bg-subtle lg:hover:bg-default",
+                          ? "text-default"
+                          : "text-default/75 lg:bg-subtle lg:hover:bg-default",
                       )}
                     >
                       {IconComponent}
+                      {item.path === hoveredPath && (
+                        <motion.div
+                          className="absolute inset-0 -z-10 rounded-md bg-primary"
+                          layoutId="asidebar"
+                          aria-hidden="true"
+                          transition={{
+                            type: "spring",
+                            bounce: 0.01,
+                            stiffness: 140,
+                            damping: 18,
+                            duration: 0.3,
+                          }}
+                        />
+                      )}
                     </Link>
                   </TooltipTrigger>
                   <TooltipContent
