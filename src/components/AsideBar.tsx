@@ -16,10 +16,10 @@ import { LuEdit } from "react-icons/lu";
 import { buttonVariants } from "./ui/Button";
 
 const navItems = [
-  { path: "/", name: "Home", icon: "Home" },
-  { path: "/popular", name: "Popular", icon: "Flame" },
-  { path: "/answer", name: "Answer", icon: "LuEdit" },
-  { path: "/communities", name: "Communities", icon: "HiOutlineUserGroup" },
+  { path: "/", name: "Home" },
+  { path: "/popular", name: "Popular" },
+  { path: "/answer", name: "Answer" },
+  { path: "/communities", name: "Communities" },
 ];
 
 const Items = {
@@ -53,7 +53,7 @@ const AsideBar: FC<AsideBarProps> = ({}) => {
               ) : null;
 
             return (
-              <li key={item.path}>
+              <li key={item.path} data-active={isActive}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
