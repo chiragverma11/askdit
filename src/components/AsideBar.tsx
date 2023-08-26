@@ -1,3 +1,5 @@
+"use client";
+
 import { Flame, Home } from "lucide-react";
 import Link from "next/link";
 import { FC } from "react";
@@ -11,10 +13,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 interface AsideBarProps {}
 
 const AsideBar: FC<AsideBarProps> = ({}) => {
+  const pathname = usePathname();
+
   return (
     <nav className="container fixed inset-x-0 bottom-0 z-10 flex h-[4.25rem] w-full items-center justify-center bg-subtle py-8 shadow-inner ring ring-zinc-300/50 backdrop-blur transition-colors dark:ring-0 sm:h-20 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-16 lg:my-auto lg:h-[calc(100vh-15%)] lg:w-[10%] lg:rounded-3xl lg:bg-emphasis/80">
       <TooltipProvider skipDelayDuration={500}>
@@ -26,7 +31,10 @@ const AsideBar: FC<AsideBarProps> = ({}) => {
                   href={"/"}
                   className={cn(
                     buttonVariants({ size: "icon" }),
-                    "w-14 hover:bg-primary/75",
+                    "w-14",
+                    pathname === "/"
+                      ? "hover:bg-primary/75"
+                      : "bg-transparent hover:bg-transparent lg:bg-subtle lg:hover:bg-default",
                   )}
                 >
                   <Home className="h-6 w-6 text-default" />
@@ -50,7 +58,10 @@ const AsideBar: FC<AsideBarProps> = ({}) => {
                   href={"/"}
                   className={cn(
                     buttonVariants({ size: "icon" }),
-                    "w-14 bg-transparent hover:bg-transparent lg:bg-subtle lg:hover:bg-default",
+                    "w-14",
+                    pathname === "/popular"
+                      ? "hover:bg-primary/75"
+                      : "bg-transparent hover:bg-transparent lg:bg-subtle lg:hover:bg-default",
                   )}
                 >
                   <Flame className="h-6 w-6 text-default" />
@@ -74,7 +85,10 @@ const AsideBar: FC<AsideBarProps> = ({}) => {
                   href={"/"}
                   className={cn(
                     buttonVariants({ size: "icon" }),
-                    "w-14 bg-transparent hover:bg-transparent lg:bg-subtle lg:hover:bg-default",
+                    "w-14",
+                    pathname === "/answer"
+                      ? "hover:bg-primary/75"
+                      : "bg-transparent hover:bg-transparent lg:bg-subtle lg:hover:bg-default",
                   )}
                 >
                   <LuEdit className="h-6 w-6 text-default" />
@@ -99,7 +113,10 @@ const AsideBar: FC<AsideBarProps> = ({}) => {
                   href={"/communities"}
                   className={cn(
                     buttonVariants({ size: "icon" }),
-                    "w-14 bg-transparent hover:bg-transparent lg:bg-subtle lg:hover:bg-default",
+                    "w-14",
+                    pathname === "/communities"
+                      ? "hover:bg-primary/75"
+                      : "bg-transparent hover:bg-transparent lg:bg-subtle lg:hover:bg-default",
                   )}
                 >
                   <HiOutlineUserGroup className="h-6 w-6 text-default" />
