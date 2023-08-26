@@ -56,7 +56,7 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href={"/r/create"}>
+          <Link href={"/communities/create"}>
             <HiOutlineUserGroup className="mr-2 h-4 w-4" />
             Create Community
           </Link>

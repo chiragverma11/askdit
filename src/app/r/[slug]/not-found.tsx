@@ -15,7 +15,7 @@ export default function NotFound() {
         </p>
         <div className="mx-auto mt-4 flex gap-4">
           <Link
-            href="/r/create"
+            href="/communities/create"
             className={cn(
               buttonVariants({ variant: "outline", size: "sm" }),
               "bg-emphasis hover:bg-subtle",

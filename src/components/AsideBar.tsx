@@ -96,7 +96,7 @@ const AsideBar: FC<AsideBarProps> = ({}) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={"/"}
+                  href={"/communities"}
                   className={cn(
                     buttonVariants({ size: "icon" }),
                     "w-14 bg-transparent hover:bg-transparent lg:bg-subtle lg:hover:bg-default",

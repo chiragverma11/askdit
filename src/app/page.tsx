@@ -54,7 +54,7 @@ const SideLink = () => {
             Create a Post
           </Link>
           <Link
-            href="/r/create"
+            href="/communities/create"
             className={cn(buttonVariants({ variant: "outline" }), "w-full")}
           >
             Create a Community
