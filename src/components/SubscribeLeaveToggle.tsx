@@ -14,6 +14,7 @@ interface SubscribeLeaveToggleProps extends React.HTMLAttributes<HTMLElement> {
   subredditId: string;
   subredditName: string;
   session: Session | null;
+  disableRefresh?: boolean;
   disabled?: boolean;
 }
 
@@ -23,7 +24,9 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
   subredditName,
   session,
   className,
+  disableRefresh,
   disabled = false,
+  ...props
 }) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -34,9 +37,10 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
     trpc.community.subscribe.useMutation({
       onSuccess: () => {
         toast({ description: `Successfully joined r/${subredditName}` });
-        startTransition(() => {
-          router.refresh();
-        });
+        !disableRefresh &&
+          startTransition(() => {
+            router.refresh();
+          });
       },
       onError() {
         setIsSub(false);
@@ -47,9 +51,10 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
     trpc.community.unsubscribe.useMutation({
       onSuccess: () => {
         toast({ description: `Successfully left r/${subredditName}` });
-        startTransition(() => {
-          router.refresh();
-        });
+        !disableRefresh &&
+          startTransition(() => {
+            router.refresh();
+          });
       },
       onError() {
         setIsSub(true);
@@ -64,21 +69,25 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
         "min-w-max max-w-xs rounded-lg border-primary px-3 after:w-12 after:transition after:content-['Joined'] hover:after:content-['Leave']",
         className,
       )}
-      onClick={() => {
+      onClick={(e) => {
+        e.preventDefault();
         setIsSub(false);
         unsubscribe({ communityId: subredditId });
       }}
       disabled={disabled}
+      {...props}
     />
   ) : session ? (
     <Button
       size={"xs"}
       className={cn("rounded-lg px-3", className)}
-      onClick={() => {
+      onClick={(e) => {
+        e.preventDefault();
         setIsSub(true);
         subscribe({ communityId: subredditId });
       }}
       disabled={disabled}
+      {...props}
     >
       Join
     </Button>
