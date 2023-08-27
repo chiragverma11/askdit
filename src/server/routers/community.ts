@@ -110,4 +110,26 @@ export const communityRouter = router({
         message: "Unsubscribed successfully.",
       };
     }),
+  yourCommunities: protectedProcedure.query(async (opts) => {
+    const { user } = opts.ctx;
+
+    const yourCommunities = await db.subscription.findMany({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        Subreddit: {
+          include: {
+            _count: {
+              select: {
+                subscribers: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return yourCommunities;
+  }),
 });
