@@ -132,4 +132,28 @@ export const communityRouter = router({
 
     return yourCommunities;
   }),
+  exploreCommunities: protectedProcedure.query(async (opts) => {
+    const { user } = opts.ctx;
+
+    const exploreCommunities = await db.subreddit.findMany({
+      where: {
+        NOT: {
+          subscribers: {
+            some: {
+              userId: user.id,
+            },
+          },
+        },
+      },
+      include: {
+        _count: {
+          select: {
+            subscribers: true,
+          },
+        },
+      },
+    });
+
+    return exploreCommunities;
+  }),
 });
