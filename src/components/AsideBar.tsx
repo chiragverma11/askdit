@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import { Flame, Home } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FC } from "react";
+import { FC, HTMLAttributes } from "react";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { LuEdit } from "react-icons/lu";
 import { buttonVariants } from "./ui/Button";
@@ -30,13 +30,18 @@ const Items = {
   Communities: "Communities",
 } as const;
 
-interface AsideBarProps {}
+interface AsideBarProps extends HTMLAttributes<HTMLElement> {}
 
-const AsideBar: FC<AsideBarProps> = ({}) => {
+const AsideBar: FC<AsideBarProps> = ({ className }) => {
   const pathname = usePathname() || "/";
 
   return (
-    <nav className="container fixed inset-x-0 bottom-0 z-10 flex h-[4.25rem] w-full items-center justify-center bg-subtle py-8 shadow-inner ring ring-zinc-300/50 backdrop-blur transition-colors dark:ring-0 sm:h-20 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-16 lg:my-auto lg:h-[calc(100vh-15%)] lg:w-[10%] lg:rounded-3xl lg:bg-emphasis/80">
+    <nav
+      className={cn(
+        "container fixed inset-x-0 bottom-0 z-10 flex h-[4.25rem] w-full items-center justify-center bg-subtle py-8 shadow-inner ring ring-zinc-300/50 backdrop-blur transition-colors dark:ring-0 sm:h-20 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-16 lg:my-auto lg:h-[calc(100vh-15%)] lg:w-[10%] lg:rounded-3xl lg:bg-emphasis/80",
+        className,
+      )}
+    >
       <TooltipProvider skipDelayDuration={500}>
         <ul className="xl:gap flex h-full w-full items-center justify-between lg:flex-col lg:justify-evenly lg:gap-16 2xl:gap-20">
           {navItems.map((item) => {
