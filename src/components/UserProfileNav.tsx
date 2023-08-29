@@ -36,7 +36,7 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
         align="end"
         onCloseAutoFocus={(e) => e.preventDefault()}
         sideOffset={10}
-        className="border-default/40 bg-subtle"
+        className="border-default/40 bg-emphasis dark:bg-subtle"
       >
         <div className="flex items-center justify-center p-2">
           <div className="flex flex-col gap-1">
