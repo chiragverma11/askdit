@@ -33,7 +33,7 @@ const CreatePostInput: FC<CreatePostInputProps> = ({
 
         <div
           className={cn(
-            "inline-flex w-full items-center gap-2 rounded-lg border border-default/25 bg-subtle px-6 text-sm text-subtle backdrop-blur-xl transition focus-within:border-default/90 focus-within:bg-default hover:border-default/90",
+            "inline-flex w-full items-center gap-2 rounded-lg border border-default/25 bg-subtle px-6 text-sm text-subtle backdrop-blur-xl transition focus-within:border-default/90 focus-within:bg-subtle/60 hover:border-default/90 dark:focus-within:bg-default",
           )}
         >
           {href ? (

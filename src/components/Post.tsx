@@ -6,7 +6,7 @@ const Post = ({ className, ...props }: PostProps) => {
   return (
     <div
       className={cn(
-        "mx-auto h-[40vh] rounded-3xl border border-default/25 bg-emphasis  hover:border-default/60 lg:h-[65vh]",
+        "mx-auto h-[40vh] w-full rounded-3xl border border-default/25  bg-emphasis hover:border-default/60 lg:h-[65vh]",
         className,
       )}
       {...props}

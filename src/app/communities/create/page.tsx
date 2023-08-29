@@ -17,7 +17,7 @@ const CreateCommunity: FC<CreateCommunityProps> = ({}) => {
           href={"/"}
           className={cn(
             buttonVariants({ variant: "ghost" }),
-            "self-start hover:bg-zinc-200/75 dark:hover:bg-emphasis/50 dark:hover:ring dark:hover:ring-emphasis/60",
+            "mx-4 self-start hover:bg-zinc-200/75 dark:hover:bg-emphasis/50 dark:hover:ring dark:hover:ring-emphasis/60",
           )}
         >
           <IoArrowBack className="mr-2 h-4 w-4" />
@@ -25,7 +25,7 @@ const CreateCommunity: FC<CreateCommunityProps> = ({}) => {
         </Link>
         <div className="container mx-auto flex flex-col justify-center gap-10">
           <div className="flex flex-col gap-6">
-            <h1>Create a Community</h1>
+            <h1 className="text-lg font-semibold">Create a Community</h1>
           </div>
           <CreateCommunityForm />
         </div>

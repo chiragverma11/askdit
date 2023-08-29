@@ -66,7 +66,7 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
       size={"xs"}
       variant={"outline"}
       className={cn(
-        "min-w-max max-w-xs rounded-lg border-primary px-3 after:w-12 after:transition after:content-['Joined'] hover:after:content-['Leave']",
+        "min-w-max max-w-xs rounded-lg border-primary px-3 after:w-12 after:transition after:content-['Joined'] hover:bg-transparent hover:after:content-['Leave']",
         className,
       )}
       onClick={(e) => {

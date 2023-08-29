@@ -38,7 +38,7 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
   return (
     <nav
       className={cn(
-        "container fixed inset-x-0 bottom-0 z-10 flex h-[4.25rem] w-full items-center justify-center bg-subtle py-8 shadow-inner ring ring-zinc-300/50 backdrop-blur transition-colors dark:ring-0 sm:h-20 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-16 lg:my-auto lg:h-[calc(100vh-15%)] lg:w-[10%] lg:rounded-3xl lg:bg-emphasis/80",
+        "container fixed inset-x-0 bottom-0 z-10 flex h-[4.25rem] w-full items-center justify-center bg-subtle py-8 shadow-inner ring ring-zinc-300/50 backdrop-blur transition-colors dark:ring-0 sm:h-20 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-16 lg:my-auto lg:h-[calc(100vh-15%)] lg:max-h-[600px] lg:w-[10%] lg:rounded-3xl lg:bg-emphasis/80",
         className,
       )}
     >
@@ -68,8 +68,8 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
                         buttonVariants({ size: "icon" }),
                         "relative w-14 bg-transparent hover:bg-transparent",
                         isActive
-                          ? "text-default"
-                          : "text-default/75 lg:bg-subtle lg:hover:bg-default",
+                          ? "text-white hover:bg-white/20 hover:dark:bg-black/10"
+                          : "text-default/75 lg:bg-subtle lg:hover:bg-default/70 lg:dark:hover:bg-default",
                       )}
                     >
                       {IconComponent}
