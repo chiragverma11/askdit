@@ -6,12 +6,12 @@
   :root {
     /* background */
 
-    --askdit-bg: 0 0% 96%;
+    --askdit-bg: 0 15% 98%;
+    --askdit-bg-emphasis: 0 5% 94%;
+    --askdit-bg-subtle: 0 5% 91%;
 
-    --askdit-bg-emphasis: #e5e7eb;
-    --askdit-bg-subtle: #f3f4f6;
-    --askdit-bg-muted: #f9fafb;
-    --askdit-bg-inverted: #111827;
+    --askdit-bg-muted: hsl(220 13% 91%);
+    --askdit-bg-inverted: hsl(221, 39%, 11%);
 
     /* background -> components*/
     --askdit-bg-info: #dee9fc;
@@ -21,20 +21,21 @@
     --askdit-bg-dark-error: #752522;
 
     /* Borders */
+    --askdit-border: 0 12% 64%;
+
     --askdit-border-emphasis: #9ca3af;
-    --askdit-border: #d1d5db;
     --askdit-border-subtle: #e5e7eb;
     --askdit-border-booker: #e5e7eb;
     --askdit-border-muted: #f3f4f6;
     --askdit-border-error: #aa2e26;
 
     /* Content/Text */
-    --askdit-text: 240 10% 3.9%;
+    --askdit-text: 0 10% 3.9%;
+    --askdit-text-inverted: 0 0% 90%;
 
     --askdit-text-emphasis: #111827;
     --askdit-text-subtle: #6b7280;
     --askdit-text-muted: #9ca3af;
-    --askdit-text-inverted: white;
 
     /* Content/Text -> components */
     --askdit-text-info: #253985;
@@ -48,6 +49,10 @@
 
     --askdit-brand-emphasis: #101010;
 
+    /* Skeleton */
+    --skeleton-base: #d9d9d9;
+    --skeleton-highlight: #cccccc;
+
     /* 
       Shadcn's Variables 
     */
@@ -58,8 +63,8 @@
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover: 0 0% 15%;
+    --popover-foreground: 0 0% 2%;
 
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -129,6 +134,10 @@
     --askdit-brand-text: white;
 
     --askdit-brand-emphasis: #101010;
+
+    /* Skeleton */
+    --skeleton-base: #3d3d3d;
+    --skeleton-highlight: #444;
 
     /* Shadcn's Variables */
     --background: 240 10% 3.9%;
