@@ -28,7 +28,8 @@ const Navbar = async () => {
             )}
           >
             <Icons.logo className="h-8 w-8 lg:hidden lg:h-6 lg:w-6" />
-            <Icons.logoWithText className="hidden h-8 w-full lg:block lg:h-6" />
+            <Icons.logoWithText className="hidden h-8 w-full lg:h-6 dark:lg:block" />
+            <Icons.logoWithDarkText className="hidden h-8 w-full dark:hidden lg:block lg:h-6" />
           </Link>
           <nav className="flex w-3/4 items-center justify-end lg:justify-around">
             <SearchBar className="hidden lg:inline-flex" />
