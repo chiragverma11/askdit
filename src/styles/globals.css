@@ -7,8 +7,8 @@
     /* background */
 
     --askdit-bg: 0 15% 98%;
-    --askdit-bg-emphasis: 0 5% 94%;
     --askdit-bg-subtle: 0 5% 91%;
+    --askdit-bg-emphasis: 0 5% 94%;
 
     --askdit-bg-muted: hsl(220 13% 91%);
     --askdit-bg-inverted: hsl(221, 39%, 11%);
@@ -21,7 +21,7 @@
     --askdit-bg-dark-error: #752522;
 
     /* Borders */
-    --askdit-border: 0 12% 64%;
+    --askdit-border: 0 15% 64%;
 
     --askdit-border-emphasis: #9ca3af;
     --askdit-border-subtle: #e5e7eb;
@@ -32,9 +32,9 @@
     /* Content/Text */
     --askdit-text: 0 10% 3.9%;
     --askdit-text-inverted: 0 0% 90%;
+    --askdit-text-subtle: 0 0% 47%;
 
     --askdit-text-emphasis: #111827;
-    --askdit-text-subtle: #6b7280;
     --askdit-text-muted: #9ca3af;
 
     /* Content/Text -> components */
@@ -152,7 +152,7 @@
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
 
-    --border: hsl(240 3.7% 15.9%);
+    --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
 
     --primary: 0 0% 98%;
