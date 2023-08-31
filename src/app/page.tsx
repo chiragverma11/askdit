@@ -37,8 +37,8 @@ const IndexPage = async () => {
 
 const SideLink = () => {
   return (
-    <div className="absolute right-[-18rem] top-0 hidden justify-self-end xl:block">
-      <div className="flex flex-col gap-4 rounded-xl border border-default/25 px-4 py-4">
+    <div className="absolute right-[-2rem] top-0 hidden justify-self-end xl:block">
+      <div className="fixed flex flex-col gap-4 rounded-xl border border-default/40 bg-emphasis px-4 py-4">
         <div>
           <p className="text-lg font-semibold">Home</p>
         </div>
@@ -55,7 +55,10 @@ const SideLink = () => {
           </Link>
           <Link
             href="/communities/create"
-            className={cn(buttonVariants({ variant: "outline" }), "w-full")}
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "w-full hover:bg-subtle/75",
+            )}
           >
             Create a Community
           </Link>
