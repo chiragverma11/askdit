@@ -27,13 +27,15 @@ const CreatePostInput: FC<CreatePostInputProps> = ({
     >
       <div className="flex w-full items-center gap-3 px-4">
         <div className="relative">
-          <UserAvatar user={session.user} />
+          <Link href={`/u/${session.user.username}`}>
+            <UserAvatar user={session.user} />
+          </Link>
           <span className="absolute bottom-[0.01rem] right-[0.025rem] h-3 w-3 rounded-full border border-emphasis bg-green-500 ring-2 ring-emphasis"></span>
         </div>
 
         <div
           className={cn(
-            "inline-flex w-full items-center gap-2 rounded-lg border border-default/25 bg-subtle px-6 text-sm text-subtle backdrop-blur-xl transition focus-within:border-default/90 focus-within:bg-subtle/60 hover:border-default/90 dark:focus-within:bg-default",
+            "inline-flex w-full items-center gap-2 rounded-lg bg-subtle px-6 text-sm text-subtle backdrop-blur-xl transition focus-within:border-default/90 focus-within:bg-subtle/60 dark:focus-within:bg-default",
           )}
         >
           {href ? (
@@ -58,14 +60,14 @@ const CreatePostInput: FC<CreatePostInputProps> = ({
             variant={"ghost"}
             className="aspect-square hover:bg-subtle"
           >
-            <LucideImage className="text-subtle hover:text-subtle/75" />
+            <LucideImage className="text-subtle" />
           </Button>
           <Button
             size={"icon"}
             variant={"ghost"}
             className="aspect-square hover:bg-subtle"
           >
-            <Link2 className="text-subtle hover:text-subtle/75" />
+            <Link2 className="text-subtle" />
           </Button>
         </div>
       </div>

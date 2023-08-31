@@ -12,7 +12,7 @@ const CloseModal: FC<CloseModalProps> = ({}) => {
   return (
     <Button
       variant="subtle"
-      className="h-8 w-8 rounded-md bg-emphasis p-0 hover:bg-default"
+      className="h-8 w-8 rounded-md bg-zinc-300/70 p-0 hover:bg-zinc-300 dark:bg-emphasis dark:hover:bg-default"
       onClick={() => router.back()}
     >
       <X aria-label="Close" className="h-5 w-5 text-white" />

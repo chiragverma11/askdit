@@ -69,7 +69,7 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
                         "relative w-14 bg-transparent hover:bg-transparent",
                         isActive
                           ? "text-white hover:bg-white/20 hover:dark:bg-black/10"
-                          : "text-default/75 lg:bg-subtle lg:hover:bg-default/70 lg:dark:hover:bg-default",
+                          : "text-default/75 lg:bg-default lg:hover:bg-default/70 dark:lg:hover:bg-default/50",
                       )}
                     >
                       {IconComponent}
