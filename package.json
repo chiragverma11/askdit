@@ -44,6 +44,7 @@
     "@trpc/client": "^10.38.0",
     "@trpc/react-query": "^10.38.0",
     "@trpc/server": "^10.38.0",
+    "@uploadthing/react": "^5.5.0",
     "autoprefixer": "10.4.14",
     "axios": "^1.5.0",
     "class-variance-authority": "^0.7.0",
@@ -62,6 +63,7 @@
     "postcss": "8.4.27",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.45.4",
     "react-icons": "^4.10.1",
     "react-loading-skeleton": "^3.3.1",
@@ -71,6 +73,7 @@
     "tailwindcss": "3.3.3",
     "tailwindcss-animate": "^1.0.6",
     "typescript": "5.1.6",
+    "uploadthing": "^5.5.2",
     "url-metadata": "^3.0.3",
     "zod": "^3.22.2"
   },
