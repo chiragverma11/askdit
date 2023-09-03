@@ -5,7 +5,7 @@ import { User } from "next-auth";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import ThemeSwitch from "./ThemeSwitch";
 import UserAvatar from "./UserAvatar";
@@ -16,6 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/DropdownMenu";
+import { cn } from "@/lib/utils";
 
 interface CustomUser extends User {
   username: String;
@@ -26,10 +27,23 @@ interface UserProfileNavProps {
 
 const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <DropdownMenu modal={false}>
-      <DropdownMenuTrigger className="rounded-full outline outline-offset-2 outline-brand-default/50 transition hover:outline-red-500/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+    <DropdownMenu
+      modal={false}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+      }}
+    >
+      <DropdownMenuTrigger
+        className={cn(
+          "rounded-full transition hover:outline-red-500/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          isOpen
+            ? "ring-2 ring-brand-default/50 ring-offset-2 ring-offset-default/75"
+            : null,
+        )}
+      >
         <UserAvatar user={user} />
       </DropdownMenuTrigger>
       <DropdownMenuContent
