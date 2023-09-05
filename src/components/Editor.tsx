@@ -1,18 +1,22 @@
 "use client";
 
 import { useMounted } from "@/hooks/use-mounted";
-import EditorJS from "@editorjs/editorjs";
-import { FC, useCallback, useEffect, useRef } from "react";
-import TextareaAutosize from "react-textarea-autosize";
-import "@/styles/editor.css";
-import { Button } from "./ui/Button";
 import { uploadFiles } from "@/lib/uploadthing";
+import { cn } from "@/lib/utils";
+import "@/styles/editor.css";
+import EditorJS from "@editorjs/editorjs";
+import { AnimatePresence, motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
+import TextareaAutosize from "react-textarea-autosize";
+import { Button } from "./ui/Button";
 
 interface EditorProps {
   communityId?: string;
 }
 
 const Editor: FC<EditorProps> = ({ communityId }) => {
+  const [editorLoading, setEditorLoading] = useState(true);
   const ref = useRef<EditorJS>();
   const titleRef = useRef<HTMLTextAreaElement | null>(null);
   const isMounted = useMounted();
@@ -34,6 +38,7 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
     const editor = new EditorJS({
       holderId: "editorjs",
       onReady() {
+        setEditorLoading(false);
         ref.current = editor;
         new DragDrop(editor);
       },
@@ -47,19 +52,21 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
           inlineToolbar: ["link"],
           config: {
             placeholder: "Header",
+            levels: [2, 3, 4],
+            defaultLevel: 3,
           },
         },
         paragraph: {
           class: Paragraph,
           inlineToolbar: true,
         },
-        list: List,
         linkTool: {
           class: LinkTool,
           config: {
             endpoint: "/api/link",
           },
         },
+        list: List,
         image: {
           class: ImageTool,
           config: {
@@ -79,16 +86,16 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
             },
           },
         },
-        embed: Embed,
         code: CodeTool,
+        table: Table,
+        embed: Embed,
         inlineCode: {
           class: InlineCode,
           shortcut: "CTRL+SHIFT+M",
         },
-        table: Table,
         strikethrough: Strikethrough,
       },
-      data: { blocks: [] },
+      // data: { blocks: [] },
     });
   }, []);
 
@@ -108,26 +115,50 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
   }, [isMounted, initializeEditor]);
 
   return (
-    <div className="my-4 w-full rounded-xl border-zinc-200 bg-emphasis px-2 py-2 shadow-xl lg:p-10 lg:pb-6">
+    <div className="my-4 w-full rounded-xl border-zinc-200 bg-emphasis px-5 py-5 shadow-xl lg:p-10 lg:pb-6">
       <div className="prose prose-stone dark:prose-invert">
-        <TextareaAutosize
-          maxLength={300}
-          ref={(e) => {
-            titleRef.current = e;
-          }}
-          placeholder="Title"
-          className="w-full resize-none overflow-hidden bg-transparent text-2xl font-bold after:w-12 after:content-['Joined'] focus:outline-none lg:text-4xl"
-        />
-        <div id="editorjs" className="min-h-[250px]"></div>
-        <div className="mt-2 flex items-center justify-between">
-          <p className="text-sm text-gray-500">
+        <motion.div initial={{ height: 0 }} animate={{ height: "auto" }}>
+          <TextareaAutosize
+            maxLength={300}
+            ref={(e) => {
+              titleRef.current = e;
+            }}
+            placeholder="Title"
+            className="w-full resize-none overflow-hidden bg-transparent text-2xl font-bold after:w-12 after:content-['Joined'] focus:outline-none lg:text-4xl"
+          />
+        </motion.div>
+        <div className="min-h-[250px]">
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: "100%" }}
+              exit={{ opacity: 0 }}
+              className={cn(
+                "full flex justify-center",
+                !editorLoading ? "hidden" : "",
+              )}
+            >
+              <Loader2
+                strokeWidth={2.75}
+                className="animate-spin text-blue-500/75"
+              />
+            </motion.div>
+          </AnimatePresence>
+          <div id="editorjs"></div>
+        </div>
+        <div className="mt-2 flex w-full items-center justify-between">
+          <p className="hidden text-sm text-gray-500 md:inline">
             Use{" "}
             <kbd className="rounded-md border bg-muted px-1 text-xs uppercase">
               Tab
             </kbd>{" "}
             to open the command menu.
           </p>
-          <Button type="submit" form="" className="px-6 py-1 font-semibold">
+          <Button
+            type="submit"
+            form=""
+            className="self-end px-6 py-1 font-semibold"
+          >
             Post
           </Button>
         </div>
