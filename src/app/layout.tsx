@@ -9,9 +9,9 @@ import { Toaster } from "@/components/ui/Toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Askdit",
+  title: { default: "Askdit", template: "%s | Askdit" },
   description:
-    "A Social media which focuses on creating communities and asking questions",
+    "Askdit is a network of communities where people can dive into their interests and ask questions. There's a community for whatever you're interested in on Askdit",
 };
 
 export default function RootLayout({
