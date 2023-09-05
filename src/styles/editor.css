@@ -8,8 +8,8 @@
 .dark .cdx-button,
 .dark .ce-popover,
 .dark .ce-toolbar__plus:hover {
-  background: theme("colors.popover.DEFAULT");
-  color: inherit;
+  background: theme("colors.default");
+  color: theme("textColor.accent.foreground");
   border-color: theme("colors.border");
 }
 
@@ -18,7 +18,7 @@
 .dark .ce-toolbox__button,
 .dark .cdx-settings-button,
 .dark .ce-toolbar__plus {
-  color: inherit;
+  color: theme("textColor.white");
 }
 
 .dark .ce-popover__item-icon,
@@ -39,8 +39,8 @@
   color: inherit;
 }
 
-.dark ::selection {
-  background: theme("colors.accent.DEFAULT");
+.dark .codex-editor ::selection {
+  background: theme("colors.red.800/10");
 }
 
 .dark .cdx-settings-button:hover,
@@ -53,7 +53,7 @@
 .dark .ce-popover__item:hover,
 .dark .ce-conversion-tool:hover,
 .dark .ce-toolbar__settings-btn:hover {
-  background-color: theme("colors.accent.DEFAULT");
+  background-color: theme("colors.highlight");
   color: theme("colors.accent.foreground");
 }
 
@@ -68,4 +68,12 @@
 
 .codex-editor__redactor {
   padding-bottom: 0 !important;
+}
+
+/* My Custom */
+
+.dark .link-tool__input-holder--error .link-tool__input {
+  background-color: theme("colors.highlight");
+  color: theme("colors.red.500/60");
+  border: theme("borderColor.red.400/50");
 }
