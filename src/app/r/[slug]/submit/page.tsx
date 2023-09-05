@@ -1,10 +1,9 @@
+import AsideBar from "@/components/AsideBar";
 import Editor from "@/components/Editor";
 import { db } from "@/lib/db";
 import { Metadata, ResolvingMetadata } from "next";
-import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import { FC } from "react";
-const AsideBar = dynamic(() => import("@/components/AsideBar"), { ssr: false });
 
 async function getCommunity({ name }: { name: string }) {
   const community = await db.subreddit.findFirst({
@@ -28,11 +27,9 @@ export async function generateMetadata(
 
   const community = await getCommunity({ name: slug });
 
-  const previousTitle = (await parent).title || "";
-
   if (!community) {
     return {
-      title: previousTitle,
+      title: "Community not found",
     };
   }
 
