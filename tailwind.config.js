@@ -23,6 +23,7 @@ module.exports = {
         default: "hsl(var(--askdit-bg) / <alpha-value>)",
         subtle: "hsl(var(--askdit-bg-subtle) / <alpha-value>)",
         emphasis: "hsl(var(--askdit-bg-emphasis) / <alpha-value>)",
+        highlight: "hsl(var(--askdit-bg-highlight) / <alpha-value>)",
         brand: {
           default: "hsl(var(--askdit-brand) / <alpha-value>)",
           text: "hsl(var(--askdit-brand-text) / <alpha-value>)",
