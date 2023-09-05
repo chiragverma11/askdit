@@ -4,6 +4,7 @@ import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
 import { buttonVariants } from "@/components/ui/Button";
 import { Separator } from "@/components/ui/Separator";
 import { getAuthSession } from "@/lib/auth";
+import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
 import { db } from "@/lib/db";
 import { cn, getDefaultCommunityBg } from "@/lib/utils";
 import { Session } from "next-auth";
@@ -39,7 +40,7 @@ async function getCommunity(communityName: string) {
         orderBy: {
           createdAt: "desc",
         },
-        take: 5,
+        take: INFINITE_SCROLL_PAGINATION_RESULTS,
       },
     },
   });
@@ -168,8 +169,8 @@ const SideMenu = ({
   if (!community) return null;
 
   return (
-    <div className="absolute right-[-18rem] top-0 hidden justify-self-end xl:block">
-      <div className="flex flex-col gap-4 rounded-xl border border-default/25 px-4 py-4">
+    <div className="absolute right-[-2rem] top-0 hidden justify-self-end xl:block">
+      <div className="fixed flex flex-col gap-4 rounded-xl border border-default/40 bg-emphasis px-4 py-4">
         <div className="flex w-56 flex-col gap-6">
           <div className="flex items-center justify-between">
             <p className="text-lg font-bold">r/{community?.name}</p>
