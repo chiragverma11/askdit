@@ -152,6 +152,11 @@ export const communityRouter = router({
           },
         },
       },
+      orderBy: {
+        subscribers: {
+          _count: "desc",
+        },
+      },
     });
 
     return exploreCommunities;
