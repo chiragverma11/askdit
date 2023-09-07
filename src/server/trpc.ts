@@ -1,6 +1,7 @@
 import { getAuthSession } from "@/lib/auth";
 import { TRPCError, initTRPC } from "@trpc/server";
 import { Context } from "./context";
+import { User } from "next-auth";
 
 const t = initTRPC.context<Context>().create();
 
@@ -10,12 +11,13 @@ export const middleware = t.middleware;
 // to check if user is authenticated
 const isAuth = middleware(async (opts) => {
   const session = await getAuthSession();
+  const user: User = session?.user;
 
   if (!session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  return opts.next({ ctx: { user: session.user } });
+  return opts.next({ ctx: { user } });
 });
 
 export const publicProcedure = t.procedure;
