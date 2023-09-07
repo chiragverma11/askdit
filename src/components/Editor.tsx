@@ -3,22 +3,40 @@
 import { useMounted } from "@/hooks/use-mounted";
 import { uploadFiles } from "@/lib/uploadthing";
 import { cn } from "@/lib/utils";
+import { PostValidator } from "@/lib/validators/post";
 import "@/styles/editor.css";
 import EditorJS from "@editorjs/editorjs";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
+import { z } from "zod";
 import { Button } from "./ui/Button";
 
 interface EditorProps {
   communityId?: string;
 }
 
+type FormData = z.infer<typeof PostValidator>;
+
 const Editor: FC<EditorProps> = ({ communityId }) => {
   const [editorLoading, setEditorLoading] = useState(true);
   const editorRef = useRef<EditorJS>();
+  const _titleRef = useRef<HTMLTextAreaElement | null>(null);
   const isMounted = useMounted();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: zodResolver(PostValidator),
+    defaultValues: { title: "", content: null, communityId },
+  });
+
+  const { ref: titleRef, ...rest } = register("title");
 
   const initializeEditor = useCallback(async () => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
@@ -113,17 +131,31 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
     }
   }, [isMounted, initializeEditor]);
 
+  const onSubmit = async (data: FormData) => {
+    const editorBlock = await editorRef.current?.save();
+
+    const payload = {
+      title: data.title,
+      content: editorBlock,
+      communityId,
+    };
+
+  };
+
   return (
     <div className="my-4 w-full rounded-xl border-zinc-200 bg-emphasis px-5 py-5 shadow-xl lg:p-10 lg:pb-6">
+      <form onSubmit={handleSubmit(onSubmit)} id="communityPostForm">
       <div className="prose prose-stone dark:prose-invert">
         <motion.div initial={{ height: 0 }} animate={{ height: "auto" }}>
           <TextareaAutosize
             maxLength={300}
             ref={(e) => {
-              titleRef.current = e;
+                titleRef(e);
+                _titleRef.current = e;
             }}
             placeholder="Title"
             className="w-full resize-none overflow-hidden bg-transparent text-2xl font-bold after:w-12 after:content-['Joined'] focus:outline-none lg:text-4xl"
+              {...rest}
           />
         </motion.div>
         <div className="min-h-[250px]">
@@ -133,13 +165,13 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
               animate={{ opacity: "100%" }}
               exit={{ opacity: 0 }}
               className={cn(
-                "full flex justify-center",
+                  "full flex items-center justify-center",
                 !editorLoading ? "hidden" : "",
               )}
             >
               <Loader2
-                strokeWidth={2.75}
-                className="animate-spin text-blue-500/75"
+                  strokeWidth={2.5}
+                  className="h-8 w-8 animate-spin text-blue-500/75 lg:h-auto lg:w-auto"
               />
             </motion.div>
           </AnimatePresence>
@@ -155,13 +187,15 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
           </p>
           <Button
             type="submit"
-            form=""
+              form="communityPostForm"
             className="self-end px-6 py-1 font-semibold"
+              isLoading={isLoading}
           >
             Post
           </Button>
         </div>
       </div>
+      </form>
     </div>
   );
 };
