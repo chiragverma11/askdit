@@ -17,8 +17,7 @@ interface EditorProps {
 
 const Editor: FC<EditorProps> = ({ communityId }) => {
   const [editorLoading, setEditorLoading] = useState(true);
-  const ref = useRef<EditorJS>();
-  const titleRef = useRef<HTMLTextAreaElement | null>(null);
+  const editorRef = useRef<EditorJS>();
   const isMounted = useMounted();
 
   const initializeEditor = useCallback(async () => {
@@ -39,7 +38,7 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
       holderId: "editorjs",
       onReady() {
         setEditorLoading(false);
-        ref.current = editor;
+        editorRef.current = editor;
         new DragDrop(editor);
       },
       autofocus: true,
@@ -108,8 +107,8 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
       init();
 
       return () => {
-        ref.current?.destroy();
-        ref.current = undefined;
+        editorRef.current?.destroy();
+        editorRef.current = undefined;
       };
     }
   }, [isMounted, initializeEditor]);
