@@ -1,16 +1,23 @@
 "use client";
 
 import AsideBar from "@/components/AsideBar";
+import AuthLink from "@/components/AuthLink";
 import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
+import { buttonVariants } from "@/components/ui/Button";
 import { trpc } from "@/lib/trpc";
 import { cn, getDefaultCommunityBg } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { Metadata } from "next";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { FC, useState } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+
+export const metadata: Metadata = {
+  title: "Communities",
+};
 
 const CommunitiesPage = () => {
   const [activeMenu, setActiveMenu] = useState<"Your Communities" | "Explore">(
@@ -57,17 +64,19 @@ const CommunitiesPage = () => {
               })}
             </div>
             <div className="flex max-h-[calc(72vh)] w-full flex-col items-center gap-4 overflow-y-scroll px-4 pb-10 lg:max-h-none lg:overflow-y-auto lg:px-0 lg:pb-0 landscape:pb-20 lg:landscape:pb-0">
-              {activeMenu === "Your Communities" ? (
-                <YourCommunities
-                  session={session}
-                  sessionStatus={sessionStatus}
-                />
-              ) : (
-                <ExploreCommunities
-                  session={session}
-                  sessionStatus={sessionStatus}
-                />
-              )}
+              <AnimatePresence>
+                {activeMenu === "Your Communities" ? (
+                  <YourCommunities
+                    session={session}
+                    sessionStatus={sessionStatus}
+                  />
+                ) : (
+                  <ExploreCommunities
+                    session={session}
+                    sessionStatus={sessionStatus}
+                  />
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -82,10 +91,18 @@ interface Communities {
 }
 
 const YourCommunities: FC<Communities> = ({ session, sessionStatus }) => {
+  if (sessionStatus === "unauthenticated") {
+    return <UnauthenticatedFallback />;
+  }
+
   const { isLoading: isLoadingCommunities, data: yourCommunities } =
     trpc.community.yourCommunities.useQuery();
 
   const isLoading = isLoadingCommunities || sessionStatus === "loading";
+
+  if (!isLoading && yourCommunities?.length === 0) {
+    return <NoContent parent="YourCommunities" />;
+  }
 
   return (
     <>
@@ -96,41 +113,50 @@ const YourCommunities: FC<Communities> = ({ session, sessionStatus }) => {
             });
 
             return (
-              <Link
-                href={`/r/${community.Subreddit.name}`}
+              <motion.div
                 key={community.subredditId}
-                className="flex w-full items-center justify-between rounded-xl border border-default/20 bg-emphasis px-4 py-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="w-full rounded-xl border border-default/20 bg-emphasis px-4 py-4"
               >
-                <div className="flex items-center gap-3">
-                  <span
-                    className={cn(
-                      "flex aspect-square h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-zinc-950",
-                      defaultProfileBg,
-                    )}
-                  >
-                    r/
-                  </span>
-                  <div className="flex flex-col gap-2">
-                    <h1 className="text-lg font-semibold md:text-xl">
-                      r/{community.Subreddit.name}
-                    </h1>
-                    <p className="text-xs text-subtle">
-                      {community.Subreddit._count.subscribers}{" "}
-                      {community.Subreddit._count.subscribers > 1
-                        ? "members"
-                        : "member"}
-                    </p>
+                <Link
+                  href={`/r/${community.Subreddit.name}`}
+                  className="flex w-full items-center justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={cn(
+                        "flex aspect-square h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-zinc-950",
+                        defaultProfileBg,
+                      )}
+                    >
+                      r/
+                    </span>
+                    <div className="flex flex-col gap-2">
+                      <h1 className="text-lg font-semibold md:text-xl">
+                        r/{community.Subreddit.name}
+                      </h1>
+                      <p className="text-xs text-subtle">
+                        {community.Subreddit._count.subscribers}{" "}
+                        {community.Subreddit._count.subscribers > 1
+                          ? "members"
+                          : "member"}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <SubscribeLeaveToggle
-                  isSubscribed={true}
-                  subredditId={community?.subredditId}
-                  subredditName={community?.Subreddit.name}
-                  session={session}
-                  disableRefresh={true}
-                  disabled={session?.user.id === community?.Subreddit.creatorId}
-                />
-              </Link>
+                  <SubscribeLeaveToggle
+                    isSubscribed={true}
+                    subredditId={community?.subredditId}
+                    subredditName={community?.Subreddit.name}
+                    session={session}
+                    disableRefresh={true}
+                    disabled={
+                      session?.user.id === community?.Subreddit.creatorId
+                    }
+                  />
+                </Link>
+              </motion.div>
             );
           })
         : Array.from({ length: 4 }, () => "").map((elem, index) => (
@@ -141,10 +167,18 @@ const YourCommunities: FC<Communities> = ({ session, sessionStatus }) => {
 };
 
 const ExploreCommunities: FC<Communities> = ({ session, sessionStatus }) => {
+  if (sessionStatus === "unauthenticated") {
+    return <UnauthenticatedFallback />;
+  }
+
   const { isLoading: isLoadingCommunities, data: exploreCommunities } =
     trpc.community.exploreCommunities.useQuery();
 
   const isLoading = isLoadingCommunities || sessionStatus === "loading";
+
+  if (!isLoading && exploreCommunities?.length === 0) {
+    return <NoContent parent="ExploreCommunities" />;
+  }
 
   return (
     <>
@@ -155,39 +189,48 @@ const ExploreCommunities: FC<Communities> = ({ session, sessionStatus }) => {
             });
 
             return (
-              <Link
-                href={`/r/${community.name}`}
+              <motion.div
                 key={community.id}
-                className="flex w-full items-center justify-between rounded-xl border border-default/20 bg-emphasis px-4 py-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="w-full rounded-xl border border-default/20 bg-emphasis px-4 py-4"
               >
-                <div className="flex items-center gap-3">
-                  <span
-                    className={cn(
-                      "flex aspect-square h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-zinc-950",
-                      defaultProfileBg,
-                    )}
-                  >
-                    r/
-                  </span>
-                  <div className="flex flex-col gap-2">
-                    <h1 className="text-lg font-semibold md:text-xl">
-                      r/{community.name}
-                    </h1>
-                    <p className="text-xs text-subtle">
-                      {community._count.subscribers}{" "}
-                      {community._count.subscribers > 1 ? "members" : "member"}
-                    </p>
+                <Link
+                  href={`/r/${community.name}`}
+                  className="flex w-full items-center justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={cn(
+                        "flex aspect-square h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-zinc-950",
+                        defaultProfileBg,
+                      )}
+                    >
+                      r/
+                    </span>
+                    <div className="flex flex-col gap-2">
+                      <h1 className="text-lg font-semibold md:text-xl">
+                        r/{community.name}
+                      </h1>
+                      <p className="text-xs text-subtle">
+                        {community._count.subscribers}{" "}
+                        {community._count.subscribers > 1
+                          ? "members"
+                          : "member"}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <SubscribeLeaveToggle
-                  isSubscribed={false}
-                  subredditId={community?.id}
-                  subredditName={community?.name}
-                  session={session}
-                  disableRefresh={true}
-                  disabled={session?.user.id === community?.creatorId}
-                />
-              </Link>
+                  <SubscribeLeaveToggle
+                    isSubscribed={false}
+                    subredditId={community?.id}
+                    subredditName={community?.name}
+                    session={session}
+                    disableRefresh={true}
+                    disabled={session?.user.id === community?.creatorId}
+                  />
+                </Link>
+              </motion.div>
             );
           })
         : Array.from({ length: 4 }, () => "").map((elem, index) => (
@@ -223,6 +266,53 @@ const CommunitiesSkeleton = () => {
       </div>
     </SkeletonTheme>
   );
+};
+
+const UnauthenticatedFallback = () => {
+  return (
+    <div className="flex flex-col items-center gap-4 p-4">
+      <p className="font-medium text-default">
+        Sign In to explore & Join Communities
+      </p>
+      <AuthLink href="/sign-in" className={cn(buttonVariants({ size: "sm" }))}>
+        {" "}
+        Sign In
+      </AuthLink>
+    </div>
+  );
+};
+
+const NoContent = ({
+  parent,
+}: {
+  parent: "YourCommunities" | "ExploreCommunities";
+}) => {
+  if (parent === "YourCommunities") {
+    return (
+      <div className="flex flex-col items-center gap-4 p-4">
+        <p className="font-medium text-default">
+          You haven&apos;t joined any community yet
+        </p>
+        <p className="font-medium text-default">
+          Click Explore to find communties
+        </p>
+      </div>
+    );
+  } else if (parent === "ExploreCommunities") {
+    return (
+      <div className="flex flex-col items-center gap-4 p-4">
+        <p className="font-medium text-default">
+          There are no commmunites to join.
+        </p>
+        <Link
+          href="/communities/create"
+          className={cn(buttonVariants({ size: "sm" }))}
+        >
+          Create One
+        </Link>
+      </div>
+    );
+  }
 };
 
 export default CommunitiesPage;
