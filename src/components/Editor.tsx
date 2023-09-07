@@ -14,9 +14,13 @@ import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
 import { Button } from "./ui/Button";
+import { trpc } from "@/lib/trpc";
+import { usePathname, useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 interface EditorProps {
-  communityId?: string;
+  communityId: string;
 }
 
 type FormData = z.infer<typeof PostValidator>;
@@ -25,6 +29,8 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
   const [editorLoading, setEditorLoading] = useState(true);
   const editorRef = useRef<EditorJS>();
   const _titleRef = useRef<HTMLTextAreaElement | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
   const isMounted = useMounted();
 
   const {
@@ -37,6 +43,23 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
   });
 
   const { ref: titleRef, ...rest } = register("title");
+
+  const { mutate: createPost, isLoading } =
+    trpc.post.createCommunityPost.useMutation({
+      onSuccess(data) {
+        const newPathname = pathname
+          .split("/")
+          .slice(0, -1)
+          .concat(["post", data.postId])
+          .join("/");
+        console.log(newPathname);
+        return toast({
+          description: "Your post has been created successfully.",
+          action: <Link href={newPathname}>View Post</Link>,
+        });
+        // router.push("");
+      },
+    });
 
   const initializeEditor = useCallback(async () => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
@@ -140,61 +163,62 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
       communityId,
     };
 
+    createPost(payload);
   };
 
   return (
     <div className="my-4 w-full rounded-xl border-zinc-200 bg-emphasis px-5 py-5 shadow-xl lg:p-10 lg:pb-6">
       <form onSubmit={handleSubmit(onSubmit)} id="communityPostForm">
-      <div className="prose prose-stone dark:prose-invert">
-        <motion.div initial={{ height: 0 }} animate={{ height: "auto" }}>
-          <TextareaAutosize
-            maxLength={300}
-            ref={(e) => {
+        <div className="prose prose-stone dark:prose-invert">
+          <motion.div initial={{ height: 0 }} animate={{ height: "auto" }}>
+            <TextareaAutosize
+              maxLength={300}
+              ref={(e) => {
                 titleRef(e);
                 _titleRef.current = e;
-            }}
-            placeholder="Title"
-            className="w-full resize-none overflow-hidden bg-transparent text-2xl font-bold after:w-12 after:content-['Joined'] focus:outline-none lg:text-4xl"
+              }}
+              placeholder="Title"
+              className="w-full resize-none overflow-hidden bg-transparent text-2xl font-bold after:w-12 after:content-['Joined'] focus:outline-none lg:text-4xl"
               {...rest}
-          />
-        </motion.div>
-        <div className="min-h-[250px]">
-          <AnimatePresence>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: "100%" }}
-              exit={{ opacity: 0 }}
-              className={cn(
+            />
+          </motion.div>
+          <div className="min-h-[250px]">
+            <AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: "100%" }}
+                exit={{ opacity: 0 }}
+                className={cn(
                   "full flex items-center justify-center",
-                !editorLoading ? "hidden" : "",
-              )}
-            >
-              <Loader2
+                  !editorLoading ? "hidden" : "",
+                )}
+              >
+                <Loader2
                   strokeWidth={2.5}
                   className="h-8 w-8 animate-spin text-blue-500/75 lg:h-auto lg:w-auto"
-              />
-            </motion.div>
-          </AnimatePresence>
-          <div id="editorjs"></div>
-        </div>
-        <div className="mt-2 flex w-full items-center justify-between">
-          <p className="hidden text-sm text-gray-500 md:inline">
-            Use{" "}
-            <kbd className="rounded-md border bg-muted px-1 text-xs uppercase">
-              Tab
-            </kbd>{" "}
-            to open the command menu.
-          </p>
-          <Button
-            type="submit"
+                />
+              </motion.div>
+            </AnimatePresence>
+            <div id="editorjs"></div>
+          </div>
+          <div className="mt-2 flex w-full items-center justify-between">
+            <p className="hidden text-sm text-gray-500 md:inline">
+              Use{" "}
+              <kbd className="rounded-md border bg-muted px-1 text-xs uppercase">
+                Tab
+              </kbd>{" "}
+              to open the command menu.
+            </p>
+            <Button
+              type="submit"
               form="communityPostForm"
-            className="self-end px-6 py-1 font-semibold"
+              className="self-end px-6 py-1 font-semibold"
               isLoading={isLoading}
-          >
-            Post
-          </Button>
+            >
+              Post
+            </Button>
+          </div>
         </div>
-      </div>
       </form>
     </div>
   );
