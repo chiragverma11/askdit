@@ -2,9 +2,14 @@ import AsideBar from "@/components/AsideBar";
 import CreateCommunityForm from "@/components/CreateCommunityForm";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
+import { Metadata } from "next";
 import Link from "next/link";
 import { FC } from "react";
 import { IoArrowBack } from "react-icons/io5";
+
+export const metadata: Metadata = {
+  title: "Create Community",
+};
 
 interface CreateCommunityProps {}
 
