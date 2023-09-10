@@ -85,6 +85,8 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
 
   if (!community) return notFound();
 
+  const initialPosts = community.posts;
+
   return (
     <>
       <AsideBar />
@@ -95,7 +97,7 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
             session={session}
             community={community}
           />
-          <PostFeed />
+          <PostFeed initialPosts={initialPosts} communityName={slug} />
           <InfoSideMenu
             isSubscribed={isSubscribed}
             session={session}
