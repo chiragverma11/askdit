@@ -63,19 +63,19 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
           </div>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href={`/u/${user.username}`}>
             <UserIcon className="mr-2 h-4 w-4" />
             Profile
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href={"/communities/create"}>
             <HiOutlineUserGroup className="mr-2 h-4 w-4" />
             Create Community
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href={"/settings"}>
             <Settings className="mr-2 h-4 w-4" />
             Settings
@@ -83,7 +83,7 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="flex items-center justify-between"
+          className="flex cursor-pointer items-center justify-between"
           onSelect={(event) => {
             event.preventDefault();
           }}
@@ -93,6 +93,7 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
 
         <DropdownMenuSeparator />
         <DropdownMenuItem
+          className="cursor-pointer"
           onSelect={(event) => {
             event.preventDefault();
             signOut({ callbackUrl: pathname });
