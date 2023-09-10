@@ -1,3 +1,4 @@
+import { Vote } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -18,4 +19,14 @@ export function getDefaultCommunityBg({
     : firstChar?.match(/[s-zS-Z]/g)
     ? "bg-violet-400"
     : "";
+}
+
+export function getVotesAmount({ votes }: { votes: Vote[] }) {
+  const votesAmt = votes.reduce((acc, vote) => {
+    if (vote.type === "UP") return acc + 1;
+    if (vote.type === "DOWN") return acc - 1;
+    return acc;
+  }, 0);
+
+  return votesAmt;
 }
