@@ -2,13 +2,14 @@
 
 import { cn, getDefaultCommunityBg } from "@/lib/utils";
 import { Comment, Post, Subreddit, User, Vote } from "@prisma/client";
-import { MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { TbShare3 } from "react-icons/tb";
 import EditorOutput from "./EditorOutput";
+import PostVote from "./PostVote";
 import UserAvatar from "./UserAvatar";
 
-interface PostProps extends React.HTMLAttributes<HTMLAnchorElement> {
+interface PostProps extends React.HTMLAttributes<HTMLDivElement> {
   post: Post & {
     author: User;
     votes: Vote[];
@@ -31,14 +32,17 @@ const Post = ({
   });
 
   return (
-    <Link
-      href={`/r/${post.subreddit.name}/post/${post.id}`}
+    <div
       className={cn(
-        "mx-auto flex w-full flex-col gap-2 rounded-3xl border border-default/25 bg-emphasis p-4 text-sm hover:border-default/60",
+        "relative mx-auto flex w-full flex-col gap-2 rounded-3xl border border-default/25 bg-emphasis p-4 text-sm hover:border-default/60",
         className,
       )}
       {...props}
     >
+      <Link
+        href={`/r/${post.subreddit.name}/post/${post.id}`}
+        className="absolute inset-0"
+      ></Link>
       <div className="flex w-full items-center justify-between">
         {isCommunity ? (
           <Link
@@ -71,26 +75,18 @@ const Post = ({
       <div>
         <EditorOutput content={post.content} />
       </div>
-      <div className="text-x flex items-center gap-3 text-xs font-medium">
-        <span className="inline-flex items-center rounded-3xl bg-subtle">
-          <span className="flex h-8 w-10 items-center justify-center">
-            <ThumbsUp className="h-4 w-4 text-default" />
-          </span>
-          <span className="text-default">{votesAmt}</span>
-          <span className="flex h-8 w-10 items-center justify-center">
-            <ThumbsDown className="h-4 w-4 text-default" />
-          </span>
+      <div className="text-x flex items-center gap-3 text-xs font-semibold text-subtle dark:text-default">
+        <PostVote votesAmt={votesAmt} className="z-10" />
+        <span className="inline-flex items-center gap-1 rounded-3xl bg-subtle px-3 py-2">
+          <MessageSquare className="h-5 w-5" />
+          <span>{post.comments.length}</span>
         </span>
         <span className="inline-flex items-center gap-1 rounded-3xl bg-subtle px-3 py-2">
-          <MessageSquare className="h-5 w-5 text-default" />
-          {post.comments.length}
-        </span>
-        <span className="inline-flex items-center gap-1 rounded-3xl bg-subtle px-3 py-2">
-          <TbShare3 className="h-5 w-5 text-default" />
+          <TbShare3 className="h-5 w-5" />
           Share
         </span>
       </div>
-    </Link>
+    </div>
   );
 };
 
