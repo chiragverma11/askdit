@@ -1,3 +1,5 @@
+"use client";
+
 import { cn, getDefaultCommunityBg } from "@/lib/utils";
 import { Comment, Post, Subreddit, User, Vote } from "@prisma/client";
 import { MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react";
