@@ -9,6 +9,7 @@
     --askdit-bg: 0 8% 90%;
     --askdit-bg-subtle: 0 5% 94%;
     --askdit-bg-emphasis: 0 5% 97%;
+    --askdit-bg-highlight: 0 0% 80%;
 
     --askdit-bg-muted: hsl(220 13% 91%);
     --askdit-bg-inverted: hsl(221, 39%, 11%);
