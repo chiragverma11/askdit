@@ -7,11 +7,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { useMediaQuery } from "@mantine/hooks";
+import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { Flame, Home, PenSquare } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FC, HTMLAttributes } from "react";
+import { FC, HTMLAttributes, useState } from "react";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { buttonVariants } from "./ui/Button";
 
@@ -33,11 +34,27 @@ interface AsideBarProps extends HTMLAttributes<HTMLElement> {}
 
 const AsideBar: FC<AsideBarProps> = ({ className }) => {
   const pathname = usePathname() || "/";
+  const { scrollY } = useScroll();
+  const [lessVisible, setLessVisible] = useState(false);
+
+  const lg = useMediaQuery("(min-width: 1024px)");
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previousValue = scrollY.getPrevious();
+    if (latest > previousValue && latest > 150) {
+      setLessVisible(true);
+    } else {
+      setLessVisible(false);
+    }
+  });
 
   return (
-    <nav
+    <motion.nav
+      variants={{ visible: { opacity: 1 }, lessVisible: { opacity: 0.25 } }}
+      animate={!lg && lessVisible ? "lessVisible" : "visible"}
+      transition={{ duration: 0.35, ease: "easeInOut" }}
       className={cn(
-        "container fixed inset-x-0 bottom-0 z-10 flex w-full items-center justify-center border-t border-t-highlight bg-subtle py-2 shadow-inner ring ring-zinc-300/50 backdrop-blur transition-colors dark:ring-0 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-16 lg:my-auto lg:h-[calc(100vh-15%)] lg:max-h-[600px] lg:w-32 lg:rounded-3xl lg:border-none lg:bg-emphasis/80 lg:py-8",
+        "container fixed inset-x-0 bottom-0 z-10 flex w-full items-center justify-center border-t border-t-highlight bg-subtle py-2 shadow-inner ring-zinc-300/50 backdrop-blur transition-colors dark:ring-0 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-16 lg:my-auto lg:h-[calc(100vh-15%)] lg:max-h-[600px] lg:w-32 lg:rounded-3xl lg:border-none lg:bg-emphasis/80 lg:py-8 lg:ring",
         className,
       )}
     >
@@ -103,7 +120,7 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
           })}
         </ul>
       </TooltipProvider>
-    </nav>
+    </motion.nav>
   );
 };
 
