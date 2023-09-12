@@ -7,6 +7,7 @@ import { getAuthSession } from "@/lib/auth";
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
 import { db } from "@/lib/db";
 import { cn, getDefaultCommunityBg } from "@/lib/utils";
+import { Metadata, ResolvingMetadata } from "next";
 import { Session } from "next-auth";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -66,6 +67,16 @@ const getSubscription = async ({
 
   return subscription;
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const communityName = params.slug;
+
+  return { title: communityName };
+}
 
 const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
   const { slug } = params;
