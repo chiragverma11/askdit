@@ -37,12 +37,12 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
   return (
     <nav
       className={cn(
-        "container fixed inset-x-0 bottom-0 z-10 flex w-full items-center justify-center border-t border-t-highlight bg-subtle py-2 shadow-inner ring ring-zinc-300/50 backdrop-blur transition-colors dark:ring-0 sm:h-20 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-16 lg:my-auto lg:h-[calc(100vh-15%)] lg:max-h-[600px] lg:w-32 lg:rounded-3xl lg:border-none lg:bg-emphasis/80",
+        "container fixed inset-x-0 bottom-0 z-10 flex w-full items-center justify-center border-t border-t-highlight bg-subtle py-2 shadow-inner ring ring-zinc-300/50 backdrop-blur transition-colors dark:ring-0 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-16 lg:my-auto lg:h-[calc(100vh-15%)] lg:max-h-[600px] lg:w-32 lg:rounded-3xl lg:border-none lg:bg-emphasis/80 lg:py-8",
         className,
       )}
     >
       <TooltipProvider skipDelayDuration={500}>
-        <ul className="xl:gap flex h-full w-full items-center justify-between lg:flex-col lg:justify-evenly lg:gap-16 2xl:gap-20">
+        <ul className="flex h-full w-full items-center justify-between sm:max-w-lg lg:w-full lg:flex-col lg:justify-evenly lg:gap-16 2xl:gap-20">
           {navItems.map((item) => {
             const isActive = item.path === pathname;
 
