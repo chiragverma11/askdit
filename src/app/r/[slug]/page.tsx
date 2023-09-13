@@ -7,7 +7,7 @@ import { getAuthSession } from "@/lib/auth";
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
 import { db } from "@/lib/db";
 import { cn, getDefaultCommunityBg } from "@/lib/utils";
-import { Metadata, ResolvingMetadata } from "next";
+import { Metadata } from "next";
 import { Session } from "next-auth";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -101,8 +101,8 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
   return (
     <>
       <AsideBar />
-      <div className="flex w-full flex-col items-center justify-center px-4 py-8 pt-4">
-        <div className="relative w-full lg:w-[600px]">
+      <div className="flex w-full flex-col items-center justify-center py-8 pt-4 lg:px-4">
+        <div className="relative w-full sm:max-w-xl lg:w-[600px]">
           <CommunityInfo
             isSubscribed={isSubscribed}
             session={session}
