@@ -203,6 +203,9 @@ dependencies:
   url-metadata:
     specifier: ^3.0.3
     version: 3.0.3
+  vaul:
+    specifier: ^0.6.0
+    version: 0.6.0(@types/react-dom@18.2.7)(@types/react@18.2.17)(react-dom@18.2.0)(react@18.2.0)
   zod:
     specifier: ^3.22.2
     version: 3.22.2
@@ -5568,6 +5571,20 @@ packages:
   /uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     hasBin: true
+    dev: false
+
+  /vaul@0.6.0(@types/react-dom@18.2.7)(@types/react@18.2.17)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-KLGrHya93SWH9xbWRNxXifj645ydCUe0KBiGCOBlIHsFRK6hnOr1qmrNqVG2G+fnxIp4DwDdHWOmcx5gNvHsCA==}
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    dependencies:
+      '@radix-ui/react-dialog': 1.0.4(@types/react-dom@18.2.7)(@types/react@18.2.17)(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
     dev: false
 
   /watchpack@2.4.0:
