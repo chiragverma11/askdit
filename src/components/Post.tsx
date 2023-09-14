@@ -1,7 +1,7 @@
 "use client";
 
 import { cn, getDefaultCommunityBg } from "@/lib/utils";
-import { Comment, Post, Subreddit, User, Vote } from "@prisma/client";
+import { Comment, Post, Subreddit, User, Vote, VoteType } from "@prisma/client";
 import { MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { TbShare3 } from "react-icons/tb";
@@ -18,12 +18,14 @@ interface PostProps extends React.HTMLAttributes<HTMLDivElement> {
   };
   isCommunity?: boolean;
   votesAmt: number;
+  currentVoteType?: VoteType;
 }
 
 const Post = ({
   post,
   isCommunity,
   votesAmt,
+  currentVoteType,
   className,
   ...props
 }: PostProps) => {

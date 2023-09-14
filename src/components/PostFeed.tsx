@@ -20,7 +20,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
   const { data: session, status: sessionStatus } = useSession();
 
   return (
-    <div className="space-y-3 pb-16 lg:pb-0">
+    <div className="space-y-1 pb-16 sm:space-y-3 lg:pb-0">
       {initialPosts.map((post) => {
         const votesAmt = getVotesAmount({ votes: post.votes });
 
@@ -30,10 +30,11 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
 
         return (
           <Post
+            key={post.id}
             post={post}
             votesAmt={votesAmt}
-            key={post.id}
             isCommunity={communityName ? true : false}
+            currentVoteType={currentVote?.type}
           />
         );
       })}
