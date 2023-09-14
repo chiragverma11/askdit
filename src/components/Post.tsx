@@ -4,9 +4,9 @@ import { cn, getDefaultCommunityBg } from "@/lib/utils";
 import { Comment, Post, Subreddit, User, Vote, VoteType } from "@prisma/client";
 import { MessageSquare } from "lucide-react";
 import Link from "next/link";
-import { TbShare3 } from "react-icons/tb";
 import EditorOutput from "./EditorOutput";
 import PostVote from "./PostVote";
+import SharePost from "./SharePost";
 import UserAvatar from "./UserAvatar";
 
 interface PostProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -83,10 +83,7 @@ const Post = ({
           <MessageSquare className="h-5 w-5" />
           <span>{post.comments.length}</span>
         </span>
-        <span className="inline-flex items-center gap-1 rounded-3xl bg-subtle px-3 py-2">
-          <TbShare3 className="h-5 w-5" />
-          Share
-        </span>
+        <SharePost post={post} />
       </div>
     </div>
   );
