@@ -1,5 +1,6 @@
 import AsideBar from "@/components/AsideBar";
 import Post from "@/components/Post";
+import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getVotesAmount } from "@/lib/utils";
 import { notFound } from "next/navigation";
@@ -24,6 +25,7 @@ const getPost = async ({ postId }: { postId: string }) => {
 
 const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
   const { postId } = params;
+  const session = await getAuthSession();
 
   const post = await getPost({ postId });
 
@@ -31,12 +33,21 @@ const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
 
   const votesAmt = getVotesAmount({ votes: post.votes });
 
+  const currentVote = post.votes.find(
+    (vote) => vote.userId === session?.user.id,
+  );
+
   return (
     <>
       <AsideBar />
-      <div className="flex w-full justify-center px-4 py-6 pt-4">
+      <div className="flex w-full justify-center py-6 pt-4">
         <div className="relative w-full lg:w-[600px]">
-          <Post post={post} votesAmt={votesAmt} />
+          <Post
+            post={post}
+            votesAmt={votesAmt}
+            currentVoteType={currentVote?.type}
+            className="rounded-t-3xl"
+          />
         </div>
       </div>
     </>
