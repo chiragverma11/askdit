@@ -78,8 +78,18 @@ const Post = ({
         <EditorOutput content={post.content} />
       </div>
       <div className="text-x flex items-center gap-3 text-xs font-semibold text-subtle dark:text-default">
-        <PostVote votesAmt={votesAmt} className="z-10" />
-        <span className="inline-flex items-center gap-1 rounded-3xl bg-subtle px-3 py-2">
+        <PostVote
+          className="z-[1]"
+          postId={post.id}
+          initialVotesAmt={votesAmt}
+          initialVoteType={currentVoteType}
+        />
+        <span
+          className="z-[1] inline-flex items-center gap-1 rounded-3xl bg-subtle px-3 py-2 text-zinc-400 hover:bg-highlight/60"
+          onClick={(e) => {
+            e.preventDefault();
+          }}
+        >
           <MessageSquare className="h-5 w-5" />
           <span>{post.comments.length}</span>
         </span>
