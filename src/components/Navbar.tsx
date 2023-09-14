@@ -59,7 +59,7 @@ const Navbar = async () => {
                 className="hidden bg-emphasis lg:inline-flex"
               >
                 <Button
-                  className="relative w-12 border border-default/25 bg-emphasis font-semibold text-default hover:bg-subtle"
+                  className="relative w-12 border border-default/25 bg-emphasis font-semibold text-default transition-none hover:bg-subtle hover:transition-colors"
                   size={"sm"}
                 >
                   <Bell className="h-6 w-6" strokeWidth={2.25} />

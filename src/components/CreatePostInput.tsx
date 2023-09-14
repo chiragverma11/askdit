@@ -20,7 +20,7 @@ const CreatePostInput: FC<CreatePostInputProps> = ({
   return (
     <div
       className={cn(
-        "mx-auto flex h-16 w-full items-center rounded-xl border border-default/25 bg-emphasis transition",
+        "mx-auto flex h-16 w-full items-center rounded-xl border border-default/25 bg-emphasis",
         className,
       )}
       {...props}
@@ -35,7 +35,7 @@ const CreatePostInput: FC<CreatePostInputProps> = ({
 
         <div
           className={cn(
-            "inline-flex w-full items-center gap-2 rounded-lg bg-subtle px-6 text-sm text-subtle backdrop-blur-xl transition focus-within:border-default/90 focus-within:bg-subtle/60 dark:focus-within:bg-default",
+            "inline-flex w-full items-center gap-2 rounded-lg bg-subtle px-6 text-sm text-subtle backdrop-blur-xl focus-within:border-default/90 focus-within:bg-subtle/60 focus-within:transition-colors dark:focus-within:bg-default",
           )}
         >
           {href ? (

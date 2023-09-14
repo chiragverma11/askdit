@@ -8,7 +8,7 @@ const SearchBar: FC<SearchBarProps> = ({ className, ...props }) => {
   return (
     <div
       className={cn(
-        "inline-flex w-4/6 items-center gap-2 rounded-lg border border-default/25 bg-emphasis/80 px-6 text-sm text-subtle backdrop-blur-xl transition focus-within:border-default/90 focus-within:bg-subtle hover:border-default/90",
+        "inline-flex w-4/6 items-center gap-2 rounded-lg border border-default/25 bg-emphasis/80 px-6 text-sm text-subtle backdrop-blur-xl focus-within:border-default/90 focus-within:bg-subtle focus-within:transition hover:border-default/90",
         className,
       )}
       {...props}

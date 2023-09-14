@@ -54,7 +54,7 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
       animate={!lg && lessVisible ? "lessVisible" : "visible"}
       transition={{ duration: 0.35, ease: "easeInOut" }}
       className={cn(
-        "container fixed inset-x-0 bottom-0 z-10 flex w-full items-center justify-center border-t border-t-highlight bg-subtle py-2 shadow-inner ring-zinc-300/50 backdrop-blur transition-colors dark:ring-0 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-16 lg:my-auto lg:h-[calc(100vh-15%)] lg:max-h-[600px] lg:w-32 lg:rounded-3xl lg:border-none lg:bg-emphasis/80 lg:py-8 lg:ring",
+        "container fixed inset-x-0 bottom-0 z-10 flex w-full items-center justify-center border-t border-t-highlight bg-subtle py-2 shadow-inner ring-zinc-300/50 backdrop-blur dark:ring-0 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-16 lg:my-auto lg:h-[calc(100vh-15%)] lg:max-h-[600px] lg:w-32 lg:rounded-3xl lg:border-none lg:bg-emphasis/80 lg:py-8 lg:ring",
         className,
       )}
     >
@@ -82,7 +82,7 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
                       href={item.path}
                       className={cn(
                         buttonVariants({ size: "icon" }),
-                        "relative w-14 bg-transparent hover:bg-transparent ",
+                        "relative w-14 bg-transparent transition-none hover:bg-transparent hover:transition-colors",
                         isActive
                           ? "text-white hover:bg-white/20 hover:dark:bg-black/10"
                           : "text-default/75 lg:bg-default lg:hover:bg-default/70 dark:lg:hover:bg-default/50",
