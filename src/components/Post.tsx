@@ -36,7 +36,7 @@ const Post = ({
   return (
     <div
       className={cn(
-        "relative mx-auto flex w-full flex-col gap-2 rounded-3xl border border-default/25 bg-emphasis p-4 text-sm hover:border-default/60",
+        "relative mx-auto flex w-full flex-col gap-2 border-b border-t border-default/25 bg-emphasis px-4 py-2 text-sm sm:rounded-3xl sm:border lg:p-4 lg:hover:border-default/60",
         className,
       )}
       {...props}
@@ -52,7 +52,7 @@ const Post = ({
             className="inline-flex items-center gap-2 rounded-lg"
           >
             <UserAvatar user={post.author} className="aspect-square h-6 w-6" />
-            <span className="text-xs font-semibold">{`u/${post.author.username}`}</span>
+            <span className="text-sm font-semibold">{`u/${post.author.username}`}</span>
           </Link>
         ) : (
           <Link
