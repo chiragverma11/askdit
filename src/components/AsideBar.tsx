@@ -82,16 +82,16 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
                       href={item.path}
                       className={cn(
                         buttonVariants({ size: "icon" }),
-                        "relative w-14 bg-transparent transition-none hover:bg-transparent hover:transition-colors",
+                        "group/nav relative w-14 bg-transparent transition-none hover:bg-transparent",
                         isActive
-                          ? "text-white hover:bg-white/20 hover:dark:bg-black/10"
-                          : "text-default/75 lg:bg-default lg:hover:bg-default/70 dark:lg:hover:bg-default/50",
+                          ? "text-white hover:dark:bg-black/10"
+                          : "text-default/75",
                       )}
                     >
                       {IconComponent}
                       {isActive ? (
                         <motion.div
-                          className="absolute inset-0 -z-10 rounded-md bg-primary"
+                          className="absolute inset-0 -z-10 rounded-md bg-primary group-hover/nav:bg-primary/80 group-hover/nav:transition-colors dark:group-hover/nav:bg-primary/95"
                           layoutId="communitiesMenu"
                           aria-hidden="true"
                           transition={{
@@ -102,7 +102,9 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
                             duration: 0.3,
                           }}
                         />
-                      ) : null}
+                      ) : (
+                        <div className="absolute inset-0 -z-20 rounded-md group-hover/nav:transition-colors lg:bg-default lg:group-hover/nav:bg-default/70 dark:lg:group-hover/nav:bg-default/50"></div>
+                      )}
                     </Link>
                   </TooltipTrigger>
                   <TooltipContent
