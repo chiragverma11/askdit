@@ -49,7 +49,7 @@ const CreatePostSubreddit: FC<CreatePostSubredditProps> = async ({
     <>
       <AsideBar />
       <div className="flex w-full justify-center px-4 py-6 pt-4">
-        <div className="flex w-full flex-col lg:w-[680px]">
+        <div className="flex w-full flex-col md:w-[680px]">
           <h3 className="text-lg font-semibold">Create a Post</h3>
           <Editor communityId={community?.id} />
         </div>
