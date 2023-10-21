@@ -16,6 +16,7 @@ const SearchBar: FC<SearchBarProps> = ({ className, ...props }) => {
       <Search className="h-5 w-5" />
       <input
         type="text"
+        name="search_input"
         className="w-full bg-transparent py-2.5 font-semibold placeholder:text-subtle focus-visible:outline-none"
         placeholder="Search"
       />
