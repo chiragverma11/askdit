@@ -4,8 +4,8 @@ import PostFeed from "@/components/PostFeed";
 import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
 import { buttonVariants } from "@/components/ui/Button";
 import { getAuthSession } from "@/lib/auth";
-import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
 import { db } from "@/lib/db";
+import { getCommunity } from "@/lib/prismaQueries";
 import { cn, getDefaultCommunityBg } from "@/lib/utils";
 import { Metadata } from "next";
 import { Session } from "next-auth";
@@ -20,34 +20,15 @@ interface SubredditPageProps {
   };
 }
 
-export const getCommunity = async (communityName: string) => {
-  const subreddit = await db.subreddit.findFirst({
-    where: {
-      name: communityName,
-    },
-    include: {
-      _count: {
-        select: {
-          subscribers: true,
-        },
-      },
-      posts: {
-        include: {
-          author: true,
-          votes: true,
-          comments: true,
-          subreddit: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: INFINITE_SCROLL_PAGINATION_RESULTS,
-      },
-    },
-  });
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const communityName = params.slug;
 
-  return subreddit;
-};
+  return { title: communityName };
+}
 
 const getSubscription = async ({
   communityName,
@@ -67,16 +48,6 @@ const getSubscription = async ({
 
   return subscription;
 };
-
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> {
-  const communityName = params.slug;
-
-  return { title: communityName };
-}
 
 const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
   const { slug } = params;
@@ -102,7 +73,7 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
     <>
       <AsideBar />
       <div className="flex w-full flex-col items-center justify-center py-8 pt-4 lg:px-4">
-        <div className="relative w-full sm:max-w-xl lg:w-[600px]">
+        <div className="relative w-full md:max-w-xl lg:w-[600px]">
           <CommunityInfo
             isSubscribed={isSubscribed}
             session={session}
