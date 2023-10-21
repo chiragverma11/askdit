@@ -1,5 +1,6 @@
 import AsideBar from "@/components/AsideBar";
 import Post from "@/components/Post";
+import PostComments from "@/components/PostComments";
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getVotesAmount } from "@/lib/utils";
@@ -41,13 +42,16 @@ const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
     <>
       <AsideBar />
       <div className="flex w-full justify-center py-6 pt-4">
-        <div className="relative w-full lg:w-[600px]">
+        <div className="relative flex w-full flex-col gap-2 pb-16 md:max-w-xl lg:w-[648px] lg:max-w-2xl lg:pb-0">
           <Post
             post={post}
             votesAmt={votesAmt}
             currentVoteType={currentVote?.type}
-            className="rounded-t-3xl"
+            className="rounded-t-3xl py-4"
+            noRedirect={true}
+            isLoggedIn={session?.user ? true : false}
           />
+          <PostComments postId={post.id} user={session?.user} />
         </div>
       </div>
     </>
