@@ -1,5 +1,4 @@
-import { Vote } from "@prisma/client";
-import { type ClassValue, clsx } from "clsx";
+import { CommentVote, Vote } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { formatDistanceToNowStrict } from "date-fns";
 import { enIN } from "date-fns/locale";
@@ -24,7 +23,7 @@ export function getDefaultCommunityBg({
     : "";
 }
 
-export function getVotesAmount({ votes }: { votes: Vote[] }) {
+export function getVotesAmount({ votes }: { votes: Vote[] | CommentVote[] }) {
   const votesAmt = votes.reduce((acc, vote) => {
     if (vote.type === "UP") return acc + 1;
     if (vote.type === "DOWN") return acc - 1;
