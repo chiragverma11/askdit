@@ -9,6 +9,7 @@ import { PostValidator } from "@/lib/validators/post";
 import "@/styles/editor.css";
 import EditorJS from "@editorjs/editorjs";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getHotkeyHandler } from "@mantine/hooks";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -29,6 +30,7 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
   const [editorLoading, setEditorLoading] = useState(true);
   const editorRef = useRef<EditorJS>();
   const _titleRef = useRef<HTMLTextAreaElement | null>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const pathname = usePathname();
   const isMounted = useMounted();
@@ -175,6 +177,14 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
               }}
               placeholder="Title"
               className="w-full resize-none overflow-hidden bg-transparent text-2xl font-bold after:w-12 after:content-['Joined'] focus:outline-none lg:text-4xl"
+              onKeyDown={getHotkeyHandler([
+                [
+                  "mod+Enter",
+                  () => {
+                    submitButtonRef.current?.click();
+                  },
+                ],
+              ])}
               {...rest}
             />
           </motion.div>
@@ -195,7 +205,17 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
                 />
               </motion.div>
             </AnimatePresence>
-            <div id="editorjs"></div>
+            <div
+              id="editorjs"
+              onKeyDown={getHotkeyHandler([
+                [
+                  "mod+Enter",
+                  () => {
+                    submitButtonRef.current?.click();
+                  },
+                ],
+              ])}
+            ></div>
           </div>
           <div className="mt-2 flex w-full items-center justify-between">
             <p className="hidden text-sm text-gray-500 md:inline">
@@ -210,6 +230,7 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
               form="communityPostForm"
               className="self-end px-6 py-1 font-semibold"
               isLoading={isLoading}
+              ref={submitButtonRef}
             >
               Post
             </Button>
