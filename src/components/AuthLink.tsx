@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { FC } from "react";
 
 interface AuthLinkProps extends React.HTMLAttributes<HTMLAnchorElement> {
-  href: string;
+  href: "/sign-in" | "/sign-up";
   paramsAsCallback?: boolean;
 }
 
