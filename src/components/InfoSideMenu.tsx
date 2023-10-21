@@ -1,11 +1,11 @@
 import { Session } from "next-auth";
 import { FC } from "react";
 import { Separator } from "./ui/Separator";
-import { getCommunity } from "@/app/r/[slug]/page";
 import SubscribeLeaveToggle from "./SubscribeLeaveToggle";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "./ui/Button";
+import type { getCommunity } from "@/lib/prismaQueries";
 
 interface InfoSideMenuProps {
   isSubscribed: boolean;
