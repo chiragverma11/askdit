@@ -1,7 +1,9 @@
 "use client";
 
 import { useMounted } from "@/hooks/use-mounted";
-import { uploadFiles } from "@/lib/uploadthing";
+import { toast } from "@/hooks/use-toast";
+import { ImageKitImageUploader } from "@/lib/imagekit/imageUploader";
+import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { PostValidator } from "@/lib/validators/post";
 import "@/styles/editor.css";
@@ -9,15 +11,13 @@ import EditorJS from "@editorjs/editorjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
 import { Button } from "./ui/Button";
-import { trpc } from "@/lib/trpc";
-import { usePathname, useRouter } from "next/navigation";
-import { toast } from "@/hooks/use-toast";
-import Link from "next/link";
 
 interface EditorProps {
   communityId: string;
@@ -52,7 +52,6 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
           .slice(0, -1)
           .concat(["post", data.postId])
           .join("/");
-        console.log(newPathname);
         return toast({
           description: "Your post has been created successfully.",
           action: <Link href={newPathname}>View Post</Link>,
@@ -76,13 +75,13 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
     const DragDrop = (await import("editorjs-drag-drop")).default;
 
     const editor = new EditorJS({
-      holderId: "editorjs",
+      holder: "editorjs",
       onReady() {
         setEditorLoading(false);
         editorRef.current = editor;
         new DragDrop(editor);
+        _titleRef.current?.focus();
       },
-      autofocus: true,
       placeholder: "Type here to write your post...",
       inlineToolbar: true,
 
@@ -112,14 +111,11 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
           config: {
             uploader: {
               async uploadByFile(file: File) {
-                const [res] = await uploadFiles({
-                  files: [file],
-                  endpoint: "imageUploader",
-                });
+                const res = await ImageKitImageUploader(file, file.name);
                 return {
                   success: 1,
                   file: {
-                    url: res.url,
+                    url: res?.url,
                   },
                 };
               },
@@ -169,7 +165,7 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
   return (
     <div className="my-4 w-full rounded-xl border-zinc-200 bg-emphasis px-5 py-5 shadow-xl lg:p-10 lg:pb-6">
       <form onSubmit={handleSubmit(onSubmit)} id="communityPostForm">
-        <div className="prose prose-stone dark:prose-invert">
+        <div className="prose prose-stone w-full dark:prose-invert">
           <motion.div initial={{ height: 0 }} animate={{ height: "auto" }}>
             <TextareaAutosize
               maxLength={300}
