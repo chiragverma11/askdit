@@ -1,9 +1,13 @@
 "use client";
 
+import { useMounted } from "@/hooks/use-mounted";
 import { useToast } from "@/hooks/use-toast";
+import { RouterOutputs } from "@/lib/trpc";
+import { cn } from "@/lib/utils";
 import { useClipboard, useMediaQuery } from "@mantine/hooks";
 import { Comment, Post, Subreddit, User, Vote } from "@prisma/client";
 import { BookmarkPlus, Link as LinkIcon, Share2 } from "lucide-react";
+import { useState } from "react";
 import { TbShare3 } from "react-icons/tb";
 import { RWebShare } from "react-web-share";
 import { Drawer } from "vaul";
@@ -13,53 +17,90 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/DropdownMenu";
-import { useState } from "react";
 
-interface SharePostProps extends React.HTMLAttributes<HTMLDivElement> {
-  post: Post & {
-    author: User;
-    votes: Vote[];
-    subreddit: Subreddit;
-    comments: Comment[];
+type InfiniteCommunityPostsOutput =
+  RouterOutputs["post"]["infiniteCommunityPosts"];
+
+interface ShareButtonProps extends React.HTMLAttributes<HTMLDivElement> {
+  post?:
+    | Pick<InfiniteCommunityPostsOutput, "posts">["posts"][number]
+    | (Post & {
+        author: User;
+        votes: Vote[];
+        subreddit: Subreddit;
+        comments: Comment[];
+      });
+  comment?: {
+    id: string;
+    subredditName: string;
+    postId: string;
   };
 }
 
-const SharePost = ({ post }: SharePostProps) => {
+const ShareButton = ({ post, comment }: ShareButtonProps) => {
   const clipboard = useClipboard();
   const { toast } = useToast();
-  const baseURL = window.location.origin;
-  const postUrl = new URL(`/r/${post.subreddit.name}/post/${post.id}`, baseURL);
+  const mounted = useMounted();
+  const baseURL = mounted ? window.location.origin : "";
+  const type = post ? "post" : "comment";
+
+  const title = post ? post?.title : window.location.host;
+
+  const url = mounted
+    ? post
+      ? new URL(`/r/${post?.subreddit.name}/post/${post?.id}`, baseURL)
+      : new URL(
+          `/r/${comment?.subredditName}/post/${comment?.postId}/`,
+          baseURL,
+        )
+    : "";
+
+  if (mounted && !post && url !== "") {
+    url.searchParams.append("comment", `${comment?.id}`);
+  }
+
   const isLg = useMediaQuery("(min-width: 1024px)");
 
   function onCopyLink() {
-    clipboard.copy(postUrl);
+    clipboard.copy(url);
     if (!clipboard.error) {
       toast({ description: "Copied Link!" });
     }
   }
   if (!isLg) {
     return (
-      <SharePostDrawer postUrl={postUrl} onCopyLink={onCopyLink} post={post} />
+      <ShareButtonDrawer
+        url={url as URL}
+        onCopyLink={onCopyLink}
+        title={title}
+        type={type}
+      />
     );
   }
 
   return (
-    <SharePostDropdown postUrl={postUrl} onCopyLink={onCopyLink} post={post} />
+    <ShareButtonDropdown
+      url={url as URL}
+      onCopyLink={onCopyLink}
+      title={title}
+      type={type}
+    />
   );
 };
 
-interface SharePostMenuProps {
-  postUrl: URL;
+interface ShareButtonMenuProps {
+  url: URL;
   onCopyLink: () => void;
-  post: Post & {
-    author: User;
-    votes: Vote[];
-    subreddit: Subreddit;
-    comments: Comment[];
-  };
+  title: string;
+  type: "post" | "comment";
 }
 
-const SharePostDrawer = ({ postUrl, onCopyLink, post }: SharePostMenuProps) => {
+const ShareButtonDrawer = ({
+  url,
+  onCopyLink,
+  title,
+  type,
+}: ShareButtonMenuProps) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -78,7 +119,12 @@ const SharePostDrawer = ({ postUrl, onCopyLink, post }: SharePostMenuProps) => {
       modal={false}
     >
       <Drawer.Trigger asChild>
-        <span className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 text-zinc-400 hover:bg-highlight/60">
+        <span
+          className={cn(
+            "z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 text-zinc-400 hover:bg-highlight/40 dark:hover:bg-highlight/60",
+            type === "comment" ? "bg-transparent" : "",
+          )}
+        >
           <TbShare3 className="h-5 w-5" />
           Share
         </span>
@@ -109,8 +155,8 @@ const SharePostDrawer = ({ postUrl, onCopyLink, post }: SharePostMenuProps) => {
                 <div>
                   <RWebShare
                     data={{
-                      title: post.title,
-                      url: postUrl.toString(),
+                      title: title,
+                      url: url.toString(),
                     }}
                     onClick={() => setOpen(false)}
                   >
@@ -129,16 +175,20 @@ const SharePostDrawer = ({ postUrl, onCopyLink, post }: SharePostMenuProps) => {
   );
 };
 
-const SharePostDropdown = ({
-  postUrl,
+const ShareButtonDropdown = ({
+  url,
   onCopyLink,
-  post,
-}: SharePostMenuProps) => {
+  title,
+  type,
+}: ShareButtonMenuProps) => {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <span
-          className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 text-zinc-400 hover:bg-highlight/60"
+          className={cn(
+            "z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 text-zinc-400 hover:bg-highlight/60",
+            type === "comment" ? "bg-transparent" : "",
+          )}
           onClick={(e) => {
             e.preventDefault();
           }}
@@ -168,8 +218,8 @@ const SharePostDropdown = ({
           <div>
             <RWebShare
               data={{
-                title: post.title,
-                url: postUrl.toString(),
+                title: title,
+                url: url.toString(),
               }}
             >
               <button className="inline-flex items-center">
@@ -184,4 +234,4 @@ const SharePostDropdown = ({
   );
 };
 
-export default SharePost;
+export default ShareButton;
