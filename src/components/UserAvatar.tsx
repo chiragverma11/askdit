@@ -20,6 +20,7 @@ const UserAvatar: FC<UserAvatarProps> = ({ user, ...props }) => {
             alt="Profile Picture"
             referrerPolicy="no-referrer"
             sizes="(max-width: 768px) 10vw, (max-width: 1200px) 8vw, 5vw"
+            unoptimized
             priority={true}
           />
         </div>
