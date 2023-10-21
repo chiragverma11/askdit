@@ -5,17 +5,20 @@ import { cn } from "@/lib/utils";
 import { VoteType } from "@prisma/client";
 import { ArrowBigDown, ArrowBigUp } from "lucide-react";
 import { FC, HTMLAttributes, useEffect, useState } from "react";
+import AuthLink from "./AuthLink";
 
 interface PostVoteProps extends HTMLAttributes<HTMLSpanElement> {
   postId: string;
   initialVotesAmt: number;
   initialVoteType?: VoteType;
+  isLoggedIn: boolean;
 }
 
 const PostVote: FC<PostVoteProps> = ({
   postId,
   initialVotesAmt,
   initialVoteType,
+  isLoggedIn,
   className,
   ...props
 }) => {
@@ -52,6 +55,10 @@ const PostVote: FC<PostVoteProps> = ({
         }
       }
     },
+    onError: () => {
+      setVotesAmt(initialVotesAmt);
+      setCurrentVoteType(initialVoteType);
+    },
   });
 
   return (
@@ -65,22 +72,39 @@ const PostVote: FC<PostVoteProps> = ({
       }}
       {...props}
     >
-      <span
-        className="group/upvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-red-400/10 dark:hover:bg-red-400/5"
-        onClick={() => {
-          vote({ postId: postId, voteType: "UP" });
-        }}
-      >
-        <ArrowBigUp
-          className={cn(
-            "h-6 w-6",
-            currentVoteType === "UP"
-              ? "fill-red-500 text-red-500"
-              : "text-zinc-400 group-hover/upvote:text-red-600/75",
-          )}
-          strokeWidth={1.5}
-        />
-      </span>
+      {isLoggedIn ? (
+        <span
+          className="group/upvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-red-400/10 dark:hover:bg-red-400/5"
+          onClick={() => {
+            vote({ postId: postId, voteType: "UP" });
+          }}
+        >
+          <ArrowBigUp
+            className={cn(
+              "h-6 w-6",
+              currentVoteType === "UP"
+                ? "fill-red-500 text-red-500"
+                : "text-zinc-400 group-hover/upvote:text-red-600/75",
+            )}
+            strokeWidth={1.5}
+          />
+        </span>
+      ) : (
+        <AuthLink
+          href="/sign-in"
+          className="group/downvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-indigo-400/10 dark:hover:bg-indigo-400/5"
+        >
+          <ArrowBigDown
+            className={cn(
+              "h-6 w-6",
+              currentVoteType === "DOWN"
+                ? "fill-indigo-500 text-indigo-500"
+                : "text-zinc-400 group-hover/downvote:text-indigo-600/75",
+            )}
+            strokeWidth={1.5}
+          />
+        </AuthLink>
+      )}
       <div className="flex items-center justify-center">
         <span
           className={cn(
@@ -95,22 +119,39 @@ const PostVote: FC<PostVoteProps> = ({
           {votesAmt}
         </span>
       </div>
-      <span
-        className="group/downvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-indigo-400/10 dark:hover:bg-indigo-400/5"
-        onClick={() => {
-          vote({ postId: postId, voteType: "DOWN" });
-        }}
-      >
-        <ArrowBigDown
-          className={cn(
-            "h-6 w-6",
-            currentVoteType === "DOWN"
-              ? "fill-indigo-500 text-indigo-500"
-              : "text-zinc-400 group-hover/downvote:text-indigo-600/75",
-          )}
-          strokeWidth={1.5}
-        />
-      </span>
+      {isLoggedIn ? (
+        <span
+          className="group/downvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-indigo-400/10 dark:hover:bg-indigo-400/5"
+          onClick={() => {
+            vote({ postId: postId, voteType: "DOWN" });
+          }}
+        >
+          <ArrowBigDown
+            className={cn(
+              "h-6 w-6",
+              currentVoteType === "DOWN"
+                ? "fill-indigo-500 text-indigo-500"
+                : "text-zinc-400 group-hover/downvote:text-indigo-600/75",
+            )}
+            strokeWidth={1.5}
+          />
+        </span>
+      ) : (
+        <AuthLink
+          href="/sign-in"
+          className="group/downvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-indigo-400/10 dark:hover:bg-indigo-400/5"
+        >
+          <ArrowBigDown
+            className={cn(
+              "h-6 w-6",
+              currentVoteType === "DOWN"
+                ? "fill-indigo-500 text-indigo-500"
+                : "text-zinc-400 group-hover/downvote:text-indigo-600/75",
+            )}
+            strokeWidth={1.5}
+          />
+        </AuthLink>
+      )}
     </span>
   );
 };
