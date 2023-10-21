@@ -1,7 +1,9 @@
-import { PostValidator, PostVoteValidator } from "@/lib/validators/post";
-import { protectedProcedure, router } from "../trpc";
+import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
 import { db } from "@/lib/db";
+import { PostValidator, PostVoteValidator } from "@/lib/validators/post";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const postRouter = router({
   createCommunityPost: protectedProcedure
@@ -96,5 +98,49 @@ export const postRouter = router({
       });
 
       return new Response("OK");
+    }),
+  infiniteCommunityPosts: publicProcedure
+    .input(
+      z.object({
+        communityName: z.string(),
+        limit: z.number().min(1),
+        cursor: z.string().nullish(),
+        skip: z.number().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const limit = input.limit ?? INFINITE_SCROLL_PAGINATION_RESULTS;
+      const { skip, communityName, cursor } = input;
+
+      const posts = await db.post.findMany({
+        take: limit + 1,
+        skip: skip,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          author: true,
+          votes: true,
+          comments: true,
+          subreddit: true,
+        },
+        where: {
+          subreddit: {
+            name: communityName,
+          },
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (posts.length > limit) {
+        const nextItem = posts.pop();
+        nextCursor = nextItem?.id;
+      }
+      return {
+        posts,
+        nextCursor,
+      };
     }),
 });
