@@ -179,6 +179,7 @@
   }
   html {
     -webkit-tap-highlight-color: transparent;
+    scrollbar-width: thin;
   }
   body {
     @apply bg-default text-foreground;
