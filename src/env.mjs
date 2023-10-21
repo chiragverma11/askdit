@@ -12,8 +12,14 @@ export const env = createEnv({
     UPLOADTHING_APP_ID: z.string(),
     UPSTASH_REDIS_REST_URL: z.string(),
     UPSTASH_REDIS_REST_TOKEN: z.string(),
+    IMAGEKIT_PUBLIC_KEY: z.string(),
+    IMAGEKIT_PRIVATE_KEY: z.string(),
+    IMAGEKIT_URL_ENDPOINT: z.string(),
   },
-  // client: {},
+  client: {
+    NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY: z.string(),
+    NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT: z.string(),
+  },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
@@ -24,5 +30,13 @@ export const env = createEnv({
     UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+    IMAGEKIT_PUBLIC_KEY: process.env.IMAGEKIT_PUBLIC_KEY,
+    IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
+    IMAGEKIT_URL_ENDPOINT: process.env.IMAGEKIT_URL_ENDPOINT,
+
+    NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY:
+      process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY,
+    NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT:
+      process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT,
   },
 });
