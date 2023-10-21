@@ -1,5 +1,8 @@
 import { Vote } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
+import { clsx, type ClassValue } from "clsx";
+import { formatDistanceToNowStrict } from "date-fns";
+import { enIN } from "date-fns/locale";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -29,4 +32,59 @@ export function getVotesAmount({ votes }: { votes: Vote[] }) {
   }, 0);
 
   return votesAmt;
+}
+
+/**
+ * To format distance in custom format
+ * @see https://github.com/date-fns/date-fns/issues/1706
+ */
+
+const formatDistanceLocale = {
+  lessThanXSeconds: "just now",
+  xSeconds: "just now",
+  halfAMinute: "just now",
+  lessThanXMinutes: "{{count}} minute",
+  xMinutes: "{{count}} minute",
+  aboutXHours: "{{count}} hour",
+  xHours: "{{count}} hour",
+  xDays: "{{count}} day",
+  aboutXWeeks: "{{count}} week",
+  xWeeks: "{{count}} week",
+  aboutXMonths: "{{count}} month",
+  xMonths: "{{count}} month",
+  aboutXYears: "{{count}} year",
+  xYears: "{{count}} year",
+  overXYears: "{{count}} year",
+  almostXYears: "{{count}} year",
+};
+
+function formatDistance(token: string, count: number, options: any) {
+  options = options || {};
+
+  const result = formatDistanceLocale[
+    token as keyof typeof formatDistanceLocale
+  ].replace("{{count}}", count.toString());
+
+  const greaterThanOne = count > 1 ? true : false;
+
+  if (options.addSuffix) {
+    if (options.comparison > 0) {
+      return "in " + result + (greaterThanOne ? "s" : "");
+    } else {
+      if (result === "just now") return result;
+      return result + (greaterThanOne ? "s" : "") + " ago";
+    }
+  }
+
+  return result;
+}
+
+export function formatTimeToNow(date: Date): string {
+  return formatDistanceToNowStrict(date, {
+    addSuffix: true,
+    locale: {
+      ...enIN,
+      formatDistance,
+    },
+  });
 }
