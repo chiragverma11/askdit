@@ -34,7 +34,7 @@ import { COMMUNITY_NAME_REGEX } from "@/lib/config";
 const createCommunityFormSchema = z.object({
   communityName: z.string().regex(COMMUNITY_NAME_REGEX, {
     message:
-      "Community names must be between 3–21 characters, and can only contain letters, numbers, or underscores.",
+      "Community names must be between 3-21 characters, and can only contain letters, numbers, or underscores.",
   }),
 });
 
