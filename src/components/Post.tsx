@@ -1,6 +1,6 @@
 "use client";
 
-import { cn, getDefaultCommunityBg } from "@/lib/utils";
+import { RouterOutputs } from "@/lib/trpc";
 import { Comment, Post, Subreddit, User, Vote, VoteType } from "@prisma/client";
 import { MessageSquare } from "lucide-react";
 import Link from "next/link";
@@ -9,13 +9,18 @@ import PostVote from "./PostVote";
 import SharePost from "./SharePost";
 import UserAvatar from "./UserAvatar";
 
+type InfiniteCommunityPostsOutput =
+  RouterOutputs["post"]["infiniteCommunityPosts"];
+
 interface PostProps extends React.HTMLAttributes<HTMLDivElement> {
-  post: Post & {
+  post:
+    | Pick<InfiniteCommunityPostsOutput, "posts">["posts"][number]
+    | (Post & {
     author: User;
     votes: Vote[];
     subreddit: Subreddit;
     comments: Comment[];
-  };
+      });
   isCommunity?: boolean;
   votesAmt: number;
   currentVoteType?: VoteType;
