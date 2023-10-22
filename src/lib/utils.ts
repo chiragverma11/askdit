@@ -23,7 +23,7 @@ export function getDefaultCommunityBg({
     : "";
 }
 
-export function getVotesAmount({ votes }: { votes: Vote[] | CommentVote[] }) {
+export function getVotesAmount({ votes }: { votes: (Vote | CommentVote)[] }) {
   const votesAmt = votes.reduce((acc, vote) => {
     if (vote.type === "UP") return acc + 1;
     if (vote.type === "DOWN") return acc - 1;
