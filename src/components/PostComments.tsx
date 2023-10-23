@@ -91,7 +91,7 @@ const NoComments = () => {
     <div className="flex h-full min-h-[16rem] w-full flex-col items-center justify-center gap-3">
       <MessagesSquare className="h-8 w-8 text-subtle" strokeWidth={2} />
       <div className="flex flex-col items-center gap-2 font-semibold text-subtle">
-        <p className="">No Comments Yet</p>
+        <p className="text-base">No Comments Yet</p>
         <p className="text-sm">Be the first to share what you think!</p>
       </div>
     </div>
