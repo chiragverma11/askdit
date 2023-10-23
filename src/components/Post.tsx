@@ -43,6 +43,8 @@ const Post = ({
     communityName: post.subreddit.name,
   });
 
+  const redirectUrl = `/r/${post.subreddit.name}/post/${post.id}`;
+
   return (
     <div
       className={cn(
@@ -53,10 +55,7 @@ const Post = ({
       {...props}
     >
       {!noRedirect ? (
-        <Link
-          href={`/r/${post.subreddit.name}/post/${post.id}`}
-          className="absolute inset-0 z-[1]"
-        ></Link>
+        <Link href={redirectUrl} className="absolute inset-0 z-[1]"></Link>
       ) : null}
 
       <div className="flex w-full items-center">
@@ -114,7 +113,9 @@ const Post = ({
         )}
       </div>
       <div>
-        <p className="text-xl font-semibold">{post.title}</p>
+        <p className={cn("font-bold", noRedirect ? "text-2xl" : "text-xl")}>
+          {post.title}
+        </p>
       </div>
       <div className="w-full text-sm">
         <EditorOutput content={post.content} />
@@ -127,15 +128,25 @@ const Post = ({
           initialVoteType={currentVoteType}
           isLoggedIn={isLoggedIn}
         />
-        <span
-          className="z-[1] inline-flex items-center gap-1 rounded-3xl bg-subtle px-3 py-2 text-zinc-400 hover:bg-highlight/40 dark:hover:bg-highlight/60"
-          onClick={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <MessageSquare className="h-5 w-5" />
-          <span>{post.comments.length}</span>
-        </span>
+        {noRedirect ? (
+          <span
+            className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 text-zinc-400 hover:bg-highlight/40 dark:hover:bg-highlight/60"
+            onClick={(ref) => {
+              ref.currentTarget.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            <MessageSquare className="h-5 w-5" />
+            <span>{post.comments.length}</span>
+          </span>
+        ) : (
+          <Link
+            href={redirectUrl}
+            className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 text-zinc-400 hover:bg-highlight/40 dark:hover:bg-highlight/60"
+          >
+            <MessageSquare className="h-5 w-5" />
+            <span>{post.comments.length}</span>
+          </Link>
+        )}
         <ShareButton post={post} />
       </div>
     </div>
