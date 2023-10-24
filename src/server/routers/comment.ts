@@ -3,8 +3,10 @@ import { db } from "@/lib/db";
 import {
   AddCommentValidator,
   AddReplyValidator,
+  CommentDeleteValidator,
   CommentVoteValidator,
 } from "@/lib/validators/comment";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
@@ -350,5 +352,33 @@ export const commentRouter = router({
         commentId: newReply.id,
         message: "Reply added successfully",
       };
+    }),
+  delete: protectedProcedure
+    .input(CommentDeleteValidator)
+    .mutation(async (opts) => {
+      const { commentId } = opts.input;
+      const { user } = opts.ctx;
+
+      const comment = await db.comment.findUnique({
+        where: { id: commentId },
+        include: { author: true, votes: true },
+      });
+
+      if (!comment) {
+        return new Response("Comment not found", { status: 404 });
+      }
+
+      if (user.id !== comment.authorId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+        });
+      }
+      await db.comment.delete({
+        where: {
+          id: commentId,
+        },
+      });
+
+      return new Response("OK");
     }),
 });

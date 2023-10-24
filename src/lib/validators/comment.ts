@@ -16,5 +16,9 @@ export const CommentVoteValidator = z.object({
   voteType: z.enum(["UP", "DOWN"]),
 });
 
+export const CommentDeleteValidator = z.object({
+  commentId: z.string(),
+});
+
 export type AddCommentRequestType = z.infer<typeof AddCommentValidator>;
 export type AddReplyRequestType = z.infer<typeof AddReplyValidator>;
