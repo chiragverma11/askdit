@@ -38,6 +38,8 @@ const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
     (vote) => vote.userId === session?.user.id,
   );
 
+  const isAuthor = post.authorId === session?.user.id;
+
   return (
     <>
       <AsideBar />
@@ -50,6 +52,8 @@ const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
             className="rounded-t-3xl py-4"
             noRedirect={true}
             isLoggedIn={session?.user ? true : false}
+            isAuthor={isAuthor}
+            pathName={`/r/${post.subreddit.name}/post/${post.id}`}
           />
           <PostComments postId={post.id} user={session?.user} />
         </div>

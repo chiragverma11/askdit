@@ -73,6 +73,8 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
                 isCommunity={communityName ? true : false}
                 currentVoteType={currentVote?.type}
                 isLoggedIn={session?.user ? true : false}
+                pathName={pathname}
+                isAuthor={post.authorId === session?.user.id}
               />
             </li>
           );
@@ -85,6 +87,8 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
               isCommunity={communityName ? true : false}
               currentVoteType={currentVote?.type}
               isLoggedIn={session?.user ? true : false}
+              pathName={pathname}
+              isAuthor={post.authorId === session?.user.id}
             />
           );
         }
