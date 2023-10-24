@@ -1,6 +1,10 @@
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
 import { db } from "@/lib/db";
-import { PostValidator, PostVoteValidator } from "@/lib/validators/post";
+import {
+  PostDeleteValidator,
+  PostValidator,
+  PostVoteValidator,
+} from "@/lib/validators/post";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
@@ -142,5 +146,33 @@ export const postRouter = router({
         posts,
         nextCursor,
       };
+    }),
+  delete: protectedProcedure
+    .input(PostDeleteValidator)
+    .mutation(async (opts) => {
+      const { postId } = opts.input;
+      const { user } = opts.ctx;
+
+      const post = await db.post.findUnique({
+        where: { id: postId },
+        include: { author: true, votes: true },
+      });
+
+      if (!post) {
+        return new Response("Post not found", { status: 404 });
+      }
+
+      if (user.id !== post.authorId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+        });
+      }
+      await db.post.delete({
+        where: {
+          id: postId,
+        },
+      });
+
+      return new Response("OK");
     }),
 });

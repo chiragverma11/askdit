@@ -18,4 +18,8 @@ export const PostVoteValidator = z.object({
   voteType: z.enum(["UP", "DOWN"]),
 });
 
+export const PostDeleteValidator = z.object({
+  postId: z.string(),
+});
+
 export type PostRequestType = z.infer<typeof PostValidator>;
