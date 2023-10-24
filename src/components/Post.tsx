@@ -6,6 +6,7 @@ import { Comment, Post, Subreddit, User, Vote, VoteType } from "@prisma/client";
 import { Dot, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import EditorOutput from "./EditorOutput";
+import MoreOptions from "./MoreOptions";
 import PostVote from "./PostVote";
 import ShareButton from "./ShareButton";
 import UserAvatar from "./UserAvatar";
@@ -27,6 +28,8 @@ interface PostProps extends React.HTMLAttributes<HTMLDivElement> {
   currentVoteType?: VoteType;
   noRedirect?: boolean;
   isLoggedIn: boolean;
+  isAuthor: boolean;
+  pathName: string;
 }
 
 const Post = ({
@@ -36,7 +39,9 @@ const Post = ({
   currentVoteType,
   noRedirect = false,
   isLoggedIn,
+  isAuthor,
   className,
+  pathName,
   ...props
 }: PostProps) => {
   const defaultProfileBg = getDefaultCommunityBg({
@@ -120,7 +125,7 @@ const Post = ({
       <div className="w-full text-sm">
         <EditorOutput content={post.content} />
       </div>
-      <div className="flex items-center gap-3 text-xs font-semibold text-subtle dark:text-default">
+      <div className="flex items-center gap-2 text-xs font-semibold text-subtle dark:text-default">
         <PostVote
           className="z-[1]"
           postId={post.id}
@@ -148,6 +153,16 @@ const Post = ({
           </Link>
         )}
         <ShareButton post={post} />
+        {isLoggedIn ? (
+          <MoreOptions
+            type="post"
+            id={post.id}
+            bookmark={true}
+            redirectUrl={`/r/${post.subreddit.name}`}
+            pathName={pathName}
+            isAuthor={isAuthor}
+          />
+        ) : null}
       </div>
     </div>
   );
