@@ -331,7 +331,7 @@ export const commentRouter = router({
       const { comment, postId, replyToId } = opts.input;
       const { user } = opts.ctx;
 
-      const newReply = await db.comment.create({
+      const _newReply = await db.comment.create({
         data: {
           text: comment,
           replyToId,
@@ -343,13 +343,57 @@ export const commentRouter = router({
       await db.commentVote.create({
         data: {
           type: "UP",
-          commentId: newReply.id,
+          commentId: _newReply.id,
           userId: user.id,
         },
       });
 
+      const newReply = await db.comment.findUnique({
+        include: {
+          author: true,
+          votes: true,
+          _count: {
+            select: {
+              replies: true,
+            },
+          },
+          replies: {
+            include: {
+              author: true,
+              votes: true,
+              _count: {
+                select: {
+                  replies: true,
+                },
+              },
+              replies: {
+                take: INFINITE_SCROLL_COMMENT_RESULTS,
+                include: {
+                  author: true,
+                  votes: true,
+                  _count: {
+                    select: {
+                      replies: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        where: {
+          id: _newReply.id,
+        },
+      });
+
+      if (!newReply) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+        });
+      }
+
       return {
-        commentId: newReply.id,
+        comment: newReply,
         message: "Reply added successfully",
       };
     }),
