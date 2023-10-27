@@ -128,6 +128,7 @@ model Comment {
 
   votes     CommentVote[]
   commentId String?
+  deleted   Boolean       @default(false)
 
   @@index([postId])
   @@index([replyToId])
