@@ -83,11 +83,11 @@ const MoreOptions: FC<MoreOptionsProps> = ({
         <DropdownMenuItem className="cursor-pointer" asChild>
           <div>
             {bookmark ? (
-              <BookmarkPlus className="mr-2 h-4 w-4" />
-            ) : (
               <BookmarkMinus className="mr-2 h-4 w-4" />
+            ) : (
+              <BookmarkPlus className="mr-2 h-4 w-4" />
             )}
-            Bookmark
+            {bookmark ? "Remove " : null}Bookmark
           </div>
         </DropdownMenuItem>
         {isAuthor ? (
