@@ -1,4 +1,4 @@
-import { MORE_COMMENT_REPLIES } from "@/lib/config";
+import { COMMENT_REPLIES_DEPTH, MORE_COMMENT_REPLIES } from "@/lib/config";
 import { trpc } from "@/lib/trpc";
 import { cn, formatTimeToNow, getVotesAmount } from "@/lib/utils";
 import { InfinitePostCommentsOutput, PartialK } from "@/types/utilities";
@@ -23,6 +23,7 @@ interface CommentProps extends React.HTMLAttributes<HTMLDivElement> {
   currentVoteType?: VoteType;
   user?: User;
   pathName: string;
+  level: number;
 }
 
 const Comment: FC<CommentProps> = ({
@@ -32,6 +33,7 @@ const Comment: FC<CommentProps> = ({
   user,
   pathName,
   className,
+  level,
 }) => {
   const [isReplying, setIsReplying] = useState(false);
   const [replies, setReplies] = useState(comment.replies ?? []);
@@ -72,9 +74,9 @@ const Comment: FC<CommentProps> = ({
     <div className={cn("rounded-md p-2 pr-0", className)}>
       <div className="flex gap-1.5 pr-4">
         {!isDeleted ? (
-        <Link href={`/u/${comment.author.username}`}>
-          <UserAvatar user={comment.author} className="h-7 w-7" />
-        </Link>
+          <Link href={`/u/${comment.author.username}`}>
+            <UserAvatar user={comment.author} className="h-7 w-7" />
+          </Link>
         ) : (
           <span className="flex aspect-square h-7 w-7 items-center justify-center rounded-full bg-zinc-300 font-semibold text-zinc-950 dark:bg-zinc-600">
             u/
@@ -82,11 +84,11 @@ const Comment: FC<CommentProps> = ({
         )}
         <div className="flex items-center text-xs">
           {!isDeleted ? (
-          <Link href={`/u/${comment.author.username}`}>
-            <span className="font-semibold text-default/90 hover:underline dark:hover:text-red-100">
-              {comment.author.username}
-            </span>
-          </Link>
+            <Link href={`/u/${comment.author.username}`}>
+              <span className="font-semibold text-default/90 hover:underline dark:hover:text-red-100">
+                {comment.author.username}
+              </span>
+            </Link>
           ) : (
             <span className="font-medium text-subtle">
               Comment deleted by user
@@ -102,41 +104,41 @@ const Comment: FC<CommentProps> = ({
         <div className="w-full border-l-2 border-default/60 pb-1 pl-5">
           {!isDeleted ? (
             <>
-          <span className="whitespace-pre-wrap">{comment.text}</span>
+              <span className="whitespace-pre-wrap">{comment.text}</span>
               <div className="-ml-1.5 flex items-center gap-0 text-xs font-semibold text-subtle dark:text-default md:gap-0.5">
-            <CommentVote
-              commentId={comment.id}
-              initialVotesAmt={votesAmt}
-              initialVoteType={currentVoteType}
-              onNotLoggedIn={
-                isLoggedIn
-                  ? undefined
-                  : () => {
-                      router.push(`/sign-in?callbackUrl=${pathName}`);
+                <CommentVote
+                  commentId={comment.id}
+                  initialVotesAmt={votesAmt}
+                  initialVoteType={currentVoteType}
+                  onNotLoggedIn={
+                    isLoggedIn
+                      ? undefined
+                      : () => {
+                          router.push(`/sign-in?callbackUrl=${pathName}`);
+                        }
+                  }
+                />
+
+                <span
+                  className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl px-3 py-2 text-zinc-400 hover:bg-highlight/40 dark:hover:bg-highlight/60"
+                  onClick={(e) => {
+                    if (!isLoggedIn) {
+                      return router.push(`/sign-in?callbackUrl=${pathName}`);
                     }
-              }
-            />
+                    setIsReplying(!isReplying);
+                  }}
+                >
+                  <MessageSquare className="h-5 w-5" />
+                  <span>Reply</span>
+                </span>
 
-            <span
-              className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl px-3 py-2 text-zinc-400 hover:bg-highlight/40 dark:hover:bg-highlight/60"
-              onClick={(e) => {
-                if (!isLoggedIn) {
-                  return router.push(`/sign-in?callbackUrl=${pathName}`);
-                }
-                setIsReplying(!isReplying);
-              }}
-            >
-              <MessageSquare className="h-5 w-5" />
-              <span>Reply</span>
-            </span>
-
-            <ShareButton
-              comment={{
-                id: comment.id,
-                subredditName: params.slug as string,
-                postId: comment.postId,
-              }}
-            />
+                <ShareButton
+                  comment={{
+                    id: comment.id,
+                    subredditName: params.slug as string,
+                    postId: comment.postId,
+                  }}
+                />
                 {isLoggedIn ? (
                   <MoreOptions
                     type="comment"
@@ -148,7 +150,7 @@ const Comment: FC<CommentProps> = ({
                     onCommentDelete={deleteComment}
                   />
                 ) : null}
-          </div>
+              </div>
             </>
           ) : null}
           {isReplying ? (
@@ -166,25 +168,35 @@ const Comment: FC<CommentProps> = ({
               />
             </div>
           ) : null}
-          {replies?.map((reply) => {
-            const votesAmt = getVotesAmount({ votes: reply.votes });
+          {level <= COMMENT_REPLIES_DEPTH ? (
+            replies?.map((reply) => {
+              const votesAmt = getVotesAmount({ votes: reply.votes });
 
-            const currentVote = reply?.votes.find(
-              (vote) => vote.userId === user?.id,
-            );
+              const currentVote = reply?.votes.find(
+                (vote) => vote.userId === user?.id,
+              );
 
-            return (
-              <div key={reply.id} className="-ml-5">
-                <Comment
-                  comment={reply}
-                  votesAmt={votesAmt}
-                  currentVoteType={currentVote?.type}
-                  user={user}
-                  pathName={pathName}
-                />
-              </div>
-            );
-          })}
+              return (
+                <div key={reply.id} className="-ml-5">
+                  <Comment
+                    comment={reply}
+                    votesAmt={votesAmt}
+                    currentVoteType={currentVote?.type}
+                    user={user}
+                    pathName={pathName}
+                    level={level + 1}
+                  />
+                </div>
+              );
+            })
+          ) : (
+            <Link
+              href={`${pathName}/comment/${comment.id}`}
+              className="-ml-1 w-full cursor-pointer text-xs font-semibold text-blue-500 hover:underline dark:text-blue-400"
+            >
+              See more...
+            </Link>
+          )}
           {haveMoreReplies > 0 ? (
             <span
               className="-ml-1 w-full cursor-pointer text-xs font-semibold text-blue-500 hover:underline dark:text-blue-400"
