@@ -25,6 +25,7 @@ interface MoreOptionsProps {
   isAuthor: boolean;
   redirectUrl: string;
   pathName: string;
+  onCommentDelete?: () => void;
 }
 
 const MoreOptions: FC<MoreOptionsProps> = ({
@@ -34,6 +35,7 @@ const MoreOptions: FC<MoreOptionsProps> = ({
   isAuthor,
   redirectUrl,
   pathName,
+  onCommentDelete,
 }) => {
   const router = useRouter();
 
@@ -52,10 +54,9 @@ const MoreOptions: FC<MoreOptionsProps> = ({
   const { mutate: deleteComment } = trpc.comment.delete.useMutation({
     onSuccess: () => {
       toast({ description: "Comment deleted successfully" });
-      if (pathName === redirectUrl) {
-        return utils.comment.infiniteComments.invalidate();
+      if (onCommentDelete) {
+        onCommentDelete();
       }
-      router.push(redirectUrl);
     },
   });
 
