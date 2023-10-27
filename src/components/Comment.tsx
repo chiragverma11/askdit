@@ -3,7 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { cn, formatTimeToNow, getVotesAmount } from "@/lib/utils";
 import { InfinitePostCommentsOutput, PartialK } from "@/types/utilities";
 import { VoteType } from "@prisma/client";
-import { Dot, MessageSquare } from "lucide-react";
+import { Dot, Maximize2, MessageSquare } from "lucide-react";
 import { User } from "next-auth";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -40,6 +40,7 @@ const Comment: FC<CommentProps> = ({
   const [skip, setSkip] = useState(comment.replies?.length ?? 0);
   const [totalReplies, setTotalReplies] = useState(comment._count.replies);
   const [isDeleted, setIsDeleted] = useState(comment?.deleted);
+  const [showReplies, setShowReplies] = useState(isDeleted ? false : true);
 
   const haveMoreReplies = totalReplies - replies.length;
   const isLoggedIn = user ? true : false;
@@ -72,15 +73,28 @@ const Comment: FC<CommentProps> = ({
 
   return (
     <div className={cn("rounded-md p-2 pr-0", className)}>
-      <div className="flex gap-1.5 pr-4">
+      <div
+        className="flex gap-1.5 pr-4"
+        onClick={() => isDeleted && showReplies && setShowReplies(false)}
+      >
         {!isDeleted ? (
           <Link href={`/u/${comment.author.username}`}>
             <UserAvatar user={comment.author} className="h-7 w-7" />
           </Link>
         ) : (
-          <span className="flex aspect-square h-7 w-7 items-center justify-center rounded-full bg-zinc-300 font-semibold text-zinc-950 dark:bg-zinc-600">
-            u/
-          </span>
+          <div className="flex items-center gap-1.5">
+            {!showReplies ? (
+              <Maximize2
+                className="h-3.5 w-3.5 rotate-90 cursor-pointer text-blue-500 dark:text-blue-400"
+                onClick={() =>
+                  setShowReplies((prevShowReplies) => !prevShowReplies)
+                }
+              />
+            ) : null}
+            <span className="flex aspect-square h-7 w-7 items-center justify-center rounded-full bg-zinc-300 font-semibold text-zinc-950 dark:bg-zinc-600">
+              u/
+            </span>
+          </div>
         )}
         <div className="flex items-center text-xs">
           {!isDeleted ? (
@@ -100,124 +114,126 @@ const Comment: FC<CommentProps> = ({
           </div>
         </div>
       </div>
-      <div className="pl-3 pt-2">
-        <div className="w-full border-l-2 border-default/60 pb-1 pl-5">
-          {!isDeleted ? (
-            <>
-              <span className="whitespace-pre-wrap">{comment.text}</span>
-              <div className="-ml-1.5 flex items-center gap-0 text-xs font-semibold text-subtle dark:text-default md:gap-0.5">
-                <CommentVote
-                  commentId={comment.id}
-                  initialVotesAmt={votesAmt}
-                  initialVoteType={currentVoteType}
-                  onNotLoggedIn={
-                    isLoggedIn
-                      ? undefined
-                      : () => {
-                          router.push(`/sign-in?callbackUrl=${pathName}`);
-                        }
-                  }
-                />
-
-                <span
-                  className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl px-3 py-2 text-zinc-400 hover:bg-highlight/40 dark:hover:bg-highlight/60"
-                  onClick={(e) => {
-                    if (!isLoggedIn) {
-                      return router.push(`/sign-in?callbackUrl=${pathName}`);
+      {showReplies ? (
+        <div className="pl-3 pt-2">
+          <div className="w-full border-l-2 border-default/60 pb-1 pl-5">
+            {!isDeleted ? (
+              <>
+                <span className="whitespace-pre-wrap">{comment.text}</span>
+                <div className="-ml-1.5 flex items-center gap-0 text-xs font-semibold text-subtle dark:text-default md:gap-0.5">
+                  <CommentVote
+                    commentId={comment.id}
+                    initialVotesAmt={votesAmt}
+                    initialVoteType={currentVoteType}
+                    onNotLoggedIn={
+                      isLoggedIn
+                        ? undefined
+                        : () => {
+                            router.push(`/sign-in?callbackUrl=${pathName}`);
+                          }
                     }
-                    setIsReplying(!isReplying);
-                  }}
-                >
-                  <MessageSquare className="h-5 w-5" />
-                  <span>Reply</span>
-                </span>
+                  />
 
-                <ShareButton
-                  comment={{
-                    id: comment.id,
-                    subredditName: params.slug as string,
-                    postId: comment.postId,
+                  <span
+                    className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl px-3 py-2 text-zinc-400 hover:bg-highlight/40 dark:hover:bg-highlight/60"
+                    onClick={(e) => {
+                      if (!isLoggedIn) {
+                        return router.push(`/sign-in?callbackUrl=${pathName}`);
+                      }
+                      setIsReplying(!isReplying);
+                    }}
+                  >
+                    <MessageSquare className="h-5 w-5" />
+                    <span>Reply</span>
+                  </span>
+
+                  <ShareButton
+                    comment={{
+                      id: comment.id,
+                      subredditName: params.slug as string,
+                      postId: comment.postId,
+                    }}
+                  />
+                  {isLoggedIn ? (
+                    <MoreOptions
+                      type="comment"
+                      id={comment.id}
+                      bookmark={true}
+                      redirectUrl={pathName}
+                      pathName={pathName}
+                      isAuthor={comment.authorId === user?.id}
+                      onCommentDelete={deleteComment}
+                    />
+                  ) : null}
+                </div>
+              </>
+            ) : null}
+            {isReplying ? (
+              <div className="my-3 border-l-2 border-default/60 px-5">
+                <AddReply
+                  postId={comment.postId}
+                  addNewReply={(newReply) => {
+                    setIsReplying(false);
+                    addNewReply(newReply);
+                  }}
+                  replyToId={comment.id}
+                  onCancel={() => {
+                    setIsReplying(false);
                   }}
                 />
-                {isLoggedIn ? (
-                  <MoreOptions
-                    type="comment"
-                    id={comment.id}
-                    bookmark={true}
-                    redirectUrl={pathName}
-                    pathName={pathName}
-                    isAuthor={comment.authorId === user?.id}
-                    onCommentDelete={deleteComment}
-                  />
-                ) : null}
               </div>
-            </>
-          ) : null}
-          {isReplying ? (
-            <div className="my-3 border-l-2 border-default/60 px-5">
-              <AddReply
-                postId={comment.postId}
-                addNewReply={(newReply) => {
-                  setIsReplying(false);
-                  addNewReply(newReply);
-                }}
-                replyToId={comment.id}
-                onCancel={() => {
-                  setIsReplying(false);
-                }}
-              />
-            </div>
-          ) : null}
-          {level <= COMMENT_REPLIES_DEPTH ? (
-            replies?.map((reply) => {
-              const votesAmt = getVotesAmount({ votes: reply.votes });
+            ) : null}
+            {level <= COMMENT_REPLIES_DEPTH ? (
+              replies?.map((reply) => {
+                const votesAmt = getVotesAmount({ votes: reply.votes });
 
-              const currentVote = reply?.votes.find(
-                (vote) => vote.userId === user?.id,
-              );
+                const currentVote = reply?.votes.find(
+                  (vote) => vote.userId === user?.id,
+                );
 
-              return (
-                <div key={reply.id} className="-ml-5">
-                  <Comment
-                    comment={reply}
-                    votesAmt={votesAmt}
-                    currentVoteType={currentVote?.type}
-                    user={user}
-                    pathName={pathName}
-                    level={level + 1}
-                  />
-                </div>
-              );
-            })
-          ) : (
-            <Link
-              href={`${pathName}/comment/${comment.id}`}
-              className="-ml-1 w-full cursor-pointer text-xs font-semibold text-blue-500 hover:underline dark:text-blue-400"
-            >
-              See more...
-            </Link>
-          )}
-          {haveMoreReplies > 0 ? (
-            <span
-              className="-ml-1 w-full cursor-pointer text-xs font-semibold text-blue-500 hover:underline dark:text-blue-400"
-              onClick={() => {
-                mutate({
-                  limit: MORE_COMMENT_REPLIES,
-                  postId: comment.postId,
-                  replyToId: comment.id,
-                  skip: skip,
-                });
-              }}
-            >
-              {isLoading
-                ? "Loading..."
-                : `${haveMoreReplies} more ${
-                    haveMoreReplies === 1 ? "reply" : "replies"
-                  }`}
-            </span>
-          ) : null}
+                return (
+                  <div key={reply.id} className="-ml-5">
+                    <Comment
+                      comment={reply}
+                      votesAmt={votesAmt}
+                      currentVoteType={currentVote?.type}
+                      user={user}
+                      pathName={pathName}
+                      level={level + 1}
+                    />
+                  </div>
+                );
+              })
+            ) : (
+              <Link
+                href={`${pathName}/comment/${comment.id}`}
+                className="-ml-1 w-full cursor-pointer text-xs font-semibold text-blue-500 hover:underline dark:text-blue-400"
+              >
+                See more...
+              </Link>
+            )}
+            {haveMoreReplies > 0 ? (
+              <span
+                className="-ml-1 w-full cursor-pointer text-xs font-semibold text-blue-500 hover:underline dark:text-blue-400"
+                onClick={() => {
+                  mutate({
+                    limit: MORE_COMMENT_REPLIES,
+                    postId: comment.postId,
+                    replyToId: comment.id,
+                    skip: skip,
+                  });
+                }}
+              >
+                {isLoading
+                  ? "Loading..."
+                  : `${haveMoreReplies} more ${
+                      haveMoreReplies === 1 ? "reply" : "replies"
+                    }`}
+              </span>
+            ) : null}
+          </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 };
