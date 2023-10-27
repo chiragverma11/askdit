@@ -405,7 +405,13 @@ export const commentRouter = router({
 
       const comment = await db.comment.findUnique({
         where: { id: commentId },
-        include: { author: true, votes: true },
+        include: {
+          _count: {
+            select: {
+              replies: true,
+            },
+          },
+        },
       });
 
       if (!comment) {
@@ -417,11 +423,48 @@ export const commentRouter = router({
           code: "UNAUTHORIZED",
         });
       }
-      await db.comment.delete({
-        where: {
-          id: commentId,
-        },
-      });
+
+      if (comment._count.replies === 0) {
+        await db.comment.delete({
+          where: {
+            id: commentId,
+          },
+        });
+      } else {
+        await db.comment.update({
+          where: {
+            id: commentId,
+          },
+          data: {
+            deleted: true,
+          },
+        });
+      }
+
+      if (comment.replyToId) {
+        const parentComment = await db.comment.findUnique({
+          select: {
+            id: true,
+            deleted: true,
+            _count: {
+              select: {
+                replies: true,
+              },
+            },
+          },
+          where: {
+            id: comment.replyToId,
+          },
+        });
+
+        if (parentComment?.deleted && parentComment?._count.replies === 0) {
+          await db.comment.delete({
+            where: {
+              id: parentComment.id,
+            },
+          });
+        }
+      }
 
       return new Response("OK");
     }),
