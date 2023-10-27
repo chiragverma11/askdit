@@ -77,6 +77,7 @@ const PostComments: FC<PostCommentsProps> = ({ postId, user }) => {
               currentVoteType={currentVote?.type}
               user={user}
               pathName={pathname}
+              level={1}
             />
           );
         })}
