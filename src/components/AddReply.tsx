@@ -5,6 +5,7 @@ import {
   AddReplyRequestType,
   AddReplyValidator,
 } from "@/lib/validators/comment";
+import { InfinitePostCommentsOutput } from "@/types/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FC } from "react";
 import { useForm } from "react-hook-form";
@@ -13,7 +14,9 @@ import { Button } from "./ui/Button";
 
 interface AddReplyProps {
   postId: string;
-  refetchComments: () => void;
+  addNewReply: (
+    newReply: Pick<InfinitePostCommentsOutput, "comments">["comments"][number],
+  ) => void;
   replyToId: string;
   onCancel?: () => void;
 }
@@ -22,7 +25,7 @@ const addReplyFormSchema = AddReplyValidator;
 
 const AddReply: FC<AddReplyProps> = ({
   postId,
-  refetchComments,
+  addNewReply,
   replyToId,
   onCancel,
 }) => {
@@ -40,14 +43,14 @@ const AddReply: FC<AddReplyProps> = ({
   const formId = `addReplyForm_${replyToId}`;
 
   const { mutate: addReply, isLoading } = trpc.comment.addReply.useMutation({
-    onSuccess() {
+    onSuccess(data) {
       reset({
         comment: "",
         postId,
         replyToId,
       });
 
-      refetchComments();
+      addNewReply(data?.comment);
     },
   });
 
