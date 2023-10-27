@@ -10,6 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import { FC, useState } from "react";
 import AddReply from "./AddReply";
 import CommentVote from "./CommentVote";
+import MoreOptions from "./MoreOptions";
 import ShareButton from "./ShareButton";
 import UserAvatar from "./UserAvatar";
 
@@ -36,6 +37,7 @@ const Comment: FC<CommentProps> = ({
   const [replies, setReplies] = useState(comment.replies ?? []);
   const [skip, setSkip] = useState(comment.replies?.length ?? 0);
   const [totalReplies, setTotalReplies] = useState(comment._count.replies);
+  const [isDeleted, setIsDeleted] = useState(comment?.deleted);
 
   const haveMoreReplies = totalReplies - replies.length;
   const isLoggedIn = user ? true : false;
@@ -58,18 +60,38 @@ const Comment: FC<CommentProps> = ({
     setSkip((prevSkip) => prevSkip + 1);
   };
 
+  const deleteComment = () => {
+    setIsDeleted(true);
+  };
+
+  if (isDeleted && replies.length < 1) {
+    return null;
+  }
+
   return (
-    <div className={cn("rounded-md p-2", className)}>
+    <div className={cn("rounded-md p-2 pr-0", className)}>
       <div className="flex gap-1.5 pr-4">
+        {!isDeleted ? (
         <Link href={`/u/${comment.author.username}`}>
           <UserAvatar user={comment.author} className="h-7 w-7" />
         </Link>
+        ) : (
+          <span className="flex aspect-square h-7 w-7 items-center justify-center rounded-full bg-zinc-300 font-semibold text-zinc-950 dark:bg-zinc-600">
+            u/
+          </span>
+        )}
         <div className="flex items-center text-xs">
+          {!isDeleted ? (
           <Link href={`/u/${comment.author.username}`}>
             <span className="font-semibold text-default/90 hover:underline dark:hover:text-red-100">
               {comment.author.username}
             </span>
           </Link>
+          ) : (
+            <span className="font-medium text-subtle">
+              Comment deleted by user
+            </span>
+          )}
           <div className="flex items-center text-subtle">
             <Dot className="h-4 w-4" strokeWidth={4} />
             <span>{formatTimeToNow(new Date(comment.createdAt))}</span>
@@ -78,8 +100,10 @@ const Comment: FC<CommentProps> = ({
       </div>
       <div className="pl-3 pt-2">
         <div className="w-full border-l-2 border-default/60 pb-1 pl-5">
+          {!isDeleted ? (
+            <>
           <span className="whitespace-pre-wrap">{comment.text}</span>
-          <div className="-ml-1.5 flex items-center gap-1 text-xs font-semibold text-subtle dark:text-default">
+              <div className="-ml-1.5 flex items-center gap-0 text-xs font-semibold text-subtle dark:text-default md:gap-0.5">
             <CommentVote
               commentId={comment.id}
               initialVotesAmt={votesAmt}
@@ -113,7 +137,20 @@ const Comment: FC<CommentProps> = ({
                 postId: comment.postId,
               }}
             />
+                {isLoggedIn ? (
+                  <MoreOptions
+                    type="comment"
+                    id={comment.id}
+                    bookmark={true}
+                    redirectUrl={pathName}
+                    pathName={pathName}
+                    isAuthor={comment.authorId === user?.id}
+                    onCommentDelete={deleteComment}
+                  />
+                ) : null}
           </div>
+            </>
+          ) : null}
           {isReplying ? (
             <div className="my-3 border-l-2 border-default/60 px-5">
               <AddReply
