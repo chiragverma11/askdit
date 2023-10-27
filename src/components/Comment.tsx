@@ -1,6 +1,7 @@
 import { MORE_COMMENT_REPLIES } from "@/lib/config";
-import { RouterOutputs, trpc } from "@/lib/trpc";
+import { trpc } from "@/lib/trpc";
 import { cn, formatTimeToNow, getVotesAmount } from "@/lib/utils";
+import { InfinitePostCommentsOutput, PartialK } from "@/types/utilities";
 import { VoteType } from "@prisma/client";
 import { Dot, MessageSquare } from "lucide-react";
 import { User } from "next-auth";
@@ -11,15 +12,6 @@ import AddReply from "./AddReply";
 import CommentVote from "./CommentVote";
 import ShareButton from "./ShareButton";
 import UserAvatar from "./UserAvatar";
-
-type PartialK<T, K extends PropertyKey = PropertyKey> = Partial<
-  Pick<T, Extract<keyof T, K>>
-> &
-  Omit<T, K> extends infer O
-  ? { [P in keyof O]: O[P] }
-  : never;
-
-type InfinitePostCommentsOutput = RouterOutputs["comment"]["infiniteComments"];
 
 interface CommentProps extends React.HTMLAttributes<HTMLDivElement> {
   comment: PartialK<
