@@ -33,25 +33,30 @@ const Comment: FC<CommentProps> = ({
   className,
 }) => {
   const [isReplying, setIsReplying] = useState(false);
-  const [replies, setReplies] = useState(comment.replies);
+  const [replies, setReplies] = useState(comment.replies ?? []);
   const [skip, setSkip] = useState(comment.replies?.length ?? 0);
+  const [totalReplies, setTotalReplies] = useState(comment._count.replies);
+
+  const haveMoreReplies = totalReplies - replies.length;
+  const isLoggedIn = user ? true : false;
 
   const params = useParams();
   const router = useRouter();
 
-  const utils = trpc.useUtils();
-
-  const { data, mutate, isLoading } = trpc.comment.getMoreReplies.useMutation({
+  const { mutate, isLoading } = trpc.comment.getMoreReplies.useMutation({
     onSuccess: (data) => {
-      setSkip((prev) => prev + data.comments.length);
-      setReplies((prev) => prev?.concat(data.comments));
+      setSkip((prevSkip) => prevSkip + data.comments.length);
+      setReplies((prevReplies) => [...prevReplies, ...data.comments]);
     },
   });
 
-  const topLevelReplies = comment._count.replies;
-  const haveMoreReplies = replies ? topLevelReplies - replies.length : 0;
-
-  const isLoggedIn = user ? true : false;
+  const addNewReply = (
+    newReply: Pick<InfinitePostCommentsOutput, "comments">["comments"][number],
+  ) => {
+    setReplies((prevReplies) => [newReply, ...prevReplies]);
+    setTotalReplies((prevTotalReplies) => prevTotalReplies + 1);
+    setSkip((prevSkip) => prevSkip + 1);
+  };
 
   return (
     <div className={cn("rounded-md p-2", className)}>
@@ -113,11 +118,9 @@ const Comment: FC<CommentProps> = ({
             <div className="my-3 border-l-2 border-default/60 px-5">
               <AddReply
                 postId={comment.postId}
-                refetchComments={() => {
-                  utils.comment.infiniteComments.invalidate({
-                    postId: comment.postId,
-                  });
+                addNewReply={(newReply) => {
                   setIsReplying(false);
+                  addNewReply(newReply);
                 }}
                 replyToId={comment.id}
                 onCancel={() => {
