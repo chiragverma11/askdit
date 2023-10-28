@@ -74,7 +74,10 @@ const Comment: FC<CommentProps> = ({
   return (
     <div className={cn("rounded-md p-2 pr-0", className)}>
       <div
-        className="flex gap-1.5 pr-4"
+        className={cn(
+          "flex gap-1.5 pr-4",
+          isDeleted && showReplies && "cursor-pointer",
+        )}
         onClick={() => isDeleted && showReplies && setShowReplies(false)}
       >
         {!isDeleted ? (
@@ -209,27 +212,29 @@ const Comment: FC<CommentProps> = ({
                 href={`${pathName}/comment/${comment.id}`}
                 className="-ml-1 w-full cursor-pointer text-xs font-semibold text-blue-500 hover:underline dark:text-blue-400"
               >
-                See more...
+                Continue this thread...
               </Link>
             )}
-            {haveMoreReplies > 0 ? (
-              <span
-                className="-ml-1 w-full cursor-pointer text-xs font-semibold text-blue-500 hover:underline dark:text-blue-400"
-                onClick={() => {
-                  mutate({
-                    limit: MORE_COMMENT_REPLIES,
-                    postId: comment.postId,
-                    replyToId: comment.id,
-                    skip: skip,
-                  });
-                }}
-              >
-                {isLoading
-                  ? "Loading..."
-                  : `${haveMoreReplies} more ${
-                      haveMoreReplies === 1 ? "reply" : "replies"
-                    }`}
-              </span>
+            {level <= COMMENT_REPLIES_DEPTH ? (
+              haveMoreReplies > 0 ? (
+                <span
+                  className="-ml-1 w-full cursor-pointer text-xs font-semibold text-blue-500 hover:underline dark:text-blue-400"
+                  onClick={() => {
+                    mutate({
+                      limit: MORE_COMMENT_REPLIES,
+                      postId: comment.postId,
+                      replyToId: comment.id,
+                      skip: skip,
+                    });
+                  }}
+                >
+                  {isLoading
+                    ? "Loading..."
+                    : `${haveMoreReplies} more ${
+                        haveMoreReplies === 1 ? "reply" : "replies"
+                      }`}
+                </span>
+              ) : null
             ) : null}
           </div>
         </div>
