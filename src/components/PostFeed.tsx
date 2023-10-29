@@ -36,7 +36,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
     threshold: 1,
   });
 
-  const { data, isLoading, isFetchingNextPage, fetchNextPage } =
+  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
     trpc.post.infiniteCommunityPosts.useInfiniteQuery(
       {
         limit: INFINITE_SCROLL_PAGINATION_RESULTS,
@@ -48,10 +48,10 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
     );
 
   useEffect(() => {
-    if (entry?.isIntersecting) {
+    if (hasNextPage && entry?.isIntersecting) {
       fetchNextPage();
     }
-  }, [entry, fetchNextPage]);
+  }, [entry, fetchNextPage, isLoading, hasNextPage]);
 
   const posts = data?.pages.flatMap((page) => page.posts) ?? initialPosts;
 
