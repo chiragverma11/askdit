@@ -1,5 +1,5 @@
 import AsideBar from "@/components/AsideBar";
-import Editor from "@/components/Editor";
+import SubmitPost from "@/components/SubmitPost";
 import { db } from "@/lib/db";
 import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
@@ -51,7 +51,7 @@ const CreatePostSubreddit: FC<CreatePostSubredditProps> = async ({
       <div className="flex w-full justify-center px-4 py-6 pt-4">
         <div className="flex w-full flex-col md:w-[680px]">
           <h3 className="text-lg font-semibold">Create a Post</h3>
-          <Editor communityId={community?.id} />
+          <SubmitPost communityId={community?.id} />
         </div>
       </div>
     </>
