@@ -13,6 +13,12 @@ enum VoteType {
   DOWN
 }
 
+enum PostType {
+  POST
+  IMAGES
+  LINK
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -99,6 +105,7 @@ model Subscription {
 model Post {
   id          String    @id @default(cuid())
   title       String
+  type        PostType
   content     Json?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
