@@ -12,15 +12,11 @@ const renderers = {
   image: CustomImageRenderer,
 };
 
-const style = {
-  paragraph: {
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
-  },
-  linkTool: {
-    color: "red",
-    borderRadius: "1rem",
-  },
+interface Style {
+  [key: string]: React.CSSProperties | Style;
+}
+
+const style: Style = {
 };
 
 interface EditorOutputProps {
@@ -31,7 +27,6 @@ const EditorOutput: FC<EditorOutputProps> = ({ content }) => {
   return (
     <Output
       style={style}
-      className="text-sm"
       renderers={renderers}
       data={content}
       key="output"
