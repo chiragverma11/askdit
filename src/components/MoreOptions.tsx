@@ -10,7 +10,18 @@ import {
   Trash,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FC } from "react";
+import { FC, useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/AlertDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,6 +48,8 @@ const MoreOptions: FC<MoreOptionsProps> = ({
   pathName,
   onCommentDelete,
 }) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
   const router = useRouter();
 
   const utils = trpc.useUtils();
@@ -60,8 +73,28 @@ const MoreOptions: FC<MoreOptionsProps> = ({
     },
   });
 
+  const handleDeletion = () => {
+    type === "post"
+      ? deletePost({
+          postId: id,
+        })
+      : deleteComment({
+          commentId: id,
+        });
+  };
+
+  const handleAlertDialogOpenChange = (open: boolean) => {
+    if (open === false) {
+      setDropdownOpen(false);
+    }
+  };
+
   return (
-    <DropdownMenu modal={false}>
+    <DropdownMenu
+      modal={false}
+      open={dropdownOpen}
+      onOpenChange={setDropdownOpen}
+    >
       <DropdownMenuTrigger asChild>
         <span
           className={cn(
@@ -91,25 +124,73 @@ const MoreOptions: FC<MoreOptionsProps> = ({
           </div>
         </DropdownMenuItem>
         {isAuthor ? (
-          <DropdownMenuItem className="cursor-pointer" asChild>
-            <div
-              onClick={() =>
-                type === "post"
-                  ? deletePost({
-                      postId: id,
-                    })
-                  : deleteComment({
-                      commentId: id,
-                    })
-              }
-            >
-              <Trash className="mr-2 h-4 w-4" />
-              Delete
-            </div>
-          </DropdownMenuItem>
+          <ConfirmDeletionDialog
+            type={type}
+            handleDeletion={handleDeletion}
+            onOpenChange={handleAlertDialogOpenChange}
+          />
         ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+};
+
+interface ConfirmDeletionProps {
+  type: "post" | "comment";
+  handleDeletion: () => void;
+  onOpenChange: (open: boolean) => void;
+}
+
+const ConfirmDeletionDialog: FC<ConfirmDeletionProps> = ({
+  type,
+  handleDeletion,
+  onOpenChange,
+}) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  return (
+    <AlertDialog open={dialogOpen} onOpenChange={onOpenChange}>
+      <AlertDialogTrigger className="min-w-full" asChild>
+        <DropdownMenuItem
+          className="w-full cursor-pointer"
+          onSelect={(e) => {
+            e.preventDefault();
+            setDialogOpen(true);
+          }}
+        >
+          <div className="flex min-w-full items-center">
+            <Trash className="mr-2 h-4 w-4" />
+            Delete
+          </div>
+        </DropdownMenuItem>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="max-w-[90vw] rounded-xl bg-emphasis dark:bg-default sm:max-w-lg">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete {type}</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to delete your{" "}
+            {type === "post" ? "post? You can't undo this." : "comment?"}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel
+            onClick={() => {
+              setDialogOpen(false);
+            }}
+          >
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              handleDeletion();
+              setDialogOpen(false);
+            }}
+          >
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 
