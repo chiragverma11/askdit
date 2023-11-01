@@ -122,7 +122,7 @@ const Post = ({
           {post.title}
         </p>
       </div>
-      <div className="prose prose-stone w-full text-sm dark:prose-invert prose-a:relative prose-a:z-[1] prose-a:text-blue-500 dark:prose-a:text-blue-400">
+      <div className="prose prose-stone w-full text-sm dark:prose-invert prose-a:relative prose-a:z-[1] prose-a:text-blue-500 prose-img:m-auto dark:prose-a:text-blue-400">
         <EditorOutput content={post.content} />
       </div>
       <div className="flex items-center gap-2 text-xs font-semibold text-subtle dark:text-default">
