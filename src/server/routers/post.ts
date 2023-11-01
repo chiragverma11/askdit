@@ -13,7 +13,7 @@ export const postRouter = router({
   createCommunityPost: protectedProcedure
     .input(PostValidator)
     .mutation(async (opts) => {
-      const { communityId, title, content } = opts.input;
+      const { communityId, title, content, type } = opts.input;
       const { user } = opts.ctx;
 
       const subscription = await db.subscription.findFirst({
@@ -35,6 +35,7 @@ export const postRouter = router({
           title: title,
           content: content,
           subredditId: communityId,
+          type: type,
           authorId: user.id,
         },
       });

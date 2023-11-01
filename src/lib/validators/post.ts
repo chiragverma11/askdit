@@ -1,3 +1,4 @@
+import { PostType } from "@prisma/client";
 import { z } from "zod";
 
 export const PostValidator = z.object({
@@ -11,6 +12,7 @@ export const PostValidator = z.object({
     }),
   content: z.any(),
   communityId: z.string(),
+  type: z.nativeEnum(PostType),
 });
 
 export const PostVoteValidator = z.object({
