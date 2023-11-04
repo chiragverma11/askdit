@@ -1,5 +1,6 @@
 import { PostType } from "@prisma/client";
 import { z } from "zod";
+import { POST_TITLE_LENGTH } from "../config";
 
 export const PostValidator = z.object({
   title: z
@@ -7,8 +8,8 @@ export const PostValidator = z.object({
     .min(1, {
       message: "Title must be at least 1 character long",
     })
-    .max(300, {
-      message: "Title must be less than 300 characters long",
+    .max(POST_TITLE_LENGTH, {
+      message: `Title must be less than ${POST_TITLE_LENGTH} characters long`,
     }),
   content: z.any(),
   communityId: z.string(),
