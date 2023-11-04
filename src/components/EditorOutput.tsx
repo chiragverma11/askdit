@@ -2,10 +2,11 @@
 
 import dynamic from "next/dynamic";
 import { FC } from "react";
+import LoadingEditorOutput from "./LoadingEditorOutput";
 import CustomImageRenderer from "./renderers/CustomImageRenderer";
 const Output = dynamic(
   async () => (await import("editorjs-react-renderer")).default,
-  { ssr: false },
+  { ssr: false, loading: LoadingEditorOutput },
 );
 
 const renderers = {
