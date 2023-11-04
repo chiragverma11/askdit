@@ -82,7 +82,7 @@ const Editor: FC<EditorProps> = ({ editorRef, focusTitle, clickSubmit }) => {
                 return {
                   success: 1,
                   file: {
-                    url: res?.url,
+                    url: `${res?.url}?width=${res?.width}&height=${res?.height}`,
                   },
                 };
               },
