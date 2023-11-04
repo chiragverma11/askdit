@@ -1,6 +1,5 @@
 "use client";
 
-import { env } from "@/env.mjs";
 /**
  * @see https://docs.imagekit.io/getting-started/quickstart-guides/nextjs
  */
@@ -20,16 +19,20 @@ export default function imageKitLoader({
 
   const urlRegex = /\/([^/]+)$/;
 
+  let urlEndpoint = "";
+
   if (src.includes("https://")) {
     const matchResult = src.match(urlRegex);
-    if (matchResult && matchResult[1]) {
-      src = matchResult[1];
+
+    if (matchResult) {
+      if (matchResult[1]) {
+        src = matchResult[1];
+      }
+      urlEndpoint = matchResult.input?.slice(0, matchResult?.index) ?? "";
     }
   }
 
   const paramsString = params.join(",");
-
-  let urlEndpoint = env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT;
 
   if (urlEndpoint[urlEndpoint.length - 1] === "/")
     urlEndpoint = urlEndpoint.substring(0, urlEndpoint.length - 1);
