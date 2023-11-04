@@ -17,6 +17,10 @@ interface Style {
 }
 
 const style: Style = {
+  paragraph: {
+    margin: "8px 0px",
+    textAlign: "left",
+  },
 };
 
 interface EditorOutputProps {
@@ -25,12 +29,7 @@ interface EditorOutputProps {
 
 const EditorOutput: FC<EditorOutputProps> = ({ content }) => {
   return (
-    <Output
-      style={style}
-      renderers={renderers}
-      data={content}
-      key="output"
-    />
+    <Output style={style} renderers={renderers} data={content} key="output" />
   );
 };
 
