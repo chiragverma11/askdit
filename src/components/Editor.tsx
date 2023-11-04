@@ -1,6 +1,9 @@
 "use client";
 
 import { useMounted } from "@/hooks/use-mounted";
+import {
+  IMAGEKIT_REGULAR_POST_UPLOAD_FOLDER,
+} from "@/lib/config";
 import { ImageKitImageUploader } from "@/lib/imagekit/imageUploader";
 import { cn } from "@/lib/utils";
 import "@/styles/editor.css";
@@ -71,7 +74,11 @@ const Editor: FC<EditorProps> = ({ editorRef, focusTitle, clickSubmit }) => {
           config: {
             uploader: {
               async uploadByFile(file: File) {
-                const res = await ImageKitImageUploader(file, file.name);
+                const res = await ImageKitImageUploader({
+                  file,
+                  fileName: file.name,
+                  folder: IMAGEKIT_REGULAR_POST_UPLOAD_FOLDER,
+                });
                 return {
                   success: 1,
                   file: {

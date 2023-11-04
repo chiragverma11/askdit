@@ -7,7 +7,17 @@ interface AuthenticationParametersResponse {
   signature: string;
 }
 
-export async function ImageKitImageUploader(file: File, fileName: string) {
+interface ImageKitImageUploaderProps {
+  file: File;
+  fileName: string;
+  folder: string;
+}
+
+export async function ImageKitImageUploader({
+  file,
+  fileName,
+  folder,
+}: ImageKitImageUploaderProps) {
   try {
     const res = await fetch("/api/imagekit/authparameters", {
       method: "GET",
@@ -24,6 +34,7 @@ export async function ImageKitImageUploader(file: File, fileName: string) {
     const result = await imagekit.upload({
       file: file,
       fileName: fileName,
+      folder: folder,
       token: authenticationParameters.token,
       signature: authenticationParameters.signature,
       expire: authenticationParameters.expire,
