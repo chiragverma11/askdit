@@ -1,126 +1,106 @@
 "use client";
 
-import { toast } from "@/hooks/use-toast";
-import { trpc } from "@/lib/trpc";
-import { PostValidator } from "@/lib/validators/post";
-import type EditorJS from "@editorjs/editorjs";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { getHotkeyHandler } from "@mantine/hooks";
+import { cn } from "@/lib/utils";
+import { $Enums, PostType } from "@prisma/client";
 import { motion } from "framer-motion";
-import { usePathname, useRouter } from "next/navigation";
-import { FC, useCallback, useRef } from "react";
-import { useForm } from "react-hook-form";
-import TextareaAutosize from "react-textarea-autosize";
-import { z } from "zod";
+import { AlignJustify, ImageIcon, LinkIcon } from "lucide-react";
+import { FC, useState } from "react";
 import Editor from "./Editor";
-import { Button } from "./ui/Button";
+import { Separator } from "./ui/Separator";
+import CreateLinkPost from "./CreateLinkPost";
 
 interface SubmitPostProps {
   communityId: string;
 }
 
-type FormData = z.infer<typeof PostValidator>;
-
 const SubmitPost: FC<SubmitPostProps> = ({ communityId }) => {
-  const _titleRef = useRef<HTMLTextAreaElement | null>(null);
-  const editorRef = useRef<EditorJS>();
-  const submitButtonRef = useRef<HTMLButtonElement>(null);
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(PostValidator),
-    defaultValues: { title: "", content: null, communityId },
-  });
-
-  const { ref: titleRef, ...rest } = register("title");
-
-  const { mutate: createPost, isLoading } =
-    trpc.post.createCommunityPost.useMutation({
-      onSuccess(data) {
-        const newPathname = pathname
-          .split("/")
-          .slice(0, -1)
-          .concat(["post", data.postId])
-          .join("/");
-        toast({
-          description: "Your post has been created successfully.",
-        });
-        router.push(newPathname);
-      },
-    });
-
-  const onSubmit = async (data: FormData) => {
-    const editorBlock = await editorRef.current?.save();
-
-    const payload = {
-      title: data.title,
-      content: editorBlock,
-      communityId,
-    };
-
-    createPost(payload);
-  };
+  const [postType, setPostType] = useState<PostType>("POST");
 
   return (
-    <div className="my-4 w-full rounded-xl border-zinc-200 bg-emphasis px-5 py-5 shadow-xl lg:p-10 lg:pb-6">
-      <form onSubmit={handleSubmit(onSubmit)} id="communityPostForm">
-        <div className="prose prose-stone w-full dark:prose-invert">
-          <motion.div initial={{ height: 0 }} animate={{ height: "auto" }}>
-            <TextareaAutosize
-              maxLength={300}
-              ref={(e) => {
-                titleRef(e);
-                _titleRef.current = e;
-              }}
-              placeholder="Title"
-              className="w-full resize-none overflow-hidden bg-transparent text-2xl font-bold after:w-12 after:content-['Joined'] focus:outline-none lg:text-4xl"
-              onKeyDown={getHotkeyHandler([
-                [
-                  "mod+Enter",
-                  () => {
-                    submitButtonRef.current?.click();
-                  },
-                ],
-              ])}
-              {...rest}
-            />
-          </motion.div>
-          <Editor
-            editorRef={editorRef}
-            focusTitle={useCallback(() => {
-              _titleRef.current?.focus();
-            }, [])}
-            clickSubmit={useCallback(() => {
-              submitButtonRef.current?.click();
-            }, [])}
-          />
-          <div className="mt-2 flex w-full items-center justify-between">
-            <p className="hidden text-sm text-gray-500 md:inline">
-              Use{" "}
-              <kbd className="rounded-md border bg-muted px-1 text-xs uppercase">
-                Tab
-              </kbd>{" "}
-              to open the command menu.
-            </p>
-            <Button
-              type="submit"
-              form="communityPostForm"
-              className="self-end px-6 py-1 font-semibold"
-              isLoading={isLoading}
-              ref={submitButtonRef}
-            >
-              Post
-            </Button>
-          </div>
-        </div>
-      </form>
+    <div className="my-4 mb-16 w-full rounded-xl border-zinc-200 bg-emphasis shadow-xl">
+      <SubmitPostTypeSelect postType={postType} setPostType={setPostType} />
+      <Separator className="bg-highlight/40 dark:bg-highlight/60" />
+      <div className="px-5 py-5 lg:p-10 lg:pb-6">
+        <Editor
+          className={cn(postType === "POST" ? "block" : "hidden")}
+          communityId={communityId}
+        />
+        <PostImages
+          className={cn(postType === "IMAGES" ? "block" : "hidden")}
+        />
+        <CreateLinkPost
+          className={cn(postType === "LINK" ? "block" : "hidden")}
+          communityId={communityId}
+        />
+      </div>
     </div>
   );
+};
+
+interface SubmitPostTypeSelectProps {
+  postType: PostType;
+  setPostType: React.Dispatch<React.SetStateAction<$Enums.PostType>>;
+}
+
+const SubmitPostTypeSelect: FC<SubmitPostTypeSelectProps> = ({
+  postType,
+  setPostType,
+}) => {
+  const PostTypes: { name: string; type: PostType }[] = [
+    { name: "Post", type: "POST" },
+    { name: "Images", type: "IMAGES" },
+    { name: "Link", type: "LINK" },
+  ];
+
+  return (
+    <div className="flex w-full items-center justify-between divide-x divide-highlight/40 overflow-hidden rounded-t-xl text-base dark:divide-highlight/60">
+      {PostTypes.map((type) => {
+        const isActive = type.type === postType;
+        return (
+          <span
+            key={type.type}
+            className={cn(
+              "relative flex flex-1 cursor-pointer items-center justify-center gap-2 px-6 py-3 font-semibold",
+              isActive ? "text-red-500 dark:text-red-400" : "text-subtle",
+            )}
+            onClick={() => setPostType(type.type)}
+          >
+            {type.type === "POST" ? (
+              <AlignJustify
+                className="h-3.5 w-3.5 rounded-[2px] p-[1px] outline outline-[1.5px]"
+                strokeWidth={3}
+              />
+            ) : type.type === "IMAGES" ? (
+              <ImageIcon className="h-5 w-5" />
+            ) : (
+              <LinkIcon className="h-5 w-5" />
+            )}
+            {type.name}
+            {isActive ? (
+              <motion.div
+                className="absolute inset-0 border-b-2 border-red-500 bg-brand-default/10"
+                layoutId="selectPostType"
+                aria-hidden="true"
+                transition={{
+                  type: "spring",
+                  bounce: 0.01,
+                  stiffness: 140,
+                  damping: 18,
+                  duration: 0.25,
+                }}
+              />
+            ) : null}
+          </span>
+        );
+      })}
+    </div>
+  );
+};
+
+interface PostImagesProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+const PostImages: FC<PostImagesProps> = ({ className }) => {
+  return <div className={cn(className)}>PostImages</div>;
 };
 
 export default SubmitPost;
