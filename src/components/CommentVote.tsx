@@ -79,7 +79,7 @@ const CommentVote: FC<CommentVoteProps> = ({
             "h-6 w-6",
             currentVoteType === "UP"
               ? "fill-red-500 text-red-500"
-              : "text-zinc-400 group-hover/upvote:text-red-600/75",
+              : "text-inherit group-hover/upvote:text-red-600/75",
           )}
           strokeWidth={1.5}
         />
@@ -92,7 +92,7 @@ const CommentVote: FC<CommentVoteProps> = ({
               ? "text-red-500"
               : currentVoteType === "DOWN"
               ? "text-indigo-500"
-              : "text-zinc-400",
+              : "text-inherit",
           )}
         >
           {votesAmt}
@@ -113,7 +113,7 @@ const CommentVote: FC<CommentVoteProps> = ({
             "h-6 w-6",
             currentVoteType === "DOWN"
               ? "fill-indigo-500 text-indigo-500"
-              : "text-zinc-400 group-hover/downvote:text-indigo-600/75",
+              : "text-inherit group-hover/downvote:text-indigo-600/75",
           )}
           strokeWidth={1.5}
         />

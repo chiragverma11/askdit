@@ -123,7 +123,7 @@ const Comment: FC<CommentProps> = ({
             {!isDeleted ? (
               <>
                 <span className="whitespace-pre-wrap">{comment.text}</span>
-                <div className="-ml-1.5 flex items-center gap-0 text-xs font-semibold text-subtle dark:text-default md:gap-0.5">
+                <div className="-ml-1.5 flex items-center gap-0 text-xs font-semibold text-subtle dark:text-zinc-400 md:gap-0.5">
                   <CommentVote
                     commentId={comment.id}
                     initialVotesAmt={votesAmt}
@@ -137,18 +137,14 @@ const Comment: FC<CommentProps> = ({
                     }
                   />
 
-                  <span
-                    className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl px-3 py-2 text-zinc-400 hover:bg-highlight/40 dark:hover:bg-highlight/60"
-                    onClick={(e) => {
+                  <ReplyButton
+                    onClick={() => {
                       if (!isLoggedIn) {
                         return router.push(`/sign-in?callbackUrl=${pathName}`);
                       }
                       setIsReplying(!isReplying);
                     }}
-                  >
-                    <MessageSquare className="h-5 w-5" />
-                    <span>Reply</span>
-                  </span>
+                  />
 
                   <ShareButton
                     comment={{
@@ -240,6 +236,20 @@ const Comment: FC<CommentProps> = ({
         </div>
       ) : null}
     </div>
+  );
+};
+
+interface ReplyButtonProps extends React.HTMLAttributes<HTMLElement> {}
+
+const ReplyButton: FC<ReplyButtonProps> = ({ onClick }) => {
+  return (
+    <span
+      className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl px-3 py-2 hover:bg-highlight/40 dark:hover:bg-highlight/60"
+      onClick={onClick}
+    >
+      <MessageSquare className="h-5 w-5" />
+      <span>Reply</span>
+    </span>
   );
 };
 
