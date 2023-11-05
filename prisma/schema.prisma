@@ -104,7 +104,7 @@ model Subscription {
 
 model Post {
   id          String    @id @default(cuid())
-  title       String
+  title       String    @db.VarChar(300)
   type        PostType
   content     Json?
   createdAt   DateTime  @default(now())
