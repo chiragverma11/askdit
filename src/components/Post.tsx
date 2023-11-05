@@ -5,6 +5,7 @@ import { cn, formatTimeToNow, getDefaultCommunityBg } from "@/lib/utils";
 import { Comment, Post, Subreddit, User, Vote, VoteType } from "@prisma/client";
 import { Dot, MessageSquare } from "lucide-react";
 import Link from "next/link";
+import { FC } from "react";
 import EditorOutput from "./EditorOutput";
 import MoreOptions from "./MoreOptions";
 import PostVote from "./PostVote";
@@ -133,25 +134,12 @@ const Post = ({
           initialVoteType={currentVoteType}
           isLoggedIn={isLoggedIn}
         />
-        {noRedirect ? (
-          <span
+        <CommentButton
             className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 text-zinc-400 hover:bg-highlight/40 dark:hover:bg-highlight/60"
-            onClick={(ref) => {
-              ref.currentTarget.scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            <MessageSquare className="h-5 w-5" />
-            <span>{post.comments.length}</span>
-          </span>
-        ) : (
-          <Link
-            href={redirectUrl}
-            className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 text-zinc-400 hover:bg-highlight/40 dark:hover:bg-highlight/60"
-          >
-            <MessageSquare className="h-5 w-5" />
-            <span>{post.comments.length}</span>
-          </Link>
-        )}
+          commentsLength={post.comments.length}
+          noRedirect={noRedirect}
+          redirectUrl={redirectUrl}
+        />
         <ShareButton post={post} />
         {isLoggedIn ? (
           <MoreOptions
@@ -165,6 +153,45 @@ const Post = ({
         ) : null}
       </div>
     </div>
+  );
+};
+
+interface CommentButtonProps extends React.HTMLAttributes<HTMLElement> {
+  noRedirect: boolean;
+  redirectUrl: string;
+  commentsLength: number;
+}
+
+const CommentButton: FC<CommentButtonProps> = ({
+  className,
+  noRedirect,
+  redirectUrl,
+  commentsLength,
+}) => {
+  const CommentIcon = (
+    <>
+      <MessageSquare className="h-5 w-5" />
+      <span>{commentsLength}</span>
+    </>
+  );
+
+  if (!noRedirect) {
+    return (
+      <Link href={redirectUrl} className={className}>
+        {CommentIcon}
+      </Link>
+    );
+  }
+
+  return (
+    <span
+      className={className}
+      onClick={(ref) => {
+        ref.currentTarget.scrollIntoView({ behavior: "smooth" });
+      }}
+    >
+      {CommentIcon}
+    </span>
   );
 };
 
