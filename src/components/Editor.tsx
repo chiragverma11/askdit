@@ -2,10 +2,7 @@
 
 import { useMounted } from "@/hooks/use-mounted";
 import { toast } from "@/hooks/use-toast";
-import {
-  IMAGEKIT_REGULAR_POST_UPLOAD_FOLDER,
-  POST_TITLE_LENGTH,
-} from "@/lib/config";
+import { IMAGEKIT_REGULAR_POST_UPLOAD_FOLDER } from "@/lib/config";
 import { ImageKitImageUploader } from "@/lib/imagekit/imageUploader";
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
@@ -20,8 +17,8 @@ import { Loader2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
+import SubmitPostTitle from "./SubmitPostTitle";
 import { Button } from "./ui/Button";
 
 interface EditorProps {
@@ -185,14 +182,11 @@ const Editor: FC<EditorProps> = ({ communityId, className }) => {
             initial={{ height: 0 }}
             animate={{ height: "auto" }}
           >
-            <TextareaAutosize
-              maxLength={POST_TITLE_LENGTH}
-              ref={(e) => {
-                titleRef(e);
-                _titleRef.current = e;
-              }}
-              placeholder="Title"
-              className="w-full resize-none overflow-hidden bg-transparent pr-12 text-2xl font-bold after:w-12 after:content-['Joined'] focus:outline-none lg:pr-10 lg:text-4xl"
+            <SubmitPostTitle
+              titleLength={watch("title").length}
+              titleRef={titleRef}
+              rest={rest}
+              _titleRef={_titleRef}
               onKeyDown={getHotkeyHandler([
                 [
                   "mod+Enter",
@@ -201,11 +195,7 @@ const Editor: FC<EditorProps> = ({ communityId, className }) => {
                   },
                 ],
               ])}
-              {...rest}
             />
-            <span className="pointer-events-none absolute bottom-4 right-0 text-xxs font-semibold text-subtle">{`${
-              watch("title").length
-            }/${POST_TITLE_LENGTH}`}</span>
           </motion.div>
           <div className="min-h-[250px]">
             <AnimatePresence>

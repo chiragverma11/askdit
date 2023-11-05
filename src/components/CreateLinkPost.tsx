@@ -1,15 +1,14 @@
 import { toast } from "@/hooks/use-toast";
 import { trpc } from "@/lib/trpc";
 import { PostLinkValidator } from "@/lib/validators/post";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { getHotkeyHandler, useDebouncedValue } from "@mantine/hooks";
 import { PostType } from "@prisma/client";
 import { usePathname, useRouter } from "next/navigation";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import TextareaAutosize from "react-textarea-autosize";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { POST_TITLE_LENGTH } from "@/lib/config";
-import { getHotkeyHandler, useDebouncedValue } from "@mantine/hooks";
+import SubmitPostTitle from "./SubmitPostTitle";
 import { Button } from "./ui/Button";
 
 interface CreateLinkPostProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -123,13 +122,10 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
       <form onSubmit={handleSubmit(onSubmit)} id="communityPostLinkForm">
         <div className="prose prose-stone w-full dark:prose-invert">
           <div className="relative">
-            <TextareaAutosize
-              maxLength={POST_TITLE_LENGTH}
-              ref={(e) => {
-                titleRef(e);
-              }}
-              placeholder="Title"
-              className="w-full resize-none overflow-hidden bg-transparent pr-12 text-2xl font-bold focus:outline-none lg:pr-10 lg:text-4xl"
+            <SubmitPostTitle
+              titleLength={watch("title").length}
+              titleRef={titleRef}
+              rest={rest}
               onKeyDown={getHotkeyHandler([
                 [
                   "mod+Enter",
@@ -138,11 +134,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
                   },
                 ],
               ])}
-              {...rest}
             />
-            <span className="pointer-events-none absolute bottom-4 right-0 text-xxs font-semibold text-subtle">{`${
-              watch("title").length
-            }/${POST_TITLE_LENGTH}`}</span>
           </div>
           <div className="min-h-[100px]">
             <input
@@ -164,6 +156,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
               className="self-end px-6 py-1 font-semibold"
               isLoading={isLoading}
               ref={submitButtonRef}
+              // disabled={}
             >
               Post
             </Button>
