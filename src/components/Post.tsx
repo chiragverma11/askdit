@@ -119,7 +119,12 @@ const Post = ({
         )}
       </div>
       <div>
-        <p className={cn("font-bold", noRedirect ? "text-2xl" : "text-xl")}>
+        <p
+          className={cn(
+            "break-all font-bold",
+            noRedirect ? "text-2xl" : "text-xl",
+          )}
+        >
           {post.title}
         </p>
       </div>

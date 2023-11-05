@@ -122,7 +122,9 @@ const Comment: FC<CommentProps> = ({
           <div className="w-full border-l-2 border-default/60 pb-1 pl-5">
             {!isDeleted ? (
               <>
-                <span className="whitespace-pre-wrap">{comment.text}</span>
+                <span className="whitespace-pre-wrap break-all">
+                  {comment.text}
+                </span>
                 <div className="-ml-1.5 flex items-center gap-0 text-xs font-semibold text-subtle dark:text-zinc-400 md:gap-0.5">
                   <CommentVote
                     commentId={comment.id}
