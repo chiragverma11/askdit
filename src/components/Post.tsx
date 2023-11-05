@@ -126,7 +126,7 @@ const Post = ({
       <div className="prose prose-stone w-full text-sm dark:prose-invert prose-a:relative prose-a:z-[1] prose-a:text-blue-500 prose-img:m-auto dark:prose-a:text-blue-400">
         <EditorOutput content={post.content} />
       </div>
-      <div className="flex items-center gap-2 text-xs font-semibold text-subtle dark:text-default">
+      <div className="flex items-center gap-2 text-xs font-semibold text-subtle dark:text-zinc-400">
         <PostVote
           className="z-[1]"
           postId={post.id}
@@ -135,7 +135,7 @@ const Post = ({
           isLoggedIn={isLoggedIn}
         />
         <CommentButton
-            className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 text-zinc-400 hover:bg-highlight/40 dark:hover:bg-highlight/60"
+          className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 hover:bg-highlight/40 dark:hover:bg-highlight/60"
           commentsLength={post.comments.length}
           noRedirect={noRedirect}
           redirectUrl={redirectUrl}

@@ -121,7 +121,7 @@ const ShareButtonDrawer = ({
       <Drawer.Trigger asChild>
         <span
           className={cn(
-            "z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 text-zinc-400 hover:bg-highlight/40 dark:hover:bg-highlight/60",
+            "z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 hover:bg-highlight/40 dark:hover:bg-highlight/60",
             type === "comment" ? "bg-transparent" : "",
           )}
         >
@@ -186,7 +186,7 @@ const ShareButtonDropdown = ({
       <DropdownMenuTrigger asChild>
         <span
           className={cn(
-            "z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 text-zinc-400 hover:bg-highlight/60",
+            "z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 hover:bg-highlight/60",
             type === "comment" ? "bg-transparent" : "",
           )}
           onClick={(e) => {
