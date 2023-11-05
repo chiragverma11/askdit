@@ -122,7 +122,7 @@ model Post {
 
 model Comment {
   id        String   @id @default(cuid())
-  text      String
+  text      String   @db.VarChar(10000)
   createdAt DateTime @default(now())
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String
