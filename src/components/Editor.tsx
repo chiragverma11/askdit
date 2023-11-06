@@ -179,7 +179,7 @@ const Editor: FC<EditorProps> = ({ communityId, className }) => {
         <div className="prose prose-stone w-full dark:prose-invert">
           <motion.div
             className="relative"
-            initial={{ height: 0 }}
+            initial={{ height: "40px" }}
             animate={{ height: "auto" }}
           >
             <SubmitPostTitle
