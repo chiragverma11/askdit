@@ -7,6 +7,7 @@ import { Dot, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { FC } from "react";
 import EditorOutput from "./EditorOutput";
+import LinkPost, { type LinkContent } from "./LinkPost";
 import MoreOptions from "./MoreOptions";
 import PostVote from "./PostVote";
 import ShareButton from "./ShareButton";
@@ -128,8 +129,22 @@ const Post = ({
           {post.title}
         </p>
       </div>
-      <div className="prose prose-stone w-full text-sm dark:prose-invert prose-a:relative prose-a:z-[1] prose-a:text-blue-500 prose-img:m-auto dark:prose-a:text-blue-400">
-        <EditorOutput content={post.content} />
+      <div
+        className={cn(
+          "prose prose-stone min-w-full text-sm dark:prose-invert prose-a:relative prose-a:z-[1] prose-img:m-auto",
+          post.type !== "LINK"
+            ? "prose-a:text-blue-500 dark:prose-a:text-blue-400"
+            : "prose-a:text-inherit",
+        )}
+      >
+        {post.type === "POST" ? (
+          <EditorOutput content={post.content} />
+        ) : (
+          <LinkPost
+            content={post.content as Pick<LinkContent, "content">}
+            title={post.title}
+          />
+        )}
       </div>
       <div className="flex items-center gap-2 text-xs font-semibold text-subtle dark:text-zinc-400">
         <PostVote
