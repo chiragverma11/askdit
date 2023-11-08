@@ -77,11 +77,13 @@ model VerificationToken {
 }
 
 model Subreddit {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  posts     Post[]
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?  @db.VarChar(500)
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  posts       Post[]
 
   creator     User?          @relation("CreatedBy", fields: [creatorId], references: [id])
   creatorId   String?
