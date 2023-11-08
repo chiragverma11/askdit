@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
+import { DescriptionValidator } from "@/lib/validators/community";
 
 export const communityRouter = router({
   //Create Community
@@ -161,4 +162,43 @@ export const communityRouter = router({
 
     return exploreCommunities;
   }),
+  addDescription: protectedProcedure
+    .input(DescriptionValidator)
+    .mutation(async (opts) => {
+      const { user } = opts.ctx;
+      const { communityId, description } = opts.input;
+
+      const newDescription: string | null =
+        description === "" ? null : description;
+
+      const community = await db.subreddit.findFirst({
+        where: {
+          id: communityId,
+        },
+      });
+
+      if (!community) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Community not found.",
+        });
+      }
+
+      if (community.creatorId !== user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+        });
+      }
+
+      await db.subreddit.update({
+        where: {
+          id: communityId,
+        },
+        data: {
+          description: newDescription,
+        },
+      });
+
+      return { message: "Description added", description: newDescription };
+    }),
 });
