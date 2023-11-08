@@ -88,7 +88,7 @@ const Editor: FC<EditorProps> = ({ communityId, className }) => {
         new DragDrop(editor);
         _titleRef.current?.focus();
       },
-      placeholder: "Type here to write your post...",
+      placeholder: "Type here to write your post... (optional)",
       inlineToolbar: true,
 
       tools: {
