@@ -12,3 +12,5 @@ export const COMMENT_REPLIES_DEPTH = 9;
 
 export const IMAGEKIT_REGULAR_POST_UPLOAD_FOLDER =
   "/askdit/post/regular/images";
+
+export const COMMUNITY_DESCRIPTION_LENGTH = 500;
