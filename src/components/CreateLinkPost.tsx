@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import SubmitPostTitle from "./SubmitPostTitle";
 import { Button } from "./ui/Button";
+import { DotWave } from "@uiball/loaders";
 
 interface CreateLinkPostProps extends React.HTMLAttributes<HTMLDivElement> {
   communityId: string;
@@ -76,28 +77,25 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
     createPost(payload);
   };
 
-  const fetchUrlMetadata = useCallback(
-    async (url: string) => {
-      const res = await fetch(`/api/link?url=${url}`);
+  const fetchMetadata = useCallback(
+    async (url: string, signal: AbortSignal) => {
+      const res = await fetch(`/api/link?url=${url}`, { signal: signal });
       const result: {
         success: 0 | 1;
         meta?: {
           title: string;
-          description: string;
-          image: { url: string };
+          image: { url?: string };
         };
       } = await res.json();
 
       if (result.success === 1) {
         const newUrl = new URL(url);
 
-        console.log(newUrl);
-
         const hostName = newUrl.hostname.replace("www.", "");
 
         setValue("content.domain", hostName);
         result.meta?.image.url
-          ? setValue("content.ogImage", result.meta?.image.url)
+          ? setValue("content.ogImage", result.meta?.image?.url)
           : null;
       }
 
@@ -111,11 +109,24 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
   );
 
   useEffect(() => {
+    let controller: AbortController;
     setTimeout(async () => {
       const result = await trigger("content.url");
-      result && fetchUrlMetadata(debouncedUrl);
+      if (result) {
+        controller = new AbortController();
+        setIsFetchingMetadata(true);
+        await fetchMetadata(debouncedUrl, controller.signal);
+        setIsFetchingMetadata(false);
+      }
     }, 100);
-  }, [debouncedUrl, fetchUrlMetadata, trigger]);
+
+    return () => {
+      try {
+        controller?.abort();
+        setIsFetchingMetadata(false);
+      } catch (error) {}
+    };
+  }, [debouncedUrl, trigger, fetchMetadata]);
 
   return (
     <div className={className}>
@@ -137,13 +148,20 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
             />
           </div>
           <div className="min-h-[100px]">
-            <input
-              type="text"
-              className="w-full bg-transparent px-1 focus:outline-none"
-              placeholder="Url"
-              autoComplete="off"
-              {...register("content.url")}
-            />
+            <div className="relative">
+              <input
+                type="text"
+                className="w-full bg-transparent px-1 pr-6 focus:outline-none"
+                placeholder="Url"
+                autoComplete="off"
+                {...register("content.url")}
+              />
+              {isFetchingMetadata ? (
+                <span className="absolute right-0 top-2">
+                  <DotWave size={20} speed={1} color="gray" />
+                </span>
+              ) : null}
+            </div>
           </div>
           <div className="mt-2 flex w-full items-center justify-between">
             <p className="hidden text-sm text-gray-500 md:inline">
@@ -156,7 +174,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
               className="self-end px-6 py-1 font-semibold"
               isLoading={isLoading}
               ref={submitButtonRef}
-              // disabled={}
+              disabled={isFetchingMetadata}
             >
               Post
             </Button>
