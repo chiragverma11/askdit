@@ -32,7 +32,6 @@ export async function GET(req: NextRequest) {
           success: 1,
           meta: {
             title: metadata.title,
-            description: metadata.description,
             image: { url: undefined },
           },
         }),
@@ -44,7 +43,6 @@ export async function GET(req: NextRequest) {
         success: 1,
         meta: {
           title: metadata.title,
-          description: metadata.description,
           image: { url: metadata["og:image"] },
         },
       }),
