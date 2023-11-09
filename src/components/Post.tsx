@@ -141,7 +141,7 @@ const Post = ({
           <EditorOutput content={post.content} />
         ) : (
           <LinkPost
-            content={post.content as Pick<LinkContent, "content">}
+            content={post.content as LinkContent["content"]}
             title={post.title}
           />
         )}
