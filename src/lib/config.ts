@@ -14,3 +14,6 @@ export const IMAGEKIT_REGULAR_POST_UPLOAD_FOLDER =
   "/askdit/post/regular/images";
 
 export const COMMUNITY_DESCRIPTION_LENGTH = 500;
+
+export const URL_WITH_OPTIONAL_PROTOCOL_REGEX =
+  /^(?:http(s)?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/;

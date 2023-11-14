@@ -1,6 +1,6 @@
 import { PostType } from "@prisma/client";
 import { z } from "zod";
-import { POST_TITLE_LENGTH } from "../config";
+import { POST_TITLE_LENGTH, URL_WITH_OPTIONAL_PROTOCOL_REGEX } from "../config";
 
 export const PostValidator = z.object({
   title: z
@@ -26,7 +26,7 @@ export const PostLinkValidator = z.object({
       message: `Title must be less than ${POST_TITLE_LENGTH} characters long`,
     }),
   content: z.object({
-    url: z.string().url(),
+    url: z.string().regex(URL_WITH_OPTIONAL_PROTOCOL_REGEX),
     domain: z.string().min(1),
     ogImage: z.string().url().min(1).optional(),
   }),
