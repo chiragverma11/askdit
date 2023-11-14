@@ -1,16 +1,17 @@
 import { toast } from "@/hooks/use-toast";
 import { trpc } from "@/lib/trpc";
+import { addProtocol } from "@/lib/utils";
 import { PostLinkValidator } from "@/lib/validators/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getHotkeyHandler, useDebouncedValue } from "@mantine/hooks";
 import { PostType } from "@prisma/client";
+import { DotWave } from "@uiball/loaders";
 import { usePathname, useRouter } from "next/navigation";
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import SubmitPostTitle from "./SubmitPostTitle";
 import { Button } from "./ui/Button";
-import { DotWave } from "@uiball/loaders";
 
 interface CreateLinkPostProps extends React.HTMLAttributes<HTMLDivElement> {
   communityId: string;
@@ -22,7 +23,6 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
   communityId,
   className,
 }) => {
-  const [isFetchingMetadata, setIsFetchingMetadata] = useState(false);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -35,7 +35,6 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
     handleSubmit,
     formState: { errors, dirtyFields },
     trigger,
-    getValues,
     setValue,
   } = useForm<FormData>({
     resolver: zodResolver(PostLinkValidator),
@@ -50,6 +49,16 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
   const [debouncedUrl] = useDebouncedValue(watch("content.url"), 300);
 
   const { ref: titleRef, ...rest } = register("title");
+
+  const {
+    data: metadata,
+    refetch,
+    isFetching: isFetchingMetadata,
+    isSuccess,
+  } = trpc.post.getUrlMetadata.useQuery(
+    { url: addProtocol(debouncedUrl) },
+    { enabled: false, retry: false, retryOnMount: false },
+  );
 
   const { mutate: createPost, isLoading } =
     trpc.post.createCommunityPost.useMutation({
@@ -67,6 +76,8 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
     });
 
   const onSubmit = async (data: FormData) => {
+    data.content.url = addProtocol(data.content.url);
+
     const payload = {
       title: data.title,
       content: data.content,
@@ -77,56 +88,35 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
     createPost(payload);
   };
 
-  const fetchMetadata = useCallback(
-    async (url: string, signal: AbortSignal) => {
-      const res = await fetch(`/api/link?url=${url}`, { signal: signal });
-      const result: {
-        success: 0 | 1;
-        meta?: {
-          title: string;
-          image: { url?: string };
-        };
-      } = await res.json();
-
-      if (result.success === 1) {
-        const newUrl = new URL(url);
-
-        const hostName = newUrl.hostname.replace("www.", "");
-
-        setValue("content.domain", hostName);
-        result.meta?.image.url
-          ? setValue("content.ogImage", result.meta?.image?.url)
-          : null;
-      }
-
-      if (!dirtyFields.title) {
-        if (result.meta?.title) {
-          setValue("title", result.meta?.title);
-        }
-      }
-    },
-    [dirtyFields.title, setValue],
-  );
-
   useEffect(() => {
-    let controller: AbortController;
     setTimeout(async () => {
       const result = await trigger("content.url");
       if (result) {
-        controller = new AbortController();
-        setIsFetchingMetadata(true);
-        await fetchMetadata(debouncedUrl, controller.signal);
-        setIsFetchingMetadata(false);
+        refetch();
       }
     }, 100);
+  }, [debouncedUrl, refetch, trigger]);
 
-    return () => {
-      try {
-        controller?.abort();
-        setIsFetchingMetadata(false);
-      } catch (error) {}
-    };
-  }, [debouncedUrl, trigger, fetchMetadata]);
+  useEffect(() => {
+    if (metadata?.success === 1) {
+      console.log("useEffect");
+      const newUrl = new URL(metadata.meta.url);
+
+      const hostName = newUrl.hostname.replace("www.", "");
+
+      setValue("content.domain", hostName);
+
+      if (metadata.meta.image.url) {
+        setValue("content.ogImage", metadata.meta.image.url);
+      }
+
+      if (!dirtyFields.title) {
+        if (metadata.meta.title) {
+          setValue("title", metadata.meta.title as string);
+        }
+      }
+    }
+  }, [metadata, dirtyFields.title, setValue, isSuccess]);
 
   return (
     <div className={className}>
@@ -151,8 +141,8 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
             <div className="relative">
               <input
                 type="text"
-                className="w-full bg-transparent px-1 pr-6 focus:outline-none"
-                placeholder="Url"
+                className="w-full bg-transparent pr-6 focus:outline-none"
+                placeholder="Enter your URL"
                 autoComplete="off"
                 {...register("content.url")}
               />
@@ -165,8 +155,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
           </div>
           <div className="mt-2 flex w-full items-center justify-between">
             <p className="hidden text-sm text-gray-500 md:inline">
-              Url should start with <span className="font-bold">http://</span>{" "}
-              or <span className="font-bold">https://</span>
+              Title will be automatically fetched.
             </p>
             <Button
               type="submit"

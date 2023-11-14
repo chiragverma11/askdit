@@ -3,6 +3,7 @@ import { clsx, type ClassValue } from "clsx";
 import { formatDistanceToNowStrict } from "date-fns";
 import { enIN } from "date-fns/locale";
 import { twMerge } from "tailwind-merge";
+import urlMetadata from "url-metadata";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -136,4 +137,13 @@ export const getRelativeUrl = (url: string, imageUrl: string) => {
   const { protocol, host } = new URL(url);
   const baseURL = `${protocol}//${host}`;
   return new URL(imageUrl, baseURL).toString();
+};
+
+export const addProtocol = (url: string) => {
+  const hasProtocol = /^http(s)?:\/\//;
+
+  if (!hasProtocol.test(url)) {
+    url = "http://" + url;
+  }
+  return url;
 };
