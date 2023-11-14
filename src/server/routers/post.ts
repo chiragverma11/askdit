@@ -1,6 +1,12 @@
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
 import { db } from "@/lib/db";
 import {
+  getRelativeUrl,
+  getUrlMetadata,
+  isImageAccessible,
+  isValidUrl,
+} from "@/lib/utils";
+import {
   PostDeleteValidator,
   PostValidator,
   PostVoteValidator,
@@ -175,5 +181,74 @@ export const postRouter = router({
       });
 
       return new Response("OK");
+    }),
+  getUrlMetadata: protectedProcedure
+    .input(z.object({ url: z.string() }))
+    .query(async (opts) => {
+      const { url } = opts.input;
+
+      if (!isValidUrl(url)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Invalid URL",
+        });
+      }
+      const metadata = await getUrlMetadata(url);
+
+      if (metadata) {
+        const title =
+          metadata["title"] ||
+          metadata["og:title"] ||
+          metadata["twitter:title"] ||
+          url;
+
+        const imageUrl = getRelativeUrl(
+          url,
+          (metadata["og:image"] ||
+            metadata["twitter:image"] ||
+            (
+              metadata["favicons"] as [
+                {
+                  type: string | null;
+                  href: string | null;
+                  sizes: string | null;
+                },
+              ]
+            )[0]?.href) as string,
+        );
+
+        if (imageUrl) {
+          const imageAccessible = await isImageAccessible(imageUrl);
+
+          if (!imageAccessible) {
+            return {
+              success: 1,
+              meta: {
+                title: title,
+                image: { url: null },
+                url: url,
+              },
+            };
+          }
+        }
+
+        return {
+          success: 1,
+          meta: {
+            title: title,
+            image: { url: imageUrl },
+            url: url,
+          },
+        };
+      }
+
+      return {
+        success: 0,
+        meta: {
+          title: url,
+          image: { url: null },
+          url: url,
+        },
+      };
     }),
 });

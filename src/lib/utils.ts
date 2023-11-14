@@ -87,3 +87,53 @@ export function formatTimeToNow(date: Date): string {
     },
   });
 }
+
+export const getUrlMetadata = async (url: string) => {
+  try {
+    return await urlMetadata(url);
+  } catch (error) {
+    return null;
+  }
+};
+
+export const isImageAccessible = async (imageUrl: string) => {
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 5000);
+
+    const imageResponse = await fetch(imageUrl as string, {
+      signal: controller.signal,
+    });
+
+    clearTimeout(id);
+
+    if (!imageResponse.ok) {
+      throw new Error("Image not accessible");
+    }
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const isValidUrl = (url: string) => {
+  try {
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+export const getRelativeUrl = (url: string, imageUrl: string) => {
+  if (!imageUrl) {
+    return null;
+  }
+  if (isValidUrl(imageUrl)) {
+    return imageUrl;
+  }
+  const { protocol, host } = new URL(url);
+  const baseURL = `${protocol}//${host}`;
+  return new URL(imageUrl, baseURL).toString();
+};
