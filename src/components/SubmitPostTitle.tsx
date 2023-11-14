@@ -27,7 +27,7 @@ const SubmitPostTitle: FC<SubmitPostTitleProps> = ({
           if (_titleRef) _titleRef.current = e;
         }}
         placeholder="Title"
-        className="w-full resize-none overflow-hidden bg-transparent pr-12 text-2xl font-bold after:w-12 focus:outline-none lg:pr-10 lg:text-4xl"
+        className="w-full resize-none overflow-hidden bg-transparent pr-12 text-2xl font-bold focus:outline-none lg:pr-10 lg:text-4xl"
         onKeyDown={onKeyDown}
         {...rest}
       />
