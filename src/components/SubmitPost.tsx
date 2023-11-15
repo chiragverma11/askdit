@@ -17,7 +17,7 @@ const SubmitPost: FC<SubmitPostProps> = ({ communityId }) => {
   const [postType, setPostType] = useState<PostType>("POST");
 
   return (
-    <div className="my-4 mb-16 w-full rounded-xl border-zinc-200 bg-emphasis shadow-xl">
+    <div className="my-4 mb-16 w-full rounded-xl border-zinc-200 bg-emphasis shadow-xl lg:mb-auto">
       <SubmitPostTypeSelect postType={postType} setPostType={setPostType} />
       <Separator className="bg-highlight/40 dark:bg-highlight/60" />
       <div className="px-5 py-5 lg:p-10 lg:pb-6">
