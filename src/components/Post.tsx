@@ -85,7 +85,7 @@ const Post = ({
             </div>
           </div>
         ) : (
-          <div className="inline-flex items-center gap-2 rounded-lg">
+          <div className="z-[1] inline-flex items-center gap-2 rounded-lg">
             <Link href={`/r/${post.subreddit.name}`}>
               <span
                 className={cn(
