@@ -52,7 +52,7 @@ const CommunityDescription: FC<CommunityDescriptionProps> = ({
       {description !== null ? (
         <div
           className={cn(
-            "inline-flex w-full whitespace-pre-wrap break-all",
+            "inline w-full whitespace-pre-wrap break-words",
             isAuthor &&
               "cursor-pointer gap-2 rounded-md border transition-[padding] hover:border-default hover:p-1",
           )}
@@ -61,11 +61,7 @@ const CommunityDescription: FC<CommunityDescriptionProps> = ({
           }}
         >
           {description}
-          {isAuthor ? (
-            <span>
-              <Pencil className="h-4 w-4" />
-            </span>
-          ) : null}
+          {isAuthor ? <Pencil className="mx-1 inline h-4 w-4" /> : null}
         </div>
       ) : isAuthor ? (
         <div
@@ -125,7 +121,7 @@ const AddCommunityDescription = React.forwardRef<
       <form id="addDescriptionForm" onSubmit={handleSubmit(onSubmit)}>
         <TextareaAutosize
           placeholder="Tell us about your community"
-          className="max-h-28 w-full resize-none overflow-hidden overflow-y-auto bg-transparent focus:outline-none lg:max-h-none lg:min-h-[32px]"
+          className="max-h-28 w-full resize-none overflow-hidden overflow-y-auto break-normal bg-transparent focus:outline-none lg:max-h-none lg:min-h-[32px]"
           minRows={1}
           autoFocus={true}
           ref={(e) => descriptionRef(e)}
