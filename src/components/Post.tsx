@@ -122,7 +122,7 @@ const Post = ({
       <div>
         <p
           className={cn(
-            "break-all font-bold",
+            "break-words font-bold",
             noRedirect ? "text-2xl" : "text-xl",
           )}
         >
