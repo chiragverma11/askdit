@@ -5,7 +5,7 @@ import { $Enums, PostType } from "@prisma/client";
 import { motion } from "framer-motion";
 import { AlignJustify, ImageIcon, LinkIcon } from "lucide-react";
 import { FC, useState } from "react";
-import Editor from "./Editor";
+import CreateEditorPost from "./CreateEditorPost";
 import { Separator } from "./ui/Separator";
 import CreateLinkPost from "./CreateLinkPost";
 
@@ -21,7 +21,7 @@ const SubmitPost: FC<SubmitPostProps> = ({ communityId }) => {
       <SubmitPostTypeSelect postType={postType} setPostType={setPostType} />
       <Separator className="bg-highlight/40 dark:bg-highlight/60" />
       <div className="px-5 py-5 lg:p-10 lg:pb-6">
-        <Editor
+        <CreateEditorPost
           className={cn(postType === "POST" ? "block" : "hidden")}
           communityId={communityId}
         />

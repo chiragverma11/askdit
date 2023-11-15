@@ -21,14 +21,17 @@ import { z } from "zod";
 import SubmitPostTitle from "./SubmitPostTitle";
 import { Button } from "./ui/Button";
 
-interface EditorProps {
+interface CreateEditorPostProps {
   communityId: string;
   className?: string;
 }
 
 type FormData = z.infer<typeof PostValidator>;
 
-const Editor: FC<EditorProps> = ({ communityId, className }) => {
+const CreateEditorPost: FC<CreateEditorPostProps> = ({
+  communityId,
+  className,
+}) => {
   const [editorLoading, setEditorLoading] = useState(true);
   const editorRef = useRef<EditorJS>();
   const _titleRef = useRef<HTMLTextAreaElement | null>(null);
@@ -197,7 +200,7 @@ const Editor: FC<EditorProps> = ({ communityId, className }) => {
               ])}
             />
           </motion.div>
-          <div className="min-h-[250px]">
+          <div className="min-h-[215px]">
             <AnimatePresence>
               <motion.div
                 initial={{ opacity: 0 }}
@@ -250,4 +253,4 @@ const Editor: FC<EditorProps> = ({ communityId, className }) => {
   );
 };
 
-export default Editor;
+export default CreateEditorPost;
