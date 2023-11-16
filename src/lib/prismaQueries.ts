@@ -46,3 +46,35 @@ export const getGeneralFeedPosts = async () => {
 
   return posts;
 };
+
+export const getAuthenticatedFeedPosts = async ({
+  userId,
+}: {
+  userId: string;
+}) => {
+  const subscriptions = await db.subscription.findMany({
+    where: {
+      userId: userId,
+    },
+  });
+
+  const posts = await db.post.findMany({
+    where: {
+      subredditId: {
+        in: subscriptions.map((sub) => sub.subredditId),
+      },
+    },
+    include: {
+      author: true,
+      votes: true,
+      comments: true,
+      subreddit: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return { posts, subscriptions };
+};
