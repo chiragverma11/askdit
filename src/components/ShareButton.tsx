@@ -4,7 +4,7 @@ import { useMounted } from "@/hooks/use-mounted";
 import { useToast } from "@/hooks/use-toast";
 import { RouterOutputs } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
-import { useClipboard, useMediaQuery } from "@mantine/hooks";
+import { useClickOutside, useClipboard, useMediaQuery } from "@mantine/hooks";
 import { Comment, Post, Subreddit, User, Vote } from "@prisma/client";
 import { BookmarkPlus, Link as LinkIcon, Share2 } from "lucide-react";
 import { useState } from "react";
@@ -102,6 +102,7 @@ const ShareButtonDrawer = ({
   type,
 }: ShareButtonMenuProps) => {
   const [open, setOpen] = useState(false);
+  const drawerMenuRef = useClickOutside(() => setOpen(false));
 
   return (
     <Drawer.Root
@@ -135,7 +136,7 @@ const ShareButtonDrawer = ({
             className="fixed bottom-0 left-0 right-0 z-10 mt-24 flex flex-col rounded-t-2xl bg-emphasis dark:bg-default"
             onOpenAutoFocus={(e) => e.preventDefault()}
           >
-            <div className="flex-1 rounded-t-xl p-4">
+            <div className="flex-1 rounded-t-xl p-4" ref={drawerMenuRef}>
               <div className="mx-auto mb-6 h-1.5 w-12 flex-shrink-0 rounded-full bg-highlight" />
               <div className="flex flex-col gap-5 pb-4 text-sm font-semibold text-default">
                 <button
