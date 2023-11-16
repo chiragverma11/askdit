@@ -92,14 +92,14 @@ const PostVote: FC<PostVoteProps> = ({
       ) : (
         <AuthLink
           href="/sign-in"
-          className="group/downvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-indigo-400/10 dark:hover:bg-indigo-400/5"
+          className="group/upvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-red-400/10 dark:hover:bg-red-400/5"
         >
-          <ArrowBigDown
+          <ArrowBigUp
             className={cn(
               "h-6 w-6",
-              currentVoteType === "DOWN"
-                ? "fill-indigo-500 text-indigo-500"
-                : "text-inherit group-hover/downvote:text-indigo-600/75",
+              currentVoteType === "UP"
+                ? "fill-red-500 text-red-500"
+                : "text-inherit group-hover/upvote:text-red-600/75",
             )}
             strokeWidth={1.5}
           />
