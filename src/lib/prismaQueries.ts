@@ -29,3 +29,20 @@ export const getCommunity = async (communityName: string) => {
 
   return subreddit;
 };
+
+export const getGeneralFeedPosts = async () => {
+  const posts = await db.post.findMany({
+    include: {
+      author: true,
+      votes: true,
+      comments: true,
+      subreddit: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return posts;
+};
