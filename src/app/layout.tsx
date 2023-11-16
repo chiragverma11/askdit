@@ -1,10 +1,13 @@
-import Providers from "@/components/Providers";
 import "../styles/globals.css";
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Navbar from "@/components/Navbar";
-import { cn } from "@/lib/utils";
+
+import Providers from "@/components/Providers";
+import SiteHeader from "@/components/SiteHeader";
+import BackgroundShade from "@/components/layout/BackgroundShade";
 import { Toaster } from "@/components/ui/Toaster";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,15 +28,12 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn("antialiased", inter.className)}>
         <Providers>
-          <div className="fixed inset-0 z-[-10] max-h-screen bg-gradient-to-b from-brand-default/30 from-0% to-30% dark:from-brand-default/20 "></div>
-          <header className="sticky inset-x-0 top-0 z-[51]">
-            <Navbar />
-          </header>
-
-          {authModal}
+          <SiteHeader />
           <main>{children}</main>
+          {authModal}
         </Providers>
         <Toaster />
+        <BackgroundShade className="z-[-10]" />
       </body>
     </html>
   );
