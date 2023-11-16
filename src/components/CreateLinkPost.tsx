@@ -5,7 +5,7 @@ import { PostLinkValidator } from "@/lib/validators/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getHotkeyHandler, useDebouncedValue } from "@mantine/hooks";
 import { PostType } from "@prisma/client";
-import { DotWave } from "@uiball/loaders";
+import { DotPulse } from "@uiball/loaders";
 import { usePathname, useRouter } from "next/navigation";
 import { FC, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -148,7 +148,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
               />
               {isFetchingMetadata ? (
                 <span className="absolute right-0 top-2">
-                  <DotWave size={20} speed={1} color="gray" />
+                  <DotPulse size={20} speed={1} color="gray" />
                 </span>
               ) : null}
             </div>
