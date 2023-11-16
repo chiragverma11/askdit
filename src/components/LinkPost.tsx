@@ -21,7 +21,7 @@ const LinkPost: FC<LinkPostProps> = ({ content, title }) => {
         className="no-underline hover:no-underline active:no-underline"
       >
         {content.ogImage ? (
-          <div className="relative h-full w-full overflow-hidden bg-black/50">
+          <div className="relative h-full w-full overflow-hidden bg-background/50">
             <Image
               src={content.ogImage}
               alt=""
