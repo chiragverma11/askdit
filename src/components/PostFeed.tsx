@@ -11,7 +11,7 @@ import {
   User,
   Vote,
 } from "@prisma/client";
-import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 import { usePathname } from "next/navigation";
 import { FC, useEffect, useRef } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
@@ -26,10 +26,16 @@ interface PostFeedProps {
     comments: Comment[];
   })[];
   communityName?: string;
+  session: Session | null;
+  communityIds?: string[];
 }
 
-const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
-  const { data: session, status: sessionStatus } = useSession();
+const PostFeed: FC<PostFeedProps> = ({
+  initialPosts,
+  communityName,
+  session,
+  communityIds,
+}) => {
   const pathname = usePathname();
 
   const lastPostRef = useRef<HTMLElement>(null);
@@ -38,16 +44,37 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
     threshold: 0.1,
   });
 
+  const trpcInfiniteQueryRequest = communityName
+    ? trpc.post.infiniteCommunityPosts.useInfiniteQuery(
+        {
+          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+          communityName: communityName!,
+        },
+        {
+          getNextPageParam: (lastPage) => lastPage?.nextCursor,
+        },
+      )
+    : session
+    ? trpc.post.infiniteAuthenticatedPosts.useInfiniteQuery(
+        {
+          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+          communityIds: communityIds!,
+        },
+        {
+          getNextPageParam: (lastPage) => lastPage?.nextCursor,
+        },
+      )
+    : trpc.post.infiniteGeneralPosts.useInfiniteQuery(
+        {
+          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+        },
+        {
+          getNextPageParam: (lastPage) => lastPage?.nextCursor,
+        },
+      );
+
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    trpc.post.infiniteCommunityPosts.useInfiniteQuery(
-      {
-        limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-        communityName: communityName!,
-      },
-      {
-        getNextPageParam: (lastPage) => lastPage?.nextCursor,
-      },
-    );
+    trpcInfiniteQueryRequest;
 
   useEffect(() => {
     if (hasNextPage && entry?.isIntersecting) {

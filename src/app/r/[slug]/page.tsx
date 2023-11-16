@@ -79,7 +79,11 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
             session={session}
             community={community}
           />
-          <PostFeed initialPosts={initialPosts} communityName={slug} />
+          <PostFeed
+            initialPosts={initialPosts}
+            communityName={slug}
+            session={session}
+          />
           <InfoSideMenu
             isSubscribed={isSubscribed}
             session={session}
