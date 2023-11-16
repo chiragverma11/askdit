@@ -130,9 +130,12 @@ const ShareButtonDrawer = ({
         </span>
       </Drawer.Trigger>
       <Drawer.Portal>
-        <div className="fixed inset-0 z-10 bg-zinc-700/40">
-          <Drawer.Content className="fixed bottom-0 left-0 right-0 z-10 mt-24 flex flex-col rounded-t-2xl bg-emphasis dark:bg-default">
-            <div className="flex-1 rounded-t-[10px] p-4">
+        <div className="pointer-events-auto fixed inset-0 z-10 bg-black/40">
+          <Drawer.Content
+            className="fixed bottom-0 left-0 right-0 z-10 mt-24 flex flex-col rounded-t-2xl bg-emphasis dark:bg-default"
+            onOpenAutoFocus={(e) => e.preventDefault()}
+          >
+            <div className="flex-1 rounded-t-xl p-4">
               <div className="mx-auto mb-6 h-1.5 w-12 flex-shrink-0 rounded-full bg-highlight" />
               <div className="flex flex-col gap-5 pb-4 text-sm font-semibold text-default">
                 <button
