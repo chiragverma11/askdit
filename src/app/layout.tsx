@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className={cn("antialiased", inter.className)}>
         <Providers>
           <div className="fixed inset-0 z-[-10] max-h-screen bg-gradient-to-b from-brand-default/30 from-0% to-30% dark:from-brand-default/20 "></div>
-          <header className="sticky inset-x-0 top-0 z-[10]">
+          <header className="sticky inset-x-0 top-0 z-[51]">
             <Navbar />
           </header>
 
