@@ -3,14 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "db:push": "npx dotenv -e .env.local -- prisma db push",
-    "prisma:studio": "npx dotenv -e .env.local -- prisma studio",
-    "migrate:reset": "npx dotenv -e .env.local -- prisma migrate reset",
     "dev": "next dev",
     "build": "next build",
-    "postinstall": "prisma generate",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "npx dotenv -e .env.local prisma generate",
+    "db:push": "npx dotenv -e .env.local -- prisma db push",
+    "db:studio": "npx dotenv -e .env.local -- prisma studio"
   },
   "dependencies": {
     "@editorjs/code": "^2.8.0",
