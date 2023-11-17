@@ -46,7 +46,7 @@ const CommunitiesPage = () => {
                     {isActive ? (
                       <motion.div
                         className="absolute inset-x-0 -bottom-2 -z-10 h-1 rounded-md bg-primary"
-                        layoutId="asidebar"
+                        layoutId="communitiesMenu"
                         aria-hidden="true"
                         transition={{
                           type: "spring",

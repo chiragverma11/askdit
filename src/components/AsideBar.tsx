@@ -92,7 +92,7 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
                       {isActive ? (
                         <motion.div
                           className="absolute inset-0 -z-10 rounded-md bg-primary group-hover/nav:bg-primary/80 group-hover/nav:transition-colors dark:group-hover/nav:bg-primary/95"
-                          layoutId="communitiesMenu"
+                          layoutId="secondaryNavbar"
                           aria-hidden="true"
                           transition={{
                             type: "spring",
