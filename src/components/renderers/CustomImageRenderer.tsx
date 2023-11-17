@@ -17,7 +17,7 @@ const CustomImageRenderer = ({ data }: any) => {
         width={Number(width)}
         height={Number(height)}
         alt="image"
-        className="w-full max-w-full rounded-xl sm:rounded-2xl"
+        className="w-full max-w-full rounded-2xl"
         src={src}
         sizes="(max-width: 768px) 85vw, (max-width: 1280px) 75vw, 60vw"
         loader={imageKitLoader}
