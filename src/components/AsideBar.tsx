@@ -112,7 +112,7 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
                     align="start"
                     alignOffset={25}
                     sideOffset={5}
-                    className="hidden px-2 py-1 text-xs lg:block"
+                    className="px-2 py-1 text-xs"
                   >
                     <p>{item.name}</p>
                   </TooltipContent>
