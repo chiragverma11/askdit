@@ -1,8 +1,8 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
-import { LuLoader2 } from "react-icons/lu";
 
 import { cn } from "@/lib/utils";
+import { Icons } from "../Icons";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
@@ -50,7 +50,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isLoading}
         {...props}
       >
-        {isLoading && <LuLoader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {isLoading && (
+          <Icons.loader className="mr-2 h-4 w-4 animate-spin ease-in-out" />
+        )}
         {children}
       </button>
     );
