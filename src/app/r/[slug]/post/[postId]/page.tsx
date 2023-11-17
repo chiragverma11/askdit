@@ -1,4 +1,3 @@
-import AsideBar from "@/components/AsideBar";
 import Post from "@/components/Post";
 import PostComments from "@/components/PostComments";
 import { getAuthSession } from "@/lib/auth";
@@ -42,7 +41,6 @@ const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
 
   return (
     <>
-      <AsideBar />
       <div className="flex w-full justify-center py-6 pt-4">
         <div className="relative flex w-full flex-col gap-2 pb-16 md:max-w-xl lg:w-[648px] lg:max-w-2xl lg:pb-0">
           <Post

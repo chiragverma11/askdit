@@ -1,4 +1,3 @@
-import AsideBar from "@/components/AsideBar";
 import InfoSideMenu from "@/components/InfoSideMenu";
 import PostFeed from "@/components/PostFeed";
 import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
@@ -71,7 +70,6 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
 
   return (
     <>
-      <AsideBar />
       <div className="flex w-full flex-col items-center justify-center py-8 pt-4 lg:px-4">
         <div className="relative w-full md:max-w-xl lg:w-[600px]">
           <CommunityInfo

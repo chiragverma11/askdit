@@ -8,6 +8,7 @@ import SiteHeader from "@/components/SiteHeader";
 import BackgroundShade from "@/components/layout/BackgroundShade";
 import { Toaster } from "@/components/ui/Toaster";
 import { cn } from "@/lib/utils";
+import AsideBar from "@/components/AsideBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,6 +30,7 @@ export default function RootLayout({
       <body className={cn("antialiased", inter.className)}>
         <Providers>
           <SiteHeader />
+          <AsideBar />
           <main>{children}</main>
           {authModal}
         </Providers>

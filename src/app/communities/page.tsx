@@ -1,6 +1,5 @@
 "use client";
 
-import AsideBar from "@/components/AsideBar";
 import AuthLink from "@/components/AuthLink";
 import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
 import { buttonVariants } from "@/components/ui/Button";
@@ -28,7 +27,6 @@ const CommunitiesPage = () => {
 
   return (
     <>
-      <AsideBar />{" "}
       <div className="flex w-full justify-center px-2 py-6 pt-4">
         <div className="relative w-full overflow-x-hidden lg:w-[600px]">
           <div className="flex flex-col gap-5">

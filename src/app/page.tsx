@@ -1,4 +1,3 @@
-import AsideBar from "@/components/AsideBar";
 import CreatePostInput from "@/components/CreatePostInput";
 import AuthenticatedFeed from "@/components/homepage/AuthenticatedFeed";
 import GeneralFeed from "@/components/homepage/GeneralFeed";
@@ -11,7 +10,6 @@ const HomePage = async () => {
   const session = await getAuthSession();
   return (
     <>
-      <AsideBar />
       <div className="flex w-full justify-center py-8 pt-4 lg:px-4">
         <div className="relative w-full md:max-w-xl lg:w-[600px]">
           {session?.user ? (
