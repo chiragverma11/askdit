@@ -26,7 +26,6 @@ const LinkPost: FC<LinkPostProps> = ({ content, title }) => {
               src={content.ogImage}
               alt=""
               className="-z-10 h-full w-full scale-[1.2] object-cover blur-xl"
-              priority={true}
               sizes="(max-width: 768px) 80vw, (max-width: 1280px) 50vw, 33vw"
               fill
               unoptimized
@@ -41,7 +40,6 @@ const LinkPost: FC<LinkPostProps> = ({ content, title }) => {
                 src={content.ogImage}
                 alt={title}
                 className="h-full w-full object-contain"
-                priority={true}
                 sizes="(max-width: 768px) 80vw, (max-width: 1280px) 50vw, 33vw"
                 fill
                 unoptimized
