@@ -19,12 +19,12 @@ const SiteHeader = async () => {
   return (
     <header className="sticky inset-x-0 top-0 z-[51] bg-transparent backdrop-blur-md">
       <TooltipProvider>
-        <div className="container flex h-14 items-center justify-between gap-2">
+        <div className="container flex h-14 items-center justify-between gap-2 px-4 sm:px-8">
           <Link
             href={"/"}
             className={cn(
               buttonVariants(),
-              "py- flex items-center bg-transparent px-1 py-0 hover:bg-transparent active:scale-100",
+              "flex items-center bg-transparent px-1 py-0 hover:bg-transparent active:scale-100",
             )}
           >
             <Icons.logo className="h-8 w-8 lg:hidden lg:h-6 lg:w-6" />
