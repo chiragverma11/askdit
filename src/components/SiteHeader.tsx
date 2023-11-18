@@ -17,9 +17,9 @@ import { Button, buttonVariants } from "./ui/Button";
 const SiteHeader = async () => {
   const session = await getAuthSession();
   return (
-    <header className="sticky inset-x-0 top-0 z-[51] h-fit bg-transparent py-2 backdrop-blur-md">
+    <header className="sticky inset-x-0 top-0 z-[51] bg-transparent backdrop-blur-md">
       <TooltipProvider>
-        <div className="container mx-auto flex h-full items-center justify-between gap-2">
+        <div className="container flex h-14 items-center justify-between gap-2">
           <Link
             href={"/"}
             className={cn(
