@@ -50,16 +50,12 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
         align="end"
         onCloseAutoFocus={(e) => e.preventDefault()}
         sideOffset={10}
-        className="border-default/40 bg-emphasis dark:bg-subtle"
+        className="rounded-lg border-default/40 bg-emphasis dark:bg-subtle"
       >
-        <div className="flex items-center justify-center p-2">
-          <div className="flex flex-col gap-1">
-            {user.name && <p className="font-medium">{user.name}</p>}
-            {user.email && (
-              <p className="w-[200px] truncate text-sm text-muted-foreground">
-                {user.email}
-              </p>
-            )}
+        <div className="flex items-center p-2">
+          <div className="flex flex-col gap-1 text-sm">
+            <p className="font-medium">{user.name} </p>
+            <p className="w-52 truncate text-muted-foreground">{user.email}</p>
           </div>
         </div>
         <DropdownMenuSeparator />
@@ -67,6 +63,9 @@ const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
           <Link href={`/u/${user.username}`}>
             <UserIcon className="mr-2 h-4 w-4" />
             Profile
+            <span className="ml-1 text-xs text-muted-foreground">
+              ({user.username})
+            </span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" asChild>
