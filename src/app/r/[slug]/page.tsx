@@ -4,7 +4,7 @@ import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
 import { buttonVariants } from "@/components/ui/Button";
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { getCommunity } from "@/lib/prismaQueries";
+import { getCommunity, getSubscription } from "@/lib/prismaQueries";
 import { cn, getDefaultCommunityBg } from "@/lib/utils";
 import { Metadata } from "next";
 import { Session } from "next-auth";
@@ -28,25 +28,6 @@ export async function generateMetadata({
 
   return { title: communityName };
 }
-
-const getSubscription = async ({
-  communityName,
-  userId,
-}: {
-  communityName: string;
-  userId: string;
-}) => {
-  const subscription = await db.subscription.findFirst({
-    where: {
-      Subreddit: { name: communityName },
-      user: {
-        id: userId,
-      },
-    },
-  });
-
-  return subscription;
-};
 
 const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
   const { slug } = params;

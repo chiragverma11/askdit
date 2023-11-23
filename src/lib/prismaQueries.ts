@@ -78,3 +78,22 @@ export const getAuthenticatedFeedPosts = async ({
 
   return { posts, subscriptions };
 };
+
+export const getSubscription = async ({
+  communityName,
+  userId,
+}: {
+  communityName: string;
+  userId: string;
+}) => {
+  const subscription = await db.subscription.findFirst({
+    where: {
+      Subreddit: { name: communityName },
+      user: {
+        id: userId,
+      },
+    },
+  });
+
+  return subscription;
+};
