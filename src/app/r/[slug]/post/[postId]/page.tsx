@@ -1,5 +1,8 @@
 import Post from "@/components/Post";
 import PostComments from "@/components/PostComments";
+import FeedWrapper from "@/components/layout/FeedWrapper";
+import MainContentWrapper from "@/components/layout/MainContentWrapper";
+import SideMenuWrapper from "@/components/layout/SideMenuWrapper";
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getVotesAmount } from "@/lib/utils";
@@ -40,9 +43,9 @@ const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
   const isAuthor = post.authorId === session?.user.id;
 
   return (
-    <>
-      <div className="flex w-full justify-center py-6 pt-4">
-        <div className="relative flex w-full flex-col gap-2 pb-16 md:max-w-xl lg:w-[648px] lg:max-w-2xl lg:pb-0">
+    <MainContentWrapper>
+      <FeedWrapper>
+        <div className="flex w-full flex-col gap-2 pb-16 lg:pb-0">
           <Post
             post={post}
             votesAmt={votesAmt}
@@ -55,8 +58,8 @@ const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
           />
           <PostComments postId={post.id} user={session?.user} />
         </div>
-      </div>
-    </>
+      </FeedWrapper>
+    </MainContentWrapper>
   );
 };
 

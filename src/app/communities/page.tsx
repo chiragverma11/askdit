@@ -2,6 +2,10 @@
 
 import AuthLink from "@/components/AuthLink";
 import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
+import GeneralSideMenuCard from "@/components/homepage/GeneralSideMenuCard";
+import FeedWrapper from "@/components/layout/FeedWrapper";
+import MainContentWrapper from "@/components/layout/MainContentWrapper";
+import SideMenuWrapper from "@/components/layout/SideMenuWrapper";
 import { buttonVariants } from "@/components/ui/Button";
 import { trpc } from "@/lib/trpc";
 import { cn, getDefaultCommunityBg } from "@/lib/utils";
@@ -26,9 +30,8 @@ const CommunitiesPage = () => {
   const { data: session, status: sessionStatus } = useSession();
 
   return (
-    <>
-      <div className="flex w-full justify-center px-2 py-6 pt-4">
-        <div className="relative w-full overflow-x-hidden lg:w-[600px]">
+    <MainContentWrapper>
+      <FeedWrapper>
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-6 px-4 lg:gap-10">
               {["Your Communities", " Explore"].map((menuName) => {
@@ -77,9 +80,14 @@ const CommunitiesPage = () => {
               </AnimatePresence>
             </div>
           </div>
-        </div>
-      </div>
-    </>
+      </FeedWrapper>
+      <SideMenuWrapper>
+        <GeneralSideMenuCard
+          title="Communities"
+          description="Communities will be shown on this page. You can join or leave communities or create a community."
+        />
+      </SideMenuWrapper>
+    </MainContentWrapper>
   );
 };
 
