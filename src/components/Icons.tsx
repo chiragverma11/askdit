@@ -1,4 +1,4 @@
-import { Loader, LucideProps } from "lucide-react";
+import { RxGithubLogo } from "react-icons/rx";
 
 export const Icons = {
   logo: (props: LucideProps) => (
@@ -151,4 +151,5 @@ export const Icons = {
     </svg>
   ),
   loader: Loader,
+  github: RxGithubLogo,
 };
