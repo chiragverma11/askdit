@@ -1,4 +1,7 @@
+import BackButton from "@/components/BackButton";
 import SubmitPost from "@/components/SubmitPost";
+import FeedWrapper from "@/components/layout/FeedWrapper";
+import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import { db } from "@/lib/db";
 import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
@@ -45,14 +48,15 @@ const CreatePostSubreddit: FC<CreatePostSubredditProps> = async ({
   if (!community) return notFound();
 
   return (
-    <>
-      <div className="flex w-full justify-center px-4 py-6 pt-4">
-        <div className="flex w-full flex-col md:w-[680px]">
-          <h3 className="text-lg font-semibold">Create a Post</h3>
-          <SubmitPost communityId={community?.id} />
-        </div>
-      </div>
-    </>
+    <MainContentWrapper>
+      <FeedWrapper className="px-2 md:max-w-[680px] md:px-0">
+        <h1 className="flex items-center gap-2 text-lg font-semibold">
+          <BackButton />
+          Create a Post
+        </h1>
+        <SubmitPost communityId={community?.id} />
+      </FeedWrapper>
+    </MainContentWrapper>
   );
 };
 

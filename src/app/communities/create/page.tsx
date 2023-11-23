@@ -1,10 +1,8 @@
+import BackButton from "@/components/BackButton";
 import CreateCommunityForm from "@/components/CreateCommunityForm";
-import { buttonVariants } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
+import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import { Metadata } from "next";
-import Link from "next/link";
 import { FC } from "react";
-import { IoArrowBack } from "react-icons/io5";
 
 export const metadata: Metadata = {
   title: "Create Community",
@@ -14,26 +12,19 @@ interface CreateCommunityProps {}
 
 const CreateCommunity: FC<CreateCommunityProps> = ({}) => {
   return (
-    <>
-      <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-10 py-6 pt-4">
-        <Link
-          href={"/"}
-          className={cn(
-            buttonVariants({ variant: "ghost" }),
-            "mx-4 self-start hover:bg-zinc-200/75 dark:hover:bg-emphasis/50 dark:hover:ring dark:hover:ring-emphasis/60",
-          )}
-        >
-          <IoArrowBack className="mr-2 h-4 w-4" />
-          Home
-        </Link>
+    <MainContentWrapper>
+      <div className="w-full max-w-2xl">
         <div className="container mx-auto flex flex-col justify-center gap-10">
           <div className="flex flex-col gap-6">
-            <h1 className="text-lg font-semibold">Create a Community</h1>
+            <h1 className="flex items-center gap-2 text-lg font-semibold">
+              <BackButton />
+              Create a Community
+            </h1>
           </div>
           <CreateCommunityForm />
         </div>
       </div>
-    </>
+    </MainContentWrapper>
   );
 };
 

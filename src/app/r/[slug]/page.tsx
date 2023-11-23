@@ -1,10 +1,12 @@
-import InfoSideMenu from "@/components/InfoSideMenu";
+import CommunityInfoCard from "@/components/CommunityInfoCard";
 import PostFeed from "@/components/PostFeed";
 import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
+import FeedWrapper from "@/components/layout/FeedWrapper";
+import MainContentWrapper from "@/components/layout/MainContentWrapper";
+import SideMenuWrapper from "@/components/layout/SideMenuWrapper";
 import { buttonVariants } from "@/components/ui/Button";
 import { getAuthSession } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { getCommunity } from "@/lib/prismaQueries";
+import { getCommunity, getSubscription } from "@/lib/prismaQueries";
 import { cn, getDefaultCommunityBg } from "@/lib/utils";
 import { Metadata } from "next";
 import { Session } from "next-auth";
@@ -29,25 +31,6 @@ export async function generateMetadata({
   return { title: communityName };
 }
 
-const getSubscription = async ({
-  communityName,
-  userId,
-}: {
-  communityName: string;
-  userId: string;
-}) => {
-  const subscription = await db.subscription.findFirst({
-    where: {
-      Subreddit: { name: communityName },
-      user: {
-        id: userId,
-      },
-    },
-  });
-
-  return subscription;
-};
-
 const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
   const { slug } = params;
 
@@ -69,27 +52,34 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
   const initialPosts = community.posts;
 
   return (
-    <>
-      <div className="flex w-full flex-col items-center justify-center py-8 pt-4 lg:px-4">
-        <div className="relative w-full md:max-w-xl lg:w-[600px]">
-          <CommunityInfo
-            isSubscribed={isSubscribed}
-            session={session}
-            community={community}
-          />
-          <PostFeed
-            initialPosts={initialPosts}
-            communityName={slug}
-            session={session}
-          />
-          <InfoSideMenu
-            isSubscribed={isSubscribed}
-            session={session}
-            community={community}
-          />
-        </div>
-      </div>
-    </>
+    <MainContentWrapper>
+      <FeedWrapper>
+        <CommunityInfo
+          isSubscribed={isSubscribed}
+          session={session}
+          community={community}
+        />
+        <PostFeed
+          initialPosts={initialPosts}
+          communityName={slug}
+          session={session}
+        />
+      </FeedWrapper>
+      <SideMenuWrapper>
+        <CommunityInfoCard
+          isSubscribed={isSubscribed}
+          session={session}
+          communityInfo={{
+            id: community.id,
+            name: community.name,
+            description: community.description,
+            subscribersCount: community._count.subscribers,
+            creatorId: community.creatorId,
+            createdAt: community.createdAt,
+          }}
+        />
+      </SideMenuWrapper>
+    </MainContentWrapper>
   );
 };
 
