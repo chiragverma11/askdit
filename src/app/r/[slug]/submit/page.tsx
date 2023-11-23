@@ -1,3 +1,4 @@
+import BackButton from "@/components/BackButton";
 import SubmitPost from "@/components/SubmitPost";
 import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
@@ -49,7 +50,11 @@ const CreatePostSubreddit: FC<CreatePostSubredditProps> = async ({
   return (
     <MainContentWrapper>
       <FeedWrapper className="px-2 md:max-w-[680px] md:px-0">
-          <SubmitPost communityId={community?.id} />
+        <h1 className="flex items-center gap-2 text-lg font-semibold">
+          <BackButton />
+          Create a Post
+        </h1>
+        <SubmitPost communityId={community?.id} />
       </FeedWrapper>
     </MainContentWrapper>
   );
