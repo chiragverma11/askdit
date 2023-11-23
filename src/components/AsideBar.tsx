@@ -54,7 +54,7 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
       animate={!lg && lessVisible ? "lessVisible" : "visible"}
       transition={{ duration: 0.35, ease: "easeInOut" }}
       className={cn(
-        "container fixed inset-x-0 bottom-0 z-10 flex w-full items-center justify-center border-t border-t-highlight bg-subtle py-2 shadow-inner ring-zinc-300/50 backdrop-blur dark:ring-0 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-16 lg:my-auto lg:h-[calc(100vh-15%)] lg:max-h-[600px] lg:w-32 lg:rounded-3xl lg:border-none lg:bg-emphasis/80 lg:py-8 lg:ring",
+        "container fixed bottom-0 z-10 flex w-full items-center justify-center border-t border-t-highlight bg-subtle py-2 shadow-inner ring-zinc-300/50 backdrop-blur dark:ring-0 lg:inset-x-auto lg:bottom-auto lg:my-auto lg:h-[calc(100vh-15%)] lg:max-h-[550px] lg:min-h-[500px] lg:w-32 lg:shrink-0 lg:rounded-3xl lg:border-none lg:bg-emphasis/80 lg:py-8 lg:ring",
         className,
       )}
     >
@@ -112,7 +112,7 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
                     align="start"
                     alignOffset={25}
                     sideOffset={5}
-                    className="px-2 py-1 text-xs"
+                    className="hidden px-2 py-1 text-xs lg:block"
                   >
                     <p>{item.name}</p>
                   </TooltipContent>

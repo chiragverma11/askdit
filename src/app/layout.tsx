@@ -30,8 +30,17 @@ export default function RootLayout({
       <body className={cn("antialiased", inter.className)}>
         <Providers>
           <SiteHeader />
-          <AsideBar />
-          <main>{children}</main>
+
+          <div className="mx-auto flex max-w-[1400px] flex-row justify-center">
+            <div className="relative lg:flex lg:w-[14.1%] lg:flex-col lg:items-start xl:w-1/5">
+              <div className="flex items-start lg:ml-4 lg:pt-4">
+                <AsideBar className="w-full" />
+              </div>
+            </div>
+
+            <main className="flex grow justify-center">{children}</main>
+          </div>
+
           {authModal}
         </Providers>
         <Toaster />
