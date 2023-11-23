@@ -1,4 +1,4 @@
-import InfoSideMenu from "@/components/InfoSideMenu";
+import CommunityInfoCard from "@/components/CommunityInfoCard";
 import PostFeed from "@/components/PostFeed";
 import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
 import { buttonVariants } from "@/components/ui/Button";
@@ -63,10 +63,17 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
             communityName={slug}
             session={session}
           />
-          <InfoSideMenu
+        <CommunityInfoCard
             isSubscribed={isSubscribed}
             session={session}
-            community={community}
+          communityInfo={{
+            id: community.id,
+            name: community.name,
+            description: community.description,
+            subscribersCount: community._count.subscribers,
+            creatorId: community.creatorId,
+            createdAt: community.createdAt,
+          }}
           />
         </div>
       </div>
