@@ -1,9 +1,8 @@
-import { appRouter } from "@/server/routers/_app";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
-import { NextRequest } from "next/server";
+import { appRouter } from "@/server";
 
-const handler = (req: NextRequest) =>
+const handler = (req: Request) =>
   fetchRequestHandler({
     endpoint: "/api/trpc",
     req,
