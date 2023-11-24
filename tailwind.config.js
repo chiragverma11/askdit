@@ -2,11 +2,11 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   theme: {
     container: {
       center: true,
@@ -16,14 +16,26 @@ module.exports = {
       },
     },
     extend: {
+      backgroundImage: {
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+      },
       colors: {
+        default: "hsl(var(--askdit-bg) / <alpha-value>)",
+        subtle: "hsl(var(--askdit-bg-subtle) / <alpha-value>)",
+        emphasis: "hsl(var(--askdit-bg-emphasis) / <alpha-value>)",
+        highlight: "hsl(var(--askdit-bg-highlight) / <alpha-value>)",
+        brand: {
+          default: "hsl(var(--askdit-brand) / <alpha-value>)",
+          text: "hsl(var(--askdit-brand-text) / <alpha-value>)",
+        },
+
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "hsl(var(--askdit-brand) / <alpha-value>)",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -51,10 +63,26 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      textColor: {
+        default: "hsl(var(--askdit-text) / <alpha-value>)",
+        subtle: "hsl(var(--askdit-text-subtle) / <alpha-value>)",
+        inverted: "hsl(var(--askdit-text-inverted) / <alpha-value>)",
+      },
+      borderColor: {
+        default: "hsl(var(--askdit-border) / <alpha-value>)",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      fontSize: {
+        xxs: [
+          "0.625rem",
+          {
+            lineHeight: "0.75rem",
+          },
+        ],
       },
       keyframes: {
         "accordion-down": {
@@ -72,5 +100,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-}
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+};

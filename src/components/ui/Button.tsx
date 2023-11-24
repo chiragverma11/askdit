@@ -1,20 +1,20 @@
-import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { LuLoader2 } from "react-icons/lu";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { Icons } from "../Icons";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-white hover:bg-primary/90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border-2 border-default hover:bg-accent hover:text-accent-foreground",
+        subtle: "hover:bg-zinc-200 bg-zinc-100 text-zinc-900",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -38,34 +38,23 @@ const buttonVariants = cva(
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
-  asChild?: boolean;
   isLoading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      children,
-      variant,
-      size,
-      asChild = false,
-      isLoading,
-      ...props
-    },
-    ref,
-  ) => {
-    const Comp = asChild ? Slot : "button";
+  ({ className, children, variant, size, isLoading, ...props }, ref) => {
     return (
-      <Comp
+      <button
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         disabled={isLoading}
         {...props}
       >
-        {isLoading && <LuLoader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {isLoading && (
+          <Icons.loader className="mr-2 h-4 w-4 animate-spin ease-in-out" />
+        )}
         {children}
-      </Comp>
+      </button>
     );
   },
 );

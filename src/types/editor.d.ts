@@ -1,0 +1,11 @@
+declare module "@editorjs/header";
+declare module "@editorjs/paragraph";
+declare module "@editorjs/list";
+declare module "@editorjs/image";
+declare module "@editorjs/embed";
+declare module "@editorjs/link";
+declare module "@editorjs/code";
+declare module "@editorjs/inline-code";
+declare module "@editorjs/table";
+declare module "@sotaproject/strikethrough";
+declare module "editorjs-drag-drop";
