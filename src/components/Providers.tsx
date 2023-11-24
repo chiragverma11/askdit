@@ -16,7 +16,7 @@ const Providers: FC<ProvidersProps> = ({ children }) => {
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
     trpc.createClient({
-      links: [httpBatchLink({ url: "http://localhost:3000/api/trpc" })],
+      links: [httpBatchLink({ url: "/api/trpc" })],
     }),
   );
 
