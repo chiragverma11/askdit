@@ -1,10 +1,10 @@
-import { Image as LucideImage, Link2 } from "lucide-react";
-import { type Session } from "next-auth";
 import UserAvatar from "@/components/UserAvatar";
-import { FC } from "react";
-import { Button } from "./ui/Button";
 import { cn } from "@/lib/utils";
+import { Link2, Image as LucideImage } from "lucide-react";
+import { type Session } from "next-auth";
 import Link from "next/link";
+import { FC } from "react";
+import { buttonVariants } from "./ui/Button";
 
 interface CreatePostInputProps extends React.HTMLAttributes<HTMLDivElement> {
   session: Session;
@@ -20,12 +20,12 @@ const CreatePostInput: FC<CreatePostInputProps> = ({
   return (
     <div
       className={cn(
-        "mx-auto flex h-16 w-full items-center rounded-xl border border-default/25 bg-emphasis",
+        "mx-auto flex w-full items-center bg-emphasis md:rounded-xl md:border md:border-default/25",
         className,
       )}
       {...props}
     >
-      <div className="flex w-full items-center gap-3 px-4">
+      <div className="flex h-14 w-full items-center gap-3 px-4">
         <div className="relative">
           <Link href={`/u/${session.user.username}`}>
             <UserAvatar user={session.user} />
@@ -56,21 +56,25 @@ const CreatePostInput: FC<CreatePostInputProps> = ({
             />
           )}
         </div>
-        <div className="hidden sm:flex sm:items-center">
-          <Button
-            size={"icon"}
-            variant={"ghost"}
-            className="aspect-square hover:bg-subtle"
+        <div className="flex items-center">
+          <Link
+            href={`${href}/?media=true`}
+            className={cn(
+              "aspect-square hover:bg-subtle",
+              buttonVariants({ size: "icon", variant: "ghost" }),
+            )}
           >
             <LucideImage className="text-subtle" />
-          </Button>
-          <Button
-            size={"icon"}
-            variant={"ghost"}
-            className="aspect-square hover:bg-subtle"
+          </Link>
+          <Link
+            href={`${href}/?url`}
+            className={cn(
+              "aspect-square hover:bg-subtle",
+              buttonVariants({ size: "icon", variant: "ghost" }),
+            )}
           >
             <Link2 className="text-subtle" />
-          </Button>
+          </Link>
         </div>
       </div>
     </div>
