@@ -11,6 +11,7 @@ export async function middleware(req: NextRequest) {
     if (token) {
       return NextResponse.redirect(new URL("/", req.url));
     }
+    return null;
   }
 
   if (!token) {
