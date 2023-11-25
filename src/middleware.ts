@@ -11,7 +11,6 @@ export async function middleware(req: NextRequest) {
     if (token) {
       return NextResponse.redirect(new URL("/", req.url));
     }
-    return null;
   }
 
   if (!token) {
@@ -20,5 +19,11 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/sign-in", "/sign-up"],
+  matcher: [
+    "/sign-in",
+    "/sign-up",
+    "/submit",
+    "/r/:path/submit",
+    "/communities/create",
+  ],
 };
