@@ -110,6 +110,7 @@ const MoreOptions: FC<MoreOptionsProps> = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="start"
+        collisionPadding={4}
         onCloseAutoFocus={(e) => e.preventDefault()}
         className="border-default/40 bg-emphasis dark:bg-subtle"
       >
