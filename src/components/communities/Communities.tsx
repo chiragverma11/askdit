@@ -10,19 +10,21 @@ import YourCommunities from "./YourCommunities";
 
 interface CommunitiesProps {
   session: Session | null;
+  explore: boolean;
 }
 
-const Communities: FC<CommunitiesProps> = ({ session }) => {
+const Communities: FC<CommunitiesProps> = ({ session, explore }) => {
   const [activeMenu, setActiveMenu] = useState<"Your Communities" | "Explore">(
-    "Your Communities",
+    explore ? "Explore" : "Your Communities",
   );
 
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-6 px-4 lg:gap-10">
-        {["Your Communities", " Explore"].map((menuName) => {
+        {["Your Communities", "Explore"].map((menuName) => {
           const isActive = menuName === activeMenu;
           const menu = menuName as typeof activeMenu;
+
           return (
             <h1
               className="relative cursor-pointer text-xl font-semibold text-default lg:text-2xl"
