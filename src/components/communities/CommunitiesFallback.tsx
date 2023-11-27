@@ -78,24 +78,23 @@ const NoContent = ({
 }) => {
   if (parent === "YourCommunities") {
     return (
-      <div className="flex flex-col items-center gap-4 p-4">
-        <p className="font-medium text-default">
+      <div className="flex flex-col items-center gap-2 p-4">
+        <p className="text-default">
           You haven&apos;t joined any community yet
         </p>
-        <p className="font-medium text-default">
-          Click Explore to find communties
-        </p>
+        <p className="text-default">Click Explore to find communties</p>
       </div>
     );
   } else if (parent === "ExploreCommunities") {
     return (
       <div className="flex flex-col items-center gap-4 p-4">
-        <p className="font-medium text-default">
-          There are no commmunites to join.
-        </p>
+        <p className="text-default">There are no commmunites to join.</p>
         <Link
           href="/communities/create"
-          className={cn(buttonVariants({ size: "sm" }))}
+          className={cn(
+            buttonVariants({ size: "sm", variant: "outline" }),
+            "rounded-lg",
+          )}
         >
           Create One
         </Link>
