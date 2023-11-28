@@ -140,7 +140,7 @@ const AddCommunityDescription = React.forwardRef<
               Cancel
             </Button>
             <Button
-              className="h-auto rounded bg-transparent p-0.5 text-xs font-semibold hover:bg-transparent"
+              className="h-auto rounded bg-transparent p-0.5 text-xs font-semibold text-default hover:bg-transparent"
               form="addDescriptionForm"
               size={"xs"}
               isLoading={isLoading}
