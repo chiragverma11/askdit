@@ -30,8 +30,9 @@ const CommunitiesFallback: FC<HaveContentProps | HaveNoContentProps> = (
 };
 
 const CommunitiesSkeleton = () => {
-  return (
+  return Array.from({ length: 4 }, () => "").map((_, index) => (
     <SkeletonTheme
+      key={index}
       baseColor="var(--skeleton-base)"
       highlightColor="var(--skeleton-highlight)"
       duration={2}
@@ -54,7 +55,7 @@ const CommunitiesSkeleton = () => {
         <Skeleton width={"4.5rem"} height={"1.8rem"} borderRadius={"0.5rem"} />
       </div>
     </SkeletonTheme>
-  );
+  ));
 };
 
 const UnauthenticatedFallback = () => {
