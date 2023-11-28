@@ -60,9 +60,7 @@ const CommunitiesSkeleton = () => {
 const UnauthenticatedFallback = () => {
   return (
     <div className="flex flex-col items-center gap-4 p-4">
-      <p className="font-medium text-default">
-        Sign In to explore & Join Communities
-      </p>
+      <p className="text-default">Sign In to explore & Join Communities</p>
       <AuthLink href="/sign-in" className={cn(buttonVariants({ size: "sm" }))}>
         {" "}
         Sign In
