@@ -54,7 +54,7 @@ const CommunityDescription: FC<CommunityDescriptionProps> = ({
           className={cn(
             "inline w-full whitespace-pre-wrap break-words",
             isAuthor &&
-              "cursor-pointer gap-2 rounded-md border transition-[padding] hover:border-default hover:p-1",
+              "cursor-pointer gap-2 rounded-md border border-transparent transition-[padding] hover:border-default hover:p-1",
           )}
           onClick={() => {
             isAuthor && setAddingDescription(true);
