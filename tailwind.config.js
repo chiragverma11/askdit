@@ -84,6 +84,9 @@ module.exports = {
           },
         ],
       },
+      boxShadow: {
+        modal: "0 0 15px 0 rgba(255,255,255,0.2)",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: 0 },
