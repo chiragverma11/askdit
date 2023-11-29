@@ -1,4 +1,7 @@
+"use client";
 import { cn } from "@/lib/utils";
+import { useClickOutside } from "@mantine/hooks";
+import { useRouter } from "next/navigation";
 import { FC, ReactNode } from "react";
 
 interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -19,4 +22,30 @@ const Modal: FC<ModalProps> = ({ children, className, ...props }) => {
   );
 };
 
-export default Modal;
+interface ModalContentProps extends React.ComponentPropsWithoutRef<"div"> {
+  children: React.ReactNode;
+}
+
+const ModalContent: FC<ModalContentProps> = ({
+  className,
+  children,
+  ...props
+}) => {
+  const router = useRouter();
+  const ref = useClickOutside(() => router.back());
+
+  return (
+    <div
+      className={cn(
+        "relative h-max w-full grow rounded-2xl border border-border bg-emphasis px-2 py-16 dark:bg-default",
+        className,
+      )}
+      ref={ref}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
+
+export { Modal, ModalContent };
