@@ -27,6 +27,7 @@ const YourCommunities: FC<YourCommunitiesProps> = ({ session }) => {
       key={community.subredditId}
       community={community.Subreddit}
       session={session}
+      isSubscribed={true}
     />
   ));
 };

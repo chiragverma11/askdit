@@ -12,9 +12,14 @@ interface CommunityCardProps {
     _count: { subscribers: number };
   };
   session: Session | null;
+  isSubscribed: boolean;
 }
 
-const CommunityCard: FC<CommunityCardProps> = ({ community, session }) => {
+const CommunityCard: FC<CommunityCardProps> = ({
+  community,
+  session,
+  isSubscribed,
+}) => {
   return (
     <div
       key={community.id}
@@ -54,7 +59,7 @@ const CommunityCard: FC<CommunityCardProps> = ({ community, session }) => {
           </div>
         </div>
         <SubscribeLeaveToggle
-          isSubscribed={true}
+          isSubscribed={isSubscribed}
           subredditId={community.id}
           subredditName={community.name}
           session={session}

@@ -23,7 +23,7 @@ const ExploreCommunities: FC<ExploreCommunitiesProps> = ({ session }) => {
   }
 
   return exploreCommunities?.map((community) => (
-    <CommunityCard key={community.id} community={community} session={session} />
+    <CommunityCard key={community.id} community={community} session={session} isSubscribed={false} />
   ));
 };
 
