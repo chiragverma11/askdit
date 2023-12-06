@@ -70,11 +70,13 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
           communityInfo={{
             id: community.id,
             name: community.name,
+            image: community.image,
             description: community.description,
             subscribersCount: community._count.subscribers,
             creatorId: community.creatorId,
             createdAt: community.createdAt,
           }}
+          parent="community"
         />
       </SideMenuWrapper>
     </MainContentWrapper>
