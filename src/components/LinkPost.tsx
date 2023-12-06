@@ -19,6 +19,7 @@ const LinkPost: FC<LinkPostProps> = ({ content, title }) => {
         href={content.url}
         target="_blank"
         className="no-underline hover:no-underline active:no-underline"
+        prefetch={false}
       >
         {content.ogImage ? (
           <div className="relative h-full w-full overflow-hidden bg-background/50">

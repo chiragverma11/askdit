@@ -62,20 +62,24 @@ const Post = ({
       {...props}
     >
       {!noRedirect ? (
-        <Link href={redirectUrl} className="absolute inset-0 z-[1]"></Link>
+        <Link
+          href={redirectUrl}
+          className="absolute inset-0 z-[1]"
+          prefetch={false}
+        ></Link>
       ) : null}
 
       <div className="flex w-full items-center">
         {isCommunity ? (
           <div className="z-[1] inline-flex items-center gap-2 rounded-lg">
-            <Link href={`/u/${post.author.username}`}>
+            <Link href={`/u/${post.author.username}`} prefetch={false}>
               <UserAvatar
                 user={post.author}
                 className="aspect-square h-6 w-6"
               />
             </Link>
             <div className="flex items-center">
-              <Link href={`/u/${post.author.username}`}>
+              <Link href={`/u/${post.author.username}`} prefetch={false}>
                 <span className="text-sm font-semibold text-default/90 hover:underline dark:hover:text-red-100">{`u/${post.author.username}`}</span>
               </Link>
               <div className="flex items-center text-subtle">
@@ -86,7 +90,7 @@ const Post = ({
           </div>
         ) : (
           <div className="z-[1] inline-flex items-center gap-2 rounded-lg">
-            <Link href={`/r/${post.subreddit.name}`}>
+            <Link href={`/r/${post.subreddit.name}`} prefetch={false}>
               <span
                 className={cn(
                   "flex aspect-square h-8 w-8 items-center justify-center rounded-full text-lg font-bold text-zinc-950",
@@ -98,7 +102,7 @@ const Post = ({
             </Link>
             <div className="flex flex-col text-xs ">
               <div className="flex items-center">
-                <Link href={`/r/${post.subreddit.name}`}>
+                <Link href={`/r/${post.subreddit.name}`} prefetch={false}>
                   <span className="font-bold text-default/90 hover:underline dark:hover:text-red-100">{`r/${post.subreddit.name}`}</span>
                 </Link>
 
@@ -109,7 +113,7 @@ const Post = ({
               </div>
               <span>
                 <span className="text-default dark:text-white">{" by "}</span>
-                <Link href={`/u/${post.author.username}`}>
+                <Link href={`/u/${post.author.username}`} prefetch={false}>
                   <span className="text-default/80 hover:underline dark:hover:text-red-100">
                     {post.author.username}
                   </span>
@@ -197,7 +201,7 @@ const CommentButton: FC<CommentButtonProps> = ({
 
   if (!noRedirect) {
     return (
-      <Link href={redirectUrl} className={className}>
+      <Link href={redirectUrl} className={className} prefetch={false}>
         {CommentIcon}
       </Link>
     );
