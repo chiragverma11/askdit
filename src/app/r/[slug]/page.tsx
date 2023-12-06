@@ -54,7 +54,7 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
   return (
     <MainContentWrapper>
       <FeedWrapper>
-        <CommunityInfo
+        <CommunityHeader
           isSubscribed={isSubscribed}
           session={session}
           community={community}
@@ -83,7 +83,7 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
   );
 };
 
-const CommunityInfo = ({
+const CommunityHeader = ({
   isSubscribed,
   session,
   community,
