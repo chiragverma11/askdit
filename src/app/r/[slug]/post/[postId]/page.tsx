@@ -91,11 +91,13 @@ const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
           communityInfo={{
             id: post.subreddit.id,
             name: post.subreddit.name,
+            image:post.subreddit.image,
             description: post.subreddit.description,
             subscribersCount: post.subreddit._count.subscribers,
             creatorId: post.subreddit.creatorId,
             createdAt: post.subreddit.createdAt,
           }}
+          parent="post"
         />
       </SideMenuWrapper>
     </MainContentWrapper>
