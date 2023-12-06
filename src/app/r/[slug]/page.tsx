@@ -1,4 +1,5 @@
 import CommunityInfoCard from "@/components/CommunityInfoCard";
+import CommunityModeratorsCard from "@/components/CommunityModeratorsCard";
 import PostFeed from "@/components/PostFeed";
 import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
 import UserAvatar from "@/components/UserAvatar";
@@ -6,7 +7,7 @@ import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import SideMenuWrapper from "@/components/layout/SideMenuWrapper";
 import { getAuthSession } from "@/lib/auth";
-import { getCommunity, getSubscription } from "@/lib/prismaQueries";
+import { getCommunity, getCreator, getSubscription } from "@/lib/prismaQueries";
 import { cn, getDefaultCommunityBg } from "@/lib/utils";
 import { Metadata } from "next";
 import { Session } from "next-auth";
@@ -45,6 +46,10 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
 
   const isSubscribed = !!subscription;
 
+  const creator = community?.creatorId
+    ? await getCreator({ creatorId: community.creatorId })
+    : null;
+
   if (!community) return notFound();
 
   const initialPosts = community.posts;
@@ -63,7 +68,7 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
           session={session}
         />
       </FeedWrapper>
-      <SideMenuWrapper>
+      <SideMenuWrapper className="sticky top-[72px] h-fit justify-start">
         <CommunityInfoCard
           isSubscribed={isSubscribed}
           session={session}
@@ -78,6 +83,7 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
           }}
           parent="community"
         />
+        <CommunityModeratorsCard moderator={creator?.username || null} />
       </SideMenuWrapper>
     </MainContentWrapper>
   );
@@ -108,14 +114,14 @@ const CommunityHeader = ({
               user={{ name: community.name, image: community.image }}
             />
           ) : (
-          <span
-            className={cn(
+            <span
+              className={cn(
                 "flex aspect-square h-12 w-12 items-center justify-center rounded-full text-2xl font-bold text-zinc-950",
-              defaultProfileBg,
-            )}
-          >
-            r/
-          </span>
+                defaultProfileBg,
+              )}
+            >
+              r/
+            </span>
           )}
           <div className="flex flex-col">
             <h1 className="text-lg font-bold lg:text-2xl">
@@ -129,14 +135,14 @@ const CommunityHeader = ({
           </div>
         </div>
         <div className="flex justify-center">
-        <SubscribeLeaveToggle
-          isSubscribed={isSubscribed}
-          subredditId={community?.id}
-          subredditName={community?.name}
-          session={session}
+          <SubscribeLeaveToggle
+            isSubscribed={isSubscribed}
+            subredditId={community?.id}
+            subredditName={community?.name}
+            session={session}
             className="w-20 rounded-full"
-          disabled={session?.user.id === community?.creatorId}
-        />
+            disabled={session?.user.id === community?.creatorId}
+          />
         </div>
       </div>
       {community.description ? (

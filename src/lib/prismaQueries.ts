@@ -97,3 +97,13 @@ export const getSubscription = async ({
 
   return subscription;
 };
+
+export const getCreator = async ({ creatorId }: { creatorId: string }) => {
+  const creator = await db.user.findFirst({
+    where: {
+      id: creatorId,
+    },
+  });
+
+  return creator;
+};
