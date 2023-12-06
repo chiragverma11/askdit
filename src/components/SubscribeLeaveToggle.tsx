@@ -9,7 +9,8 @@ import AuthLink from "./AuthLink";
 import { Button, buttonVariants } from "./ui/Button";
 import { useToast } from "@/hooks/use-toast";
 
-interface SubscribeLeaveToggleProps extends React.HTMLAttributes<HTMLElement> {
+interface SubscribeLeaveToggleProps
+  extends React.ComponentPropsWithoutRef<typeof Button> {
   isSubscribed: boolean;
   subredditId: string;
   subredditName: string;
