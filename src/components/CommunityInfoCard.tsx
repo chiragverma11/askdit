@@ -54,7 +54,13 @@ const CommunityInfoCard: FC<CommunityInfoCardProps> = ({
           </div>
           <div className="flex w-full items-center justify-between">
             <p className="text-default/40">Created</p>
-            <p>{new Date(community.createdAt).toDateString()}</p>
+            <p>
+              {new Date(community.createdAt).toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </p>
           </div>
           <Separator />
           <Link
