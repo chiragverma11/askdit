@@ -1,9 +1,9 @@
-import { COMMUNITY_NAME_REGEX } from "@/lib/config";
+import { COMMUNITIES_SEARCH_RESULT, COMMUNITY_NAME_REGEX } from "@/lib/config";
 import { db } from "@/lib/db";
+import { DescriptionValidator } from "@/lib/validators/community";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { protectedProcedure, router } from "../trpc";
-import { DescriptionValidator } from "@/lib/validators/community";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const communityRouter = router({
   //Create Community
@@ -200,5 +200,35 @@ export const communityRouter = router({
       });
 
       return { message: "Description added", description: newDescription };
+    }),
+  searchCommunities: publicProcedure
+    .input(z.object({ query: z.string().min(1), userId: z.string() }))
+    .query(async (opts) => {
+      const { query, userId } = opts.input;
+
+      const searchCommunitiesResult = await db.subreddit.findMany({
+        where: {
+          name: {
+            contains: query,
+          },
+          NOT: {
+            subscribers: {
+              some: {
+                userId,
+              },
+            },
+          },
+        },
+        include: {
+          _count: {
+            select: {
+              subscribers: true,
+            },
+          },
+        },
+        take: COMMUNITIES_SEARCH_RESULT,
+      });
+
+      return searchCommunitiesResult;
     }),
 });
