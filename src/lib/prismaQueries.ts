@@ -107,3 +107,11 @@ export const getCreator = async ({ creatorId }: { creatorId: string }) => {
 
   return creator;
 };
+
+export const getCommunityInfo = async ({ name }: { name: string }) => {
+  const community = await db.subreddit.findFirst({
+    where: { name },
+  });
+
+  return community;
+};

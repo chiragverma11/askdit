@@ -2,18 +2,10 @@ import BackButton from "@/components/BackButton";
 import SubmitPost from "@/components/SubmitPost";
 import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
-import { db } from "@/lib/db";
+import { getCommunityInfo } from "@/lib/prismaQueries";
 import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import { FC } from "react";
-
-async function getCommunity({ name }: { name: string }) {
-  const community = await db.subreddit.findFirst({
-    where: { name },
-  });
-
-  return community;
-}
 
 interface CreatePostSubredditProps {
   params: {
@@ -27,7 +19,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const slug = params.slug;
 
-  const community = await getCommunity({ name: slug });
+  const community = await getCommunityInfo({ name: slug });
 
   if (!community) {
     return {
@@ -43,7 +35,7 @@ export async function generateMetadata(
 const CreatePostSubreddit: FC<CreatePostSubredditProps> = async ({
   params,
 }) => {
-  const community = await getCommunity({ name: params.slug });
+  const community = await getCommunityInfo({ name: params.slug });
 
   if (!community) return notFound();
 
