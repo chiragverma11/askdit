@@ -22,17 +22,16 @@ export const postRouter = router({
       const { communityId, title, content, type } = opts.input;
       const { user } = opts.ctx;
 
-      const subscription = await db.subscription.findFirst({
+      const community = await db.subreddit.findFirst({
         where: {
-          subredditId: communityId,
-          userId: user.id,
+          id: communityId,
         },
       });
 
-      if (!subscription) {
+      if (!community) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Subscribe to Post",
+          code: "NOT_FOUND",
+          message: "Community doesn't exist.",
         });
       }
 
