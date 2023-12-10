@@ -38,21 +38,24 @@ const CommunitiesSkeleton = () => {
       duration={2}
       inline={false}
     >
-      <div className="flex w-full items-center justify-between rounded-xl bg-emphasis px-4 py-4">
-        <div className="inline-flex items-center gap-3">
-          <Skeleton
-            className="flex aspect-square h-10 w-10 text-2xl"
-            circle={true}
-          />
-          <div className="flex flex-col gap-1">
+      <div className="w-full rounded-xl border border-default/20 bg-emphasis px-4 py-4">
+        <div className="flex w-full items-center justify-between">
+          <div className="flex items-center gap-3">
             <Skeleton
-              className="text-lg font-semibold md:text-xl"
-              width={"7rem"}
+              className="flex aspect-square h-10 w-10 text-2xl"
+              circle={true}
             />
-            <Skeleton className="text-xs text-subtle" width={"5rem"} />
+            <div className="flex flex-col -space-y-1">
+              <Skeleton
+                className="text-lg font-semibold md:text-xl"
+                width={"7rem"}
+              />
+              <Skeleton className="text-xs text-subtle" width={"5rem"} />
+            </div>
           </div>
+
+          <Skeleton width={"4.75rem"} height={"2rem"} borderRadius={"0.5rem"} />
         </div>
-        <Skeleton width={"4.5rem"} height={"1.8rem"} borderRadius={"0.5rem"} />
       </div>
     </SkeletonTheme>
   ));
