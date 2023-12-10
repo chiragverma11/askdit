@@ -11,6 +11,7 @@ interface CreatePostSubredditProps {
   params: {
     slug: string;
   };
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export async function generateMetadata(
@@ -34,6 +35,7 @@ export async function generateMetadata(
 
 const CreatePostSubreddit: FC<CreatePostSubredditProps> = async ({
   params,
+  searchParams,
 }) => {
   const community = await getCommunityInfo({ name: params.slug });
 
@@ -46,7 +48,7 @@ const CreatePostSubreddit: FC<CreatePostSubredditProps> = async ({
           <BackButton />
           Create a Post
         </h1>
-        <SubmitPost communityId={community?.id} />
+        <SubmitPost communityId={community?.id} searchParams={searchParams} />
       </FeedWrapper>
     </MainContentWrapper>
   );

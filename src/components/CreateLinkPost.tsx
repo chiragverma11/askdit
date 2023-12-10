@@ -13,14 +13,17 @@ import { z } from "zod";
 import SubmitPostTitle from "./SubmitPostTitle";
 import { Button } from "./ui/Button";
 
-interface CreateLinkPostProps extends React.HTMLAttributes<HTMLDivElement> {
+interface CreateLinkPostProps {
   communityId: string;
+  initialUrl?: string;
+  className?: string;
 }
 
 type FormData = z.infer<typeof PostLinkValidator>;
 
 const CreateLinkPost: FC<CreateLinkPostProps> = ({
   communityId,
+  initialUrl,
   className,
 }) => {
   const submitButtonRef = useRef<HTMLButtonElement>(null);
@@ -40,7 +43,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
     resolver: zodResolver(PostLinkValidator),
     defaultValues: {
       title: "",
-      content: { url: "" },
+      content: { url: initialUrl || "" },
       communityId,
       type: postType,
     },

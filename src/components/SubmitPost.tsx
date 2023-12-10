@@ -6,15 +6,22 @@ import { motion } from "framer-motion";
 import { AlignJustify, ImageIcon, LinkIcon } from "lucide-react";
 import { FC, useState } from "react";
 import CreateEditorPost from "./CreateEditorPost";
-import { Separator } from "./ui/Separator";
 import CreateLinkPost from "./CreateLinkPost";
+import { Separator } from "./ui/Separator";
 
 interface SubmitPostProps {
   communityId: string;
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-const SubmitPost: FC<SubmitPostProps> = ({ communityId }) => {
-  const [postType, setPostType] = useState<PostType>("POST");
+const SubmitPost: FC<SubmitPostProps> = ({ communityId, searchParams }) => {
+  const [postType, setPostType] = useState<PostType>(
+    searchParams?.media === "true"
+      ? "IMAGES"
+      : searchParams?.url || searchParams?.url === ""
+      ? "LINK"
+      : "POST",
+  );
 
   return (
     <div className="my-4 mb-16 w-full rounded-xl border-zinc-200 bg-emphasis shadow-xl lg:mb-auto">
@@ -31,6 +38,7 @@ const SubmitPost: FC<SubmitPostProps> = ({ communityId }) => {
         <CreateLinkPost
           className={cn(postType === "LINK" ? "block" : "hidden")}
           communityId={communityId}
+            initialUrl={(searchParams?.url as string) || ""}
         />
       </div>
     </div>
