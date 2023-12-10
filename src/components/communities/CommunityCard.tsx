@@ -47,7 +47,7 @@ const CommunityCard: FC<CommunityCardProps> = ({
               r/
             </span>
           )}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col">
             <h1 className="text-lg font-semibold md:text-xl">
               r/{community.name}
             </h1>
