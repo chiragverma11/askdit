@@ -48,7 +48,7 @@ const CreatePostSubreddit: FC<CreatePostSubredditProps> = async ({
           <BackButton />
           Create a Post
         </h1>
-        <SubmitPost communityId={community?.id} searchParams={searchParams} />
+        <SubmitPost community={community} searchParams={searchParams} />
       </FeedWrapper>
     </MainContentWrapper>
   );

@@ -1,20 +1,21 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { $Enums, PostType } from "@prisma/client";
+import { $Enums, PostType, Subreddit } from "@prisma/client";
 import { motion } from "framer-motion";
 import { AlignJustify, ImageIcon, LinkIcon } from "lucide-react";
 import { FC, useState } from "react";
+import CommunitySelector from "./CommunitySelector";
 import CreateEditorPost from "./CreateEditorPost";
 import CreateLinkPost from "./CreateLinkPost";
 import { Separator } from "./ui/Separator";
 
 interface SubmitPostProps {
-  communityId: string;
+  community: Subreddit | undefined;
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-const SubmitPost: FC<SubmitPostProps> = ({ communityId, searchParams }) => {
+const SubmitPost: FC<SubmitPostProps> = ({ community, searchParams }) => {
   const [postType, setPostType] = useState<PostType>(
     searchParams?.media === "true"
       ? "IMAGES"
@@ -24,22 +25,25 @@ const SubmitPost: FC<SubmitPostProps> = ({ communityId, searchParams }) => {
   );
 
   return (
-    <div className="my-4 mb-16 w-full rounded-xl border-zinc-200 bg-emphasis shadow-xl lg:mb-auto">
-      <SubmitPostTypeSelect postType={postType} setPostType={setPostType} />
-      <Separator className="bg-highlight/40 dark:bg-highlight/60" />
-      <div className="px-5 py-5 lg:p-10 lg:pb-6">
-        <CreateEditorPost
-          className={cn(postType === "POST" ? "block" : "hidden")}
-          communityId={communityId}
-        />
-        <PostImages
-          className={cn(postType === "IMAGES" ? "block" : "hidden")}
-        />
-        <CreateLinkPost
-          className={cn(postType === "LINK" ? "block" : "hidden")}
-          communityId={communityId}
+    <div className="my-4 w-full space-y-2">
+      <CommunitySelector community={community} />
+      <div className="mb-16 w-full rounded-xl border-zinc-200 bg-emphasis shadow-xl lg:mb-auto">
+        <SubmitPostTypeSelect postType={postType} setPostType={setPostType} />
+        <Separator className="bg-highlight/40 dark:bg-highlight/60" />
+        <div className="px-5 py-5 lg:p-10 lg:pb-6">
+          <CreateEditorPost
+            className={cn(postType === "POST" ? "block" : "hidden")}
+            communityId={community?.id}
+          />
+          <PostImages
+            className={cn(postType === "IMAGES" ? "block" : "hidden")}
+          />
+          <CreateLinkPost
+            className={cn(postType === "LINK" ? "block" : "hidden")}
+            communityId={community?.id}
             initialUrl={(searchParams?.url as string) || ""}
-        />
+          />
+        </div>
       </div>
     </div>
   );

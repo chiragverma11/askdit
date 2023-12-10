@@ -14,7 +14,7 @@ import SubmitPostTitle from "./SubmitPostTitle";
 import { Button } from "./ui/Button";
 
 interface CreateLinkPostProps {
-  communityId: string;
+  communityId: string | undefined;
   initialUrl?: string;
   className?: string;
 }
@@ -81,14 +81,16 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
   const onSubmit = async (data: FormData) => {
     data.content.url = addProtocol(data.content.url);
 
-    const payload = {
-      title: data.title,
-      content: data.content,
-      communityId,
-      type: postType,
-    };
+    if (communityId) {
+      const payload = {
+        title: data.title,
+        content: data.content,
+        communityId,
+        type: postType,
+      };
 
-    createPost(payload);
+      createPost(payload);
+    }
   };
 
   useEffect(() => {
@@ -102,7 +104,6 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
 
   useEffect(() => {
     if (metadata?.success === 1) {
-      console.log("useEffect");
       const newUrl = new URL(metadata.meta.url);
 
       const hostName = newUrl.hostname.replace("www.", "");

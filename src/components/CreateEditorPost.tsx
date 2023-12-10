@@ -22,7 +22,7 @@ import SubmitPostTitle from "./SubmitPostTitle";
 import { Button } from "./ui/Button";
 
 interface CreateEditorPostProps {
-  communityId: string;
+  communityId: string | undefined;
   className?: string;
 }
 
@@ -166,14 +166,16 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
   const onSubmit = async (data: FormData) => {
     const editorBlock = await editorRef.current?.save();
 
-    const payload = {
-      title: data.title,
-      content: editorBlock,
-      communityId,
-      type: postType,
-    };
+    if (communityId) {
+      const payload = {
+        title: data.title,
+        content: editorBlock,
+        communityId,
+        type: postType,
+      };
 
-    createPost(payload);
+      createPost(payload);
+    }
   };
 
   return (
