@@ -52,7 +52,7 @@ const Communities: FC<CommunitiesProps> = ({ session, explore }) => {
           );
         })}
       </div>
-      <div className="flex max-h-[calc(72vh)] w-full flex-col items-center gap-4 overflow-y-scroll px-4 pb-10 lg:max-h-none lg:overflow-y-auto lg:px-0 lg:pb-0 landscape:pb-20 lg:landscape:pb-0">
+      <div className="flex max-h-[calc(72vh)] w-full flex-col items-center gap-4 overflow-y-auto px-4 pb-10 lg:max-h-none lg:px-0 lg:pb-0 landscape:pb-20 lg:landscape:pb-0">
         <AnimatePresence>
           {!session ? (
             <CommunitiesFallback type="unauthenticated" />
