@@ -1,7 +1,6 @@
 "use client";
 
-import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
-import { trpc } from "@/lib/trpc";
+import { useInfinitePostFeed } from "@/hooks/use-infinite-postfeed";
 import { getVotesAmount } from "@/lib/utils";
 import { useIntersection } from "@mantine/hooks";
 import {
@@ -17,24 +16,35 @@ import { FC, useEffect, useRef } from "react";
 import Post from "./Post";
 import PostSkeleton from "./PostSkeleton";
 
-interface PostFeedProps {
+interface CommonPostProps {
   initialPosts: (PrismaPost & {
     author: User;
     votes: Vote[];
     subreddit: Subreddit;
     comments: Comment[];
   })[];
-  communityName?: string;
   session: Session | null;
+}
+interface CommunityPostsProps extends CommonPostProps {
+  type: "communityPost";
+  communityName: string;
+}
+
+interface AuthenticatedPostsProps extends CommonPostProps {
+  type: "authenticatedPost";
   communityIds?: string[];
 }
 
-const PostFeed: FC<PostFeedProps> = ({
-  initialPosts,
-  communityName,
-  session,
-  communityIds,
-}) => {
+interface GeneralPostsProps extends CommonPostProps {
+  type: "generalPost";
+}
+
+type PostFeedProps =
+  | CommunityPostsProps
+  | AuthenticatedPostsProps
+  | GeneralPostsProps;
+
+const PostFeed: FC<PostFeedProps> = ({ initialPosts, session, ...props }) => {
   const pathname = usePathname();
 
   const lastPostRef = useRef<HTMLElement>(null);
@@ -43,37 +53,8 @@ const PostFeed: FC<PostFeedProps> = ({
     threshold: 0.1,
   });
 
-  const trpcInfiniteQueryRequest = communityName
-    ? trpc.post.infiniteCommunityPosts.useInfiniteQuery(
-        {
-          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-          communityName: communityName!,
-        },
-        {
-          getNextPageParam: (lastPage) => lastPage?.nextCursor,
-        },
-      )
-    : session
-    ? trpc.post.infiniteAuthenticatedPosts.useInfiniteQuery(
-        {
-          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-          communityIds: communityIds!,
-        },
-        {
-          getNextPageParam: (lastPage) => lastPage?.nextCursor,
-        },
-      )
-    : trpc.post.infiniteGeneralPosts.useInfiniteQuery(
-        {
-          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-        },
-        {
-          getNextPageParam: (lastPage) => lastPage?.nextCursor,
-        },
-      );
-
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    trpcInfiniteQueryRequest;
+    useInfinitePostFeed(props);
 
   useEffect(() => {
     if (hasNextPage && entry?.isIntersecting) {
@@ -98,7 +79,7 @@ const PostFeed: FC<PostFeedProps> = ({
               <Post
                 post={post}
                 votesAmt={votesAmt}
-                isCommunity={communityName ? true : false}
+                isCommunity={props.type === "communityPost"}
                 currentVoteType={currentVote?.type}
                 isLoggedIn={session?.user ? true : false}
                 pathName={pathname}
@@ -112,7 +93,7 @@ const PostFeed: FC<PostFeedProps> = ({
               <Post
                 post={post}
                 votesAmt={votesAmt}
-                isCommunity={communityName ? true : false}
+                isCommunity={props.type === "communityPost"}
                 currentVoteType={currentVote?.type}
                 isLoggedIn={session?.user ? true : false}
                 pathName={pathname}

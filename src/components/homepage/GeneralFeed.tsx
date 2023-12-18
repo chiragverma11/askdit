@@ -10,7 +10,7 @@ interface GeneralFeedProps {
 const GeneralFeed: FC<GeneralFeedProps> = async ({ session }) => {
   const posts = await getGeneralFeedPosts();
 
-  return <PostFeed initialPosts={posts} session={session} />;
+  return <PostFeed type="generalPost" initialPosts={posts} session={session} />;
 };
 
 export default GeneralFeed;

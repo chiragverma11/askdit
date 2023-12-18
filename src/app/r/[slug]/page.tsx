@@ -63,6 +63,7 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
           community={community}
         />
         <PostFeed
+          type="communityPost"
           initialPosts={initialPosts}
           communityName={slug}
           session={session}

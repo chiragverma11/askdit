@@ -21,6 +21,7 @@ const AuthenticatedFeed: FC<AuthenticatedFeedProps> = async ({ session }) => {
 
   return (
     <PostFeed
+      type="authenticatedPost"
       initialPosts={posts}
       session={session}
       communityIds={subscriptions.map((sub) => sub.subredditId)}
