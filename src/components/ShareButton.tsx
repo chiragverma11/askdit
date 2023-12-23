@@ -127,7 +127,6 @@ const ShareButtonDrawer = ({
           )}
         >
           <TbShare3 className="h-5 w-5" />
-          Share
         </span>
       </Drawer.Trigger>
       <Drawer.Portal>
