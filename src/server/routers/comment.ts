@@ -1,6 +1,11 @@
 import { INFINITE_SCROLL_COMMENT_RESULTS } from "@/lib/config";
 import { db } from "@/lib/db";
 import {
+  createHierarchicalCommentReplyToSelect,
+  createHierarchicalRepliesInclude,
+  getTopContextParentCommentId,
+} from "@/lib/utils";
+import {
   AddCommentValidator,
   AddReplyValidator,
   CommentBookmarkValidator,
@@ -537,5 +542,63 @@ export const commentRouter = router({
       });
 
       return new Response("Bookmarked", { status: 200 });
+    }),
+  getComment: publicProcedure
+    .input(
+      z.object({
+        commentId: z.string(),
+        userId: z.string().optional(),
+        context: z.number().nonnegative().max(7).default(0),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const { userId, commentId, context } = input;
+
+      let topContextParentCommentId: string | undefined = undefined;
+      let repliesContext = context;
+
+      // If context is greator than 0, we need to get the top context parent comment id
+      if (context !== 0) {
+        const contextParents = await db.comment.findUnique({
+          where: {
+            id: commentId,
+          },
+          select: createHierarchicalCommentReplyToSelect({ level: context }),
+        });
+
+        const topContext = getTopContextParentCommentId(contextParents);
+
+        topContextParentCommentId = topContext.parentCommentId;
+        repliesContext = topContext.findOnContext;
+      }
+
+      const hierarchicalReplies = createHierarchicalRepliesInclude({
+        level: repliesContext,
+        userId,
+      });
+
+      const comment = await db.comment.findUnique({
+        include: {
+          author: true,
+          votes: true,
+          bookmarks: {
+            where: {
+              userId: userId,
+            },
+          },
+          _count: {
+            select: {
+              replies: true,
+            },
+          },
+          replies: hierarchicalReplies,
+        },
+        where: {
+          id: topContextParentCommentId || commentId,
+        },
+      });
+
+      return comment;
     }),
 });

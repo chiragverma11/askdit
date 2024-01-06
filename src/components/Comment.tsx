@@ -14,8 +14,7 @@ import MoreOptions from "./MoreOptions";
 import ShareButton from "./ShareButton";
 import UserAvatar from "./UserAvatar";
 
-type InfinitePostCommentsOutput =
-  RouterOutputs["comment"]["infiniteComments"];
+type InfinitePostCommentsOutput = RouterOutputs["comment"]["infiniteComments"];
 
 interface CommentProps extends React.ComponentPropsWithoutRef<"div"> {
   comment: PartialK<
@@ -27,6 +26,7 @@ interface CommentProps extends React.ComponentPropsWithoutRef<"div"> {
   user?: User;
   pathName: string;
   level: number;
+  highlightReplyId?: string;
 }
 
 const Comment: FC<CommentProps> = ({
@@ -37,6 +37,7 @@ const Comment: FC<CommentProps> = ({
   pathName,
   className,
   level,
+  highlightReplyId,
 }) => {
   const [isReplying, setIsReplying] = useState(false);
   const [replies, setReplies] = useState(comment.replies ?? []);
@@ -206,6 +207,12 @@ const Comment: FC<CommentProps> = ({
                       user={user}
                       pathName={pathName}
                       level={level + 1}
+                      className={cn(
+                        highlightReplyId
+                          ? highlightReplyId === reply.id && "bg-highlight/60"
+                          : "",
+                      )}
+                      highlightReplyId={highlightReplyId}
                     />
                   </div>
                 );

@@ -7,7 +7,8 @@ import { useIntersection } from "@mantine/hooks";
 import { DotWave } from "@uiball/loaders";
 import { MessagesSquare } from "lucide-react";
 import { User } from "next-auth";
-import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { useParams, usePathname } from "next/navigation";
 import { FC, useEffect, useRef } from "react";
 import AddComment from "./AddComment";
 import Comment from "./Comment";
@@ -15,19 +16,33 @@ import { Separator } from "./ui/Separator";
 
 interface PostCommentsProps {
   postId: string;
+  commentId?: string;
+  context?: number;
   user?: User;
 }
 
-const PostComments: FC<PostCommentsProps> = ({ postId, user }) => {
+const PostComments: FC<PostCommentsProps> = ({
+  postId,
+  commentId,
+  context,
+  user,
+}) => {
   const pathname = usePathname();
+  const params = useParams();
   const lastCommentRef = useRef<HTMLElement>(null);
   const { ref, entry } = useIntersection({
     root: lastCommentRef.current,
     threshold: 0.1,
   });
 
-    const { data, isLoading, isFetchingNextPage, fetchNextPage, refetch } =
-    trpc.comment.infiniteComments.useInfiniteQuery(
+  const {
+    data,
+    isLoading: isInfiniteCommentsLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+  } = trpc.comment.infiniteComments.useInfiniteQuery(
       {
         limit: INFINITE_SCROLL_COMMENT_RESULTS,
         postId,
@@ -36,8 +51,21 @@ const PostComments: FC<PostCommentsProps> = ({ postId, user }) => {
       {
         getNextPageParam: (lastPage) => lastPage?.nextCursor,
         staleTime: Infinity,
+      enabled: commentId ? false : true,
+    },
+  );
+
+  const { data: comment, isLoading: isCommentLoading } =
+    trpc.comment.getComment.useQuery(
+      {
+        commentId: commentId!,
+        userId: user?.id,
+        context: context ? (isNaN(context) ? 0 : context) : 0,
       },
+      { enabled: commentId ? true : false },
     );
+
+  const isLoading = commentId ? isCommentLoading : isInfiniteCommentsLoading;
 
   useEffect(() => {
     if (hasNextPage && entry?.isIntersecting) {
@@ -45,7 +73,11 @@ const PostComments: FC<PostCommentsProps> = ({ postId, user }) => {
     }
   }, [entry, fetchNextPage, isLoading, hasNextPage]);
 
-  const comments = data?.pages.flatMap((page) => page.comments);
+  const comments = commentId
+    ? comment
+      ? [comment]
+      : []
+    : data?.pages.flatMap((page) => page.comments);
 
   const refetchComments = () => {
     refetch({
@@ -68,6 +100,14 @@ const PostComments: FC<PostCommentsProps> = ({ postId, user }) => {
           user={user}
         />
         <Separator className="mx-auto h-0.5 w-5/6 rounded-full bg-default" />
+        {commentId ? (
+          <Link
+            href={`/r/${params.slug}/post/${postId}`}
+            className="w-fit text-xs font-semibold text-blue-500 hover:underline hover:underline-offset-2 dark:text-blue-400"
+          >
+            View all comments
+          </Link>
+        ) : null}
       </div>
 
       <ul className="flex w-full flex-col gap-2">
@@ -94,6 +134,12 @@ const PostComments: FC<PostCommentsProps> = ({ postId, user }) => {
               user={user}
               pathName={pathname}
               level={1}
+                className={cn(
+                  commentId
+                    ? commentId === comment.id && "bg-highlight/60"
+                    : "",
+                )}
+                highlightReplyId={commentId}
               />
             </li>
           );
