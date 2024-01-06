@@ -113,6 +113,7 @@ export const postRouter = router({
     .input(
       z.object({
         communityName: z.string(),
+        userId: z.string().optional(),
         limit: z.number().min(1),
         cursor: z.string().nullish(),
         skip: z.number().optional(),
@@ -121,7 +122,7 @@ export const postRouter = router({
     .query(async (opts) => {
       const { input } = opts;
       const limit = input.limit ?? INFINITE_SCROLL_PAGINATION_RESULTS;
-      const { skip, communityName, cursor } = input;
+      const { skip, communityName, userId, cursor } = input;
 
       const posts = await db.post.findMany({
         take: limit + 1,
@@ -135,6 +136,11 @@ export const postRouter = router({
           votes: true,
           comments: true,
           subreddit: true,
+          bookmarks: {
+            where: {
+              userId: userId,
+            },
+          },
         },
         where: {
           subreddit: {
@@ -158,6 +164,7 @@ export const postRouter = router({
       z.object({
         limit: z.number().min(1),
         communityIds: z.string().array(),
+        userId: z.string().optional(),
         cursor: z.string().nullish(),
         skip: z.number().optional(),
       }),
@@ -165,7 +172,7 @@ export const postRouter = router({
     .query(async (opts) => {
       const { input } = opts;
       const limit = input.limit ?? INFINITE_SCROLL_PAGINATION_RESULTS;
-      const { skip, communityIds, cursor } = input;
+      const { skip, communityIds, userId, cursor } = input;
 
       const posts = await db.post.findMany({
         take: limit + 1,
@@ -179,6 +186,11 @@ export const postRouter = router({
           votes: true,
           comments: true,
           subreddit: true,
+          bookmarks: {
+            where: {
+              userId: userId,
+            },
+          },
         },
         where: {
           subredditId: {

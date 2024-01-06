@@ -35,7 +35,7 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
 
   const session = await getAuthSession();
 
-  const community = await getCommunity(slug);
+  const community = await getCommunity(slug, session?.user.id);
 
   const subscription = session
     ? await getSubscription({

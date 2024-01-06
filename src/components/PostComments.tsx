@@ -3,11 +3,12 @@
 import { INFINITE_SCROLL_COMMENT_RESULTS } from "@/lib/config";
 import { trpc } from "@/lib/trpc";
 import { cn, getVotesAmount } from "@/lib/utils";
+import { useIntersection } from "@mantine/hooks";
 import { DotWave } from "@uiball/loaders";
 import { MessagesSquare } from "lucide-react";
 import { User } from "next-auth";
 import { usePathname } from "next/navigation";
-import { FC } from "react";
+import { FC, useEffect, useRef } from "react";
 import AddComment from "./AddComment";
 import Comment from "./Comment";
 import { Separator } from "./ui/Separator";
@@ -19,18 +20,30 @@ interface PostCommentsProps {
 
 const PostComments: FC<PostCommentsProps> = ({ postId, user }) => {
   const pathname = usePathname();
+  const lastCommentRef = useRef<HTMLElement>(null);
+  const { ref, entry } = useIntersection({
+    root: lastCommentRef.current,
+    threshold: 0.1,
+  });
 
-  const { data, isLoading, isFetchingNextPage, fetchNextPage, refetch } =
+    const { data, isLoading, isFetchingNextPage, fetchNextPage, refetch } =
     trpc.comment.infiniteComments.useInfiniteQuery(
       {
         limit: INFINITE_SCROLL_COMMENT_RESULTS,
         postId,
+        userId: user?.id,
       },
       {
         getNextPageParam: (lastPage) => lastPage?.nextCursor,
         staleTime: Infinity,
       },
     );
+
+  useEffect(() => {
+    if (hasNextPage && entry?.isIntersecting) {
+      fetchNextPage();
+    }
+  }, [entry, fetchNextPage, isLoading, hasNextPage]);
 
   const comments = data?.pages.flatMap((page) => page.comments);
 
@@ -56,33 +69,43 @@ const PostComments: FC<PostCommentsProps> = ({ postId, user }) => {
         />
         <Separator className="mx-auto h-0.5 w-5/6 rounded-full bg-default" />
       </div>
-      <div className="flex w-full flex-col gap-2">
+
+      <ul className="flex w-full flex-col gap-2">
         {isLoading ? (
           <div className="flex min-h-[16rem] w-full items-center justify-center">
             <DotWave size={45} speed={1} color="gray" />
           </div>
         ) : null}
-        {comments?.map((comment) => {
+        {comments?.map((comment, index) => {
           const votesAmt = getVotesAmount({ votes: comment.votes });
 
           const currentVote = comment?.votes.find(
             (vote) => vote.userId === user?.id,
           );
 
+          const isLastComment = index === comments.length - 1;
+
           return (
+            <li ref={isLastComment ? ref : undefined} key={comment.id}>
             <Comment
               comment={comment}
-              key={comment.id}
               votesAmt={votesAmt}
               currentVoteType={currentVote?.type}
               user={user}
               pathName={pathname}
               level={1}
-            />
+              />
+            </li>
           );
         })}
-        {comments?.length === 0 ? <NoComments /> : null}
+
+        {isFetchingNextPage && !isLoading ? (
+          <div className="flex w-full items-center justify-center py-1">
+            <DotWave size={45} speed={1} color="gray" />
       </div>
+        ) : null}
+        {comments?.length === 0 && !isLoading ? <NoComments /> : null}
+      </ul>
     </div>
   );
 };

@@ -1,7 +1,10 @@
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "./config";
 import { db } from "./db";
 
-export const getCommunity = async (communityName: string) => {
+export const getCommunity = async (
+  communityName: string,
+  userId: string | undefined,
+) => {
   const subreddit = await db.subreddit.findFirst({
     where: {
       name: communityName,
@@ -18,6 +21,11 @@ export const getCommunity = async (communityName: string) => {
           votes: true,
           comments: true,
           subreddit: true,
+          bookmarks: {
+            where: {
+              userId: userId,
+            },
+          },
         },
         orderBy: {
           createdAt: "desc",
@@ -52,16 +60,21 @@ export const getAuthenticatedFeedPosts = async ({
 }: {
   userId: string;
 }) => {
-  const subscriptions = await db.subscription.findMany({
+  const userSubscriptions = await db.subscription.findMany({
     where: {
       userId: userId,
     },
+    select: {
+      subredditId: true,
+    },
   });
+
+  const communityIds = userSubscriptions.map((sub) => sub.subredditId);
 
   const posts = await db.post.findMany({
     where: {
       subredditId: {
-        in: subscriptions.map((sub) => sub.subredditId),
+        in: communityIds,
       },
     },
     include: {
@@ -69,6 +82,11 @@ export const getAuthenticatedFeedPosts = async ({
       votes: true,
       comments: true,
       subreddit: true,
+      bookmarks: {
+        where: {
+          userId: userId,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -76,7 +94,42 @@ export const getAuthenticatedFeedPosts = async ({
     take: INFINITE_SCROLL_PAGINATION_RESULTS,
   });
 
-  return { posts, subscriptions };
+  return { posts, communityIds };
+};
+
+export const getCommunityPost = async ({
+  postId,
+  userId,
+}: {
+  postId: string;
+  userId: string;
+}) => {
+  const communityPost = await db.post.findFirst({
+    where: {
+      id: postId,
+    },
+    include: {
+      author: true,
+      votes: true,
+      subreddit: {
+        include: {
+          _count: {
+            select: {
+              subscribers: true,
+            },
+          },
+        },
+      },
+      comments: true,
+      bookmarks: {
+        where: {
+          userId: userId,
+        },
+      },
+    },
+  });
+
+  return communityPost;
 };
 
 export const getSubscription = async ({

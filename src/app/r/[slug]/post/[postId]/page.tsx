@@ -5,8 +5,7 @@ import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import SideMenuWrapper from "@/components/layout/SideMenuWrapper";
 import { getAuthSession } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { getSubscription } from "@/lib/prismaQueries";
+import { getCommunityPost, getSubscription } from "@/lib/prismaQueries";
 import { getVotesAmount } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { FC } from "react";
@@ -17,30 +16,6 @@ interface CommunityPostProps {
     postId: string;
   };
 }
-
-const getPost = async ({ postId }: { postId: string }) => {
-  const post = await db.post.findFirst({
-    where: {
-      id: postId,
-    },
-    include: {
-      author: true,
-      votes: true,
-      subreddit: {
-        include: {
-          _count: {
-            select: {
-              subscribers: true,
-            },
-          },
-        },
-      },
-      comments: true,
-    },
-  });
-
-  return post;
-};
 
 const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
   const { postId, slug } = params;
@@ -55,7 +30,7 @@ const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
 
   const isSubscribed = !!subscription;
 
-  const post = await getPost({ postId });
+  const post = await getCommunityPost({ postId, userId: session?.user.id });
 
   if (!post) return notFound();
 
@@ -91,7 +66,7 @@ const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
           communityInfo={{
             id: post.subreddit.id,
             name: post.subreddit.name,
-            image:post.subreddit.image,
+            image: post.subreddit.image,
             description: post.subreddit.description,
             subscribersCount: post.subreddit._count.subscribers,
             creatorId: post.subreddit.creatorId,

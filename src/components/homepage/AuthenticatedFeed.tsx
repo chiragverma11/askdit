@@ -11,11 +11,11 @@ interface AuthenticatedFeedProps {
 }
 
 const AuthenticatedFeed: FC<AuthenticatedFeedProps> = async ({ session }) => {
-  const { posts, subscriptions } = await getAuthenticatedFeedPosts({
+  const { posts, communityIds } = await getAuthenticatedFeedPosts({
     userId: session?.user.id,
   });
 
-  if (subscriptions.length === 0 && posts.length === 0) {
+  if (communityIds.length === 0 && posts.length === 0) {
     return <NoAuthenticatedPost />;
   }
 
@@ -24,7 +24,7 @@ const AuthenticatedFeed: FC<AuthenticatedFeedProps> = async ({ session }) => {
       type="authenticatedPost"
       initialPosts={posts}
       session={session}
-      communityIds={subscriptions.map((sub) => sub.subredditId)}
+      communityIds={communityIds}
     />
   );
 };

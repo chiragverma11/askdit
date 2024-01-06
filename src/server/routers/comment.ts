@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import {
   AddCommentValidator,
   AddReplyValidator,
+  CommentBookmarkValidator,
   CommentDeleteValidator,
   CommentVoteValidator,
 } from "@/lib/validators/comment";
@@ -42,6 +43,7 @@ export const commentRouter = router({
     .input(
       z.object({
         postId: z.string(),
+        userId: z.string().optional(),
         limit: z.number().min(1),
         cursor: z.string().nullish(),
         skip: z.number().optional(),
@@ -50,7 +52,7 @@ export const commentRouter = router({
     .query(async (opts) => {
       const { input } = opts;
       const limit = input.limit ?? INFINITE_SCROLL_COMMENT_RESULTS;
-      const { skip, postId, cursor } = input;
+      const { skip, postId, userId, cursor } = input;
 
       let hierarchicalReplies = {
         take: INFINITE_SCROLL_COMMENT_RESULTS - 5,
@@ -140,6 +142,11 @@ export const commentRouter = router({
               replies: true,
             },
           },
+          bookmarks: {
+            where: {
+              userId: userId,
+            },
+          },
           replies: hierarchicalReplies,
         },
         where: {
@@ -163,6 +170,7 @@ export const commentRouter = router({
     .input(
       z.object({
         postId: z.string(),
+        userId: z.string().optional(),
         replyToId: z.string(),
         limit: z.number().min(1),
         skip: z.number().optional(),
@@ -171,7 +179,7 @@ export const commentRouter = router({
     .mutation(async (opts) => {
       const { input } = opts;
       const limit = input.limit ?? INFINITE_SCROLL_COMMENT_RESULTS;
-      const { skip, postId, replyToId } = input;
+      const { skip, postId, userId, replyToId } = input;
 
       let hierarchicalReplies = {
         take: INFINITE_SCROLL_COMMENT_RESULTS - 5,
@@ -255,6 +263,11 @@ export const commentRouter = router({
           _count: {
             select: {
               replies: true,
+            },
+          },
+          bookmarks: {
+            where: {
+              userId: userId,
             },
           },
           replies: hierarchicalReplies,
@@ -357,6 +370,11 @@ export const commentRouter = router({
               replies: true,
             },
           },
+          bookmarks: {
+            where: {
+              userId: user.id,
+            },
+          },
           replies: {
             include: {
               author: true,
@@ -364,6 +382,11 @@ export const commentRouter = router({
               _count: {
                 select: {
                   replies: true,
+                },
+              },
+              bookmarks: {
+                where: {
+                  userId: user.id,
                 },
               },
               replies: {
@@ -374,6 +397,11 @@ export const commentRouter = router({
                   _count: {
                     select: {
                       replies: true,
+                    },
+                  },
+                  bookmarks: {
+                    where: {
+                      userId: user.id,
                     },
                   },
                 },
@@ -467,5 +495,47 @@ export const commentRouter = router({
       }
 
       return new Response("OK");
+    }),
+  bookmark: protectedProcedure
+    .input(CommentBookmarkValidator)
+    .mutation(async (opts) => {
+      const { commentId, remove } = opts.input;
+      const { user } = opts.ctx;
+
+      if (remove) {
+        const bookmark = await db.bookmark.findFirst({
+          where: {
+            commentId,
+            userId: user.id,
+          },
+        });
+
+        if (!bookmark) {
+          return new Response("Bookmark not found", { status: 404 });
+        }
+
+        await db.bookmark.delete({
+          where: { id: bookmark.id },
+        });
+
+        return new Response("Bookmark removed", { status: 200 });
+      }
+
+      const comment = await db.comment.findUnique({
+        where: { id: commentId },
+      });
+
+      if (!comment) {
+        return new Response("Comment not found", { status: 404 });
+      }
+
+      await db.bookmark.create({
+        data: {
+          userId: user.id,
+          commentId,
+        },
+      });
+
+      return new Response("Bookmarked", { status: 200 });
     }),
 });

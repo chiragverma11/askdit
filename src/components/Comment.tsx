@@ -1,7 +1,7 @@
 import { COMMENT_REPLIES_DEPTH, MORE_COMMENT_REPLIES } from "@/lib/config";
-import { trpc } from "@/lib/trpc";
+import { RouterOutputs, trpc } from "@/lib/trpc";
 import { cn, formatTimeToNow, getVotesAmount } from "@/lib/utils";
-import { InfinitePostCommentsOutput, PartialK } from "@/types/utilities";
+import { PartialK } from "@/types/utilities";
 import { VoteType } from "@prisma/client";
 import { Dot, Maximize2, MessageSquare } from "lucide-react";
 import { User } from "next-auth";
@@ -14,7 +14,10 @@ import MoreOptions from "./MoreOptions";
 import ShareButton from "./ShareButton";
 import UserAvatar from "./UserAvatar";
 
-interface CommentProps extends React.HTMLAttributes<HTMLDivElement> {
+type InfinitePostCommentsOutput =
+  RouterOutputs["comment"]["infiniteComments"];
+
+interface CommentProps extends React.ComponentPropsWithoutRef<"div"> {
   comment: PartialK<
     Pick<InfinitePostCommentsOutput, "comments">["comments"][number],
     "replies"
@@ -159,7 +162,9 @@ const Comment: FC<CommentProps> = ({
                     <MoreOptions
                       type="comment"
                       id={comment.id}
-                      bookmark={true}
+                      bookmark={
+                        comment.bookmarks ? comment.bookmarks.length > 0 : false
+                      }
                       redirectUrl={pathName}
                       pathName={pathName}
                       isAuthor={comment.authorId === user?.id}
@@ -221,6 +226,7 @@ const Comment: FC<CommentProps> = ({
                     mutate({
                       limit: MORE_COMMENT_REPLIES,
                       postId: comment.postId,
+                      userId: user?.id,
                       replyToId: comment.id,
                       skip: skip,
                     });

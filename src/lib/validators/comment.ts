@@ -20,5 +20,10 @@ export const CommentDeleteValidator = z.object({
   commentId: z.string(),
 });
 
+export const CommentBookmarkValidator = z.object({
+  commentId: z.string(),
+  remove: z.boolean(),
+});
+
 export type AddCommentRequestType = z.infer<typeof AddCommentValidator>;
 export type AddReplyRequestType = z.infer<typeof AddReplyValidator>;

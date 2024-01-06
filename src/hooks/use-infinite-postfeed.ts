@@ -1,63 +1,76 @@
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
-import { trpc } from "@/lib/trpc";
+import { RouterOutputs, trpc } from "@/lib/trpc";
 
-interface InfiniteCommunityPostsProps {
+interface CommonInfinitePostsProps {
+  userId: string | undefined;
+}
+
+interface InfiniteCommunityPostsProps extends CommonInfinitePostsProps {
   type: "communityPost";
   communityName: string;
 }
 
-interface InfiniteAuthenticatedPostsProps {
+interface InfiniteAuthenticatedPostsProps extends CommonInfinitePostsProps {
   type: "authenticatedPost";
   communityIds?: string[];
 }
 
-interface InfiniteGeneralPostsProps {
+interface InfiniteGeneralPostsProps extends CommonInfinitePostsProps {
   type: "generalPost";
 }
 
-export function useInfinitePostFeed(
-  options:
+type Options =
     | InfiniteCommunityPostsProps
     | InfiniteAuthenticatedPostsProps
-    | InfiniteGeneralPostsProps,
-) {
-  let trpcInfiniteQueryRequest;
+  | InfiniteGeneralPostsProps;
 
-  if (options.type === "communityPost") {
-    trpcInfiniteQueryRequest =
-      trpc.post.infiniteCommunityPosts.useInfiniteQuery(
+type DataReturnType<T extends Options> = T extends InfiniteCommunityPostsProps
+  ? InfiniteData<RouterOutputs["post"]["infiniteCommunityPosts"]>
+  : T extends InfiniteAuthenticatedPostsProps
+  ? InfiniteData<RouterOutputs["post"]["infiniteAuthenticatedPosts"]>
+  : InfiniteData<RouterOutputs["post"]["infiniteGeneralPosts"]>;
+
+export function useInfinitePostFeed<T extends Options>(options: T) {
+  const trpcInfiniteQueryRequest =
+    options.type === "communityPost"
+      ? trpc.post.infiniteCommunityPosts.useInfiniteQuery(
         {
           limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-          communityName: options.communityName!,
+            communityName: options.communityName,
+            userId: options.userId,
         },
         {
           getNextPageParam: (lastPage) => lastPage?.nextCursor,
         },
-      );
-  } else if (options.type === "authenticatedPost") {
-    trpcInfiniteQueryRequest =
-      trpc.post.infiniteAuthenticatedPosts.useInfiniteQuery(
+        )
+      : options.type === "authenticatedPost"
+      ? trpc.post.infiniteAuthenticatedPosts.useInfiniteQuery(
         {
           limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-          communityIds: options.communityIds!,
+            communityIds: options.communityIds || [],
+            userId: options.userId,
         },
         {
           getNextPageParam: (lastPage) => lastPage?.nextCursor,
         },
-      );
-  } else {
-    trpcInfiniteQueryRequest = trpc.post.infiniteGeneralPosts.useInfiniteQuery(
+        )
+      :  trpc.post.infiniteGeneralPosts.useInfiniteQuery(
       {
         limit: INFINITE_SCROLL_PAGINATION_RESULTS,
       },
       {
         getNextPageParam: (lastPage) => lastPage?.nextCursor,
       },
-    );
-  }
+        );
+  const {
+    data: rawData,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = trpcInfiniteQueryRequest;
 
-  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    trpcInfiniteQueryRequest;
+  const data = rawData as unknown as DataReturnType<T>;
 
   return { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage };
 }

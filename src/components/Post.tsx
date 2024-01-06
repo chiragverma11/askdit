@@ -2,7 +2,15 @@
 
 import { RouterOutputs } from "@/lib/trpc";
 import { cn, formatTimeToNow, getDefaultCommunityBg } from "@/lib/utils";
-import { Comment, Post, Subreddit, User, Vote, VoteType } from "@prisma/client";
+import {
+  Bookmark,
+  Comment,
+  Post as PrismaPost,
+  Subreddit,
+  User,
+  Vote,
+  VoteType,
+} from "@prisma/client";
 import { Dot, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { FC } from "react";
@@ -13,18 +21,14 @@ import PostVote from "./PostVote";
 import ShareButton from "./ShareButton";
 import UserAvatar from "./UserAvatar";
 
-type InfiniteCommunityPostsOutput =
-  RouterOutputs["post"]["infiniteCommunityPosts"];
-
-interface PostProps extends React.HTMLAttributes<HTMLDivElement> {
-  post:
-    | Pick<InfiniteCommunityPostsOutput, "posts">["posts"][number]
-    | (Post & {
-        author: User;
-        votes: Vote[];
-        subreddit: Subreddit;
-        comments: Comment[];
-      });
+interface PostProps extends React.ComponentPropsWithoutRef<"div"> {
+  post: PrismaPost & {
+    author: User;
+    votes: Vote[];
+    subreddit: Subreddit;
+    comments: Comment[];
+    bookmarks?: Bookmark[];
+  };
   isCommunity?: boolean;
   votesAmt: number;
   currentVoteType?: VoteType;
@@ -169,7 +173,7 @@ const Post = ({
           <MoreOptions
             type="post"
             id={post.id}
-            bookmark={true}
+            bookmark={post.bookmarks ? post.bookmarks.length > 0 : false}
             redirectUrl={`/r/${post.subreddit.name}`}
             pathName={pathName}
             isAuthor={isAuthor}

@@ -49,6 +49,7 @@ const MoreOptions: FC<MoreOptionsProps> = ({
   onCommentDelete,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(bookmark);
 
   const router = useRouter();
 
@@ -72,6 +73,46 @@ const MoreOptions: FC<MoreOptionsProps> = ({
       }
     },
   });
+
+  const { mutate: bookmarkPost } = trpc.post.bookmark.useMutation({
+    onSuccess: (data, variables, context) => {
+      setIsBookmarked(!isBookmarked);
+    },
+  });
+
+  const { mutate: bookmarkComment } = trpc.comment.bookmark.useMutation({
+    onSuccess: (data, variables, context) => {
+      setIsBookmarked(!isBookmarked);
+    },
+  });
+
+  const handleBookmark = () => {
+    type === "post"
+      ? bookmarkPost(
+          { postId: id, remove: isBookmarked },
+          {
+            onSuccess: () => {
+              toast({
+                description: isBookmarked
+                  ? "Post unsaved successfully"
+                  : "Post saved successfully",
+              });
+            },
+          },
+        )
+      : bookmarkComment(
+          { commentId: id, remove: isBookmarked },
+          {
+            onSuccess: () => {
+              toast({
+                description: isBookmarked
+                  ? "Comment unsaved successfully"
+                  : "Comment saved successfully",
+              });
+            },
+          },
+        );
+  };
 
   const handleDeletion = () => {
     type === "post"
@@ -114,14 +155,14 @@ const MoreOptions: FC<MoreOptionsProps> = ({
         onCloseAutoFocus={(e) => e.preventDefault()}
         className="border-default/40 bg-emphasis dark:bg-subtle"
       >
-        <DropdownMenuItem className="cursor-pointer" asChild>
-          <div>
-            {bookmark ? (
+        <DropdownMenuItem className="flex cursor-pointer items-center" asChild>
+          <div onClick={handleBookmark}>
+            {isBookmarked ? (
               <BookmarkMinus className="mr-2 h-4 w-4" />
             ) : (
               <BookmarkPlus className="mr-2 h-4 w-4" />
             )}
-            {bookmark ? "Remove " : null}Bookmark
+            {isBookmarked ? "Unsave" : "Save "}
           </div>
         </DropdownMenuItem>
         {isAuthor ? (

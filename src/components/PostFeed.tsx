@@ -4,6 +4,7 @@ import { useInfinitePostFeed } from "@/hooks/use-infinite-postfeed";
 import { getVotesAmount } from "@/lib/utils";
 import { useIntersection } from "@mantine/hooks";
 import {
+  Bookmark,
   Comment,
   Post as PrismaPost,
   Subreddit,
@@ -22,6 +23,7 @@ interface CommonPostProps {
     votes: Vote[];
     subreddit: Subreddit;
     comments: Comment[];
+    bookmarks: Bookmark[];
   })[];
   session: Session | null;
 }
@@ -54,7 +56,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, session, ...props }) => {
   });
 
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    useInfinitePostFeed(props);
+    useInfinitePostFeed({ ...props, userId: session?.user.id });
 
   useEffect(() => {
     if (hasNextPage && entry?.isIntersecting) {
