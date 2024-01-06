@@ -168,7 +168,7 @@ const Post = ({
           noRedirect={noRedirect}
           redirectUrl={redirectUrl}
         />
-        <ShareButton post={post} />
+        <ShareButton type={"post"} post={post} />
         {isLoggedIn ? (
           <MoreOptions
             type="post"

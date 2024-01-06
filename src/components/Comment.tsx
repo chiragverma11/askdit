@@ -153,11 +153,13 @@ const Comment: FC<CommentProps> = ({
                   />
 
                   <ShareButton
+                    type={"comment"}
                     comment={{
                       id: comment.id,
                       subredditName: params.slug as string,
                       postId: comment.postId,
                     }}
+                    level={level}
                   />
                   {isLoggedIn ? (
                     <MoreOptions

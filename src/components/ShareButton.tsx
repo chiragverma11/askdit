@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useClickOutside, useClipboard, useMediaQuery } from "@mantine/hooks";
 import { Comment, Post, Subreddit, User, Vote } from "@prisma/client";
 import { BookmarkPlus, Link as LinkIcon, Share2 } from "lucide-react";
-import { useState } from "react";
+import { FC, useState } from "react";
 import { TbShare3 } from "react-icons/tb";
 import { RWebShare } from "react-web-share";
 import { Drawer } from "vaul";
@@ -21,8 +21,9 @@ import {
 type InfiniteCommunityPostsOutput =
   RouterOutputs["post"]["infiniteCommunityPosts"];
 
-interface ShareButtonProps extends React.HTMLAttributes<HTMLDivElement> {
-  post?:
+interface PostShareButtonProps extends React.ComponentPropsWithoutRef<"div"> {
+  type: "post";
+  post:
     | Pick<InfiniteCommunityPostsOutput, "posts">["posts"][number]
     | (Post & {
         author: User;
@@ -30,36 +31,50 @@ interface ShareButtonProps extends React.HTMLAttributes<HTMLDivElement> {
         subreddit: Subreddit;
         comments: Comment[];
       });
-  comment?: {
+}
+
+interface CommentShareButtonProps
+  extends React.ComponentPropsWithoutRef<"div"> {
+  type: "comment";
+  comment: {
     id: string;
     subredditName: string;
     postId: string;
   };
+  level: number;
 }
 
-const ShareButton = ({ post, comment }: ShareButtonProps) => {
+const ShareButton: FC<PostShareButtonProps | CommentShareButtonProps> = (
+  props,
+) => {
   const clipboard = useClipboard();
   const { toast } = useToast();
   const mounted = useMounted();
   const baseURL = mounted ? window.location.origin : "";
-  const type = post ? "post" : "comment";
 
-  const title = post ? post?.title : window.location.host;
+  const title =
+    props.type === "post"
+      ? props.post?.title
+      : mounted
+      ? window.location.host
+      : "";
 
   const url = mounted
-    ? post
-      ? new URL(`/r/${post?.subreddit.name}/post/${post?.id}`, baseURL)
+    ? props.type === "post"
+      ? new URL(
+          `/r/${props.post?.subreddit.name}/props.post/${props.post?.id}`,
+          baseURL,
+        )
       : new URL(
-          `/r/${comment?.subredditName}/post/${comment?.postId}/`,
+          `/r/${props.comment?.subredditName}/props.post/${props.comment
+            ?.postId}/props.comment/${props.comment?.id}${
+            props.level > 1 && "?context=3"
+          }`,
           baseURL,
         )
     : "";
 
-  if (mounted && !post && url !== "") {
-    url.searchParams.append("comment", `${comment?.id}`);
-  }
-
-  const isLg = useMediaQuery("(min-width: 1024px)");
+  const lg = useMediaQuery("(min-width: 1024px)");
 
   function onCopyLink() {
     clipboard.copy(url);
@@ -67,13 +82,13 @@ const ShareButton = ({ post, comment }: ShareButtonProps) => {
       toast({ description: "Copied Link!" });
     }
   }
-  if (!isLg) {
+  if (!lg) {
     return (
       <ShareButtonDrawer
         url={url as URL}
         onCopyLink={onCopyLink}
         title={title}
-        type={type}
+        type={props.type}
       />
     );
   }
@@ -83,7 +98,7 @@ const ShareButton = ({ post, comment }: ShareButtonProps) => {
       url={url as URL}
       onCopyLink={onCopyLink}
       title={title}
-      type={type}
+      type={props.type}
     />
   );
 };
@@ -165,7 +180,7 @@ const ShareButtonDrawer = ({
                   >
                     <button className="inline-flex items-center">
                       <Share2 className="mr-2 h-4 w-4" strokeWidth={2.125} />
-                      Share post via...
+                      Share {type} via...
                     </button>
                   </RWebShare>
                 </div>
@@ -227,7 +242,7 @@ const ShareButtonDropdown = ({
             >
               <button className="inline-flex items-center">
                 <Share2 className="mr-2 h-4 w-4" />
-                Share post via...
+                Share {type} via...
               </button>
             </RWebShare>
           </div>
