@@ -1,6 +1,6 @@
 "use client";
 
-import { INFINITE_SCROLL_COMMENT_RESULTS } from "@/lib/config";
+import { useInfiniteCommentFeed } from "@/hooks/use-infinite-commentfeed";
 import { trpc } from "@/lib/trpc";
 import { cn, getVotesAmount } from "@/lib/utils";
 import { useIntersection } from "@mantine/hooks";
@@ -42,18 +42,12 @@ const PostComments: FC<PostCommentsProps> = ({
     fetchNextPage,
     hasNextPage,
     refetch,
-  } = trpc.comment.infiniteComments.useInfiniteQuery(
-      {
-        limit: INFINITE_SCROLL_COMMENT_RESULTS,
-        postId,
-        userId: user?.id,
-      },
-      {
-        getNextPageParam: (lastPage) => lastPage?.nextCursor,
-        staleTime: Infinity,
-      enabled: commentId ? false : true,
-    },
-  );
+  } = useInfiniteCommentFeed({
+    type: "postComment",
+    postId,
+    userId: user?.id,
+    disabled: commentId ? true : false,
+  });
 
   const { data: comment, isLoading: isCommentLoading } =
     trpc.comment.getComment.useQuery(
@@ -127,13 +121,13 @@ const PostComments: FC<PostCommentsProps> = ({
 
           return (
             <li ref={isLastComment ? ref : undefined} key={comment.id}>
-            <Comment
-              comment={comment}
-              votesAmt={votesAmt}
-              currentVoteType={currentVote?.type}
-              user={user}
-              pathName={pathname}
-              level={1}
+              <Comment
+                comment={comment}
+                votesAmt={votesAmt}
+                currentVoteType={currentVote?.type}
+                user={user}
+                pathName={pathname}
+                level={1}
                 className={cn(
                   commentId
                     ? commentId === comment.id && "bg-highlight/60"
@@ -148,7 +142,7 @@ const PostComments: FC<PostCommentsProps> = ({
         {isFetchingNextPage && !isLoading ? (
           <div className="flex w-full items-center justify-center py-1">
             <DotWave size={45} speed={1} color="gray" />
-      </div>
+          </div>
         ) : null}
         {comments?.length === 0 && !isLoading ? <NoComments /> : null}
       </ul>
