@@ -194,6 +194,8 @@ const Comment: FC<CommentProps> = ({
             ) : null}
             {level <= COMMENT_REPLIES_DEPTH ? (
               replies?.map((reply) => {
+                if (!reply) return null;
+
                 const votesAmt = getVotesAmount({ votes: reply.votes });
 
                 const currentVote = reply?.votes.find(

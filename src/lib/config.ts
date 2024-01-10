@@ -6,6 +6,8 @@ export const INFINITE_SCROLL_PAGINATION_RESULTS = 6;
 
 export const INFINITE_SCROLL_COMMENT_RESULTS = 10;
 
+export const COMMENT_MAX_REPLIES = 5;
+
 export const COMMENT_MIN_REPLIES = 3;
 
 export const MORE_COMMENT_REPLIES = 20;

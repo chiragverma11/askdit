@@ -1,4 +1,7 @@
-import { INFINITE_SCROLL_COMMENT_RESULTS } from "@/lib/config";
+import {
+  COMMENT_MAX_REPLIES,
+  INFINITE_SCROLL_COMMENT_RESULTS,
+} from "@/lib/config";
 import { db } from "@/lib/db";
 import {
   createHierarchicalCommentReplyToSelect,
@@ -59,78 +62,11 @@ export const commentRouter = router({
       const limit = input.limit ?? INFINITE_SCROLL_COMMENT_RESULTS;
       const { skip, postId, userId, cursor } = input;
 
-      let hierarchicalReplies = {
-        take: INFINITE_SCROLL_COMMENT_RESULTS - 5,
-        include: {
-          author: true,
-          votes: true,
-          _count: {
-            select: {
-              replies: true,
-            },
-          },
-          replies: {
-            take: INFINITE_SCROLL_COMMENT_RESULTS - 6,
-            include: {
-              author: true,
-              votes: true,
-              _count: {
-                select: {
-                  replies: true,
-                },
-              },
-              replies: {
-                take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                include: {
-                  author: true,
-                  votes: true,
-                  _count: {
-                    select: {
-                      replies: true,
-                    },
-                  },
-                  replies: {
-                    take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                    include: {
-                      author: true,
-                      votes: true,
-                      _count: {
-                        select: {
-                          replies: true,
-                        },
-                      },
-                      replies: {
-                        take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                        include: {
-                          author: true,
-                          votes: true,
-                          _count: {
-                            select: {
-                              replies: true,
-                            },
-                          },
-                          replies: {
-                            take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                            include: {
-                              author: true,
-                              votes: true,
-                              _count: {
-                                select: {
-                                  replies: true,
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      };
+      const hierarchicalReplies = createHierarchicalRepliesInclude({
+        level: 6,
+        userId,
+        take: COMMENT_MAX_REPLIES,
+      });
 
       const comments = await db.comment.findMany({
         take: limit + 1,
@@ -186,78 +122,11 @@ export const commentRouter = router({
       const limit = input.limit ?? INFINITE_SCROLL_COMMENT_RESULTS;
       const { skip, postId, userId, replyToId } = input;
 
-      let hierarchicalReplies = {
-        take: INFINITE_SCROLL_COMMENT_RESULTS - 5,
-        include: {
-          author: true,
-          votes: true,
-          _count: {
-            select: {
-              replies: true,
-            },
-          },
-          replies: {
-            take: INFINITE_SCROLL_COMMENT_RESULTS - 6,
-            include: {
-              author: true,
-              votes: true,
-              _count: {
-                select: {
-                  replies: true,
-                },
-              },
-              replies: {
-                take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                include: {
-                  author: true,
-                  votes: true,
-                  _count: {
-                    select: {
-                      replies: true,
-                    },
-                  },
-                  replies: {
-                    take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                    include: {
-                      author: true,
-                      votes: true,
-                      _count: {
-                        select: {
-                          replies: true,
-                        },
-                      },
-                      replies: {
-                        take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                        include: {
-                          author: true,
-                          votes: true,
-                          _count: {
-                            select: {
-                              replies: true,
-                            },
-                          },
-                          replies: {
-                            take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                            include: {
-                              author: true,
-                              votes: true,
-                              _count: {
-                                select: {
-                                  replies: true,
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      };
+      const hierarchicalReplies = createHierarchicalRepliesInclude({
+        level: 6,
+        userId,
+        take: COMMENT_MAX_REPLIES,
+      });
 
       const replies = await db.comment.findMany({
         take: limit,
