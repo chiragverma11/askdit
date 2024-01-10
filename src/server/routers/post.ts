@@ -7,6 +7,7 @@ import {
   isValidUrl,
 } from "@/lib/utils";
 import {
+  PostBookmarkValidator,
   PostDeleteValidator,
   PostValidator,
   PostVoteValidator,
@@ -274,6 +275,48 @@ export const postRouter = router({
       });
 
       return new Response("OK");
+    }),
+  bookmark: protectedProcedure
+    .input(PostBookmarkValidator)
+    .mutation(async (opts) => {
+      const { postId, remove } = opts.input;
+      const { user } = opts.ctx;
+
+      if (remove) {
+        const bookmark = await db.bookmark.findFirst({
+          where: {
+            postId,
+            userId: user.id,
+          },
+        });
+
+        if (!bookmark) {
+          return new Response("Bookmark not found", { status: 404 });
+        }
+
+        await db.bookmark.delete({
+          where: { id: bookmark.id },
+        });
+
+        return new Response("Bookmark removed", { status: 200 });
+      }
+
+      const post = await db.post.findUnique({
+        where: { id: postId },
+      });
+
+      if (!post) {
+        return new Response("Post not found", { status: 404 });
+      }
+
+      await db.bookmark.create({
+        data: {
+          userId: user.id,
+          postId,
+        },
+      });
+
+      return new Response("Bookmarked", { status: 200 });
     }),
   getUrlMetadata: protectedProcedure
     .input(z.object({ url: z.string() }))

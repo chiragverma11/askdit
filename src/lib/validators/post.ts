@@ -43,4 +43,9 @@ export const PostDeleteValidator = z.object({
   postId: z.string(),
 });
 
+export const PostBookmarkValidator = z.object({
+  postId: z.string(),
+  remove: z.boolean(),
+});
+
 export type PostRequestType = z.infer<typeof PostValidator>;
