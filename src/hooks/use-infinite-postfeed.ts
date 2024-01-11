@@ -1,5 +1,6 @@
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
 import { RouterOutputs, trpc } from "@/lib/trpc";
+import { InfiniteData } from "@tanstack/react-query";
 
 interface CommonInfinitePostsProps {
   userId: string | undefined;
@@ -19,49 +20,67 @@ interface InfiniteGeneralPostsProps extends CommonInfinitePostsProps {
   type: "generalPost";
 }
 
+interface InfiniteUserPostsProps extends CommonInfinitePostsProps {
+  type: "userPost";
+  authorId: string;
+}
+
 type Options =
-    | InfiniteCommunityPostsProps
-    | InfiniteAuthenticatedPostsProps
-  | InfiniteGeneralPostsProps;
+  | InfiniteCommunityPostsProps
+  | InfiniteAuthenticatedPostsProps
+  | InfiniteGeneralPostsProps
+  | InfiniteUserPostsProps;
 
 type DataReturnType<T extends Options> = T extends InfiniteCommunityPostsProps
   ? InfiniteData<RouterOutputs["post"]["infiniteCommunityPosts"]>
   : T extends InfiniteAuthenticatedPostsProps
   ? InfiniteData<RouterOutputs["post"]["infiniteAuthenticatedPosts"]>
-  : InfiniteData<RouterOutputs["post"]["infiniteGeneralPosts"]>;
+  : T extends InfiniteGeneralPostsProps
+  ? InfiniteData<RouterOutputs["post"]["infiniteGeneralPosts"]>
+  : InfiniteData<RouterOutputs["post"]["infiniteUserPosts"]>;
 
 export function useInfinitePostFeed<T extends Options>(options: T) {
   const trpcInfiniteQueryRequest =
     options.type === "communityPost"
       ? trpc.post.infiniteCommunityPosts.useInfiniteQuery(
-        {
-          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+          {
+            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
             communityName: options.communityName,
             userId: options.userId,
-        },
-        {
-          getNextPageParam: (lastPage) => lastPage?.nextCursor,
-        },
+          },
+          {
+            getNextPageParam: (lastPage) => lastPage?.nextCursor,
+          },
         )
       : options.type === "authenticatedPost"
       ? trpc.post.infiniteAuthenticatedPosts.useInfiniteQuery(
-        {
-          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+          {
+            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
             communityIds: options.communityIds || [],
             userId: options.userId,
-        },
-        {
-          getNextPageParam: (lastPage) => lastPage?.nextCursor,
-        },
+          },
+          {
+            getNextPageParam: (lastPage) => lastPage?.nextCursor,
+          },
         )
-      :  trpc.post.infiniteGeneralPosts.useInfiniteQuery(
-      {
-        limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-      },
-      {
-        getNextPageParam: (lastPage) => lastPage?.nextCursor,
-      },
+      : options.type === "generalPost"
+      ? trpc.post.infiniteGeneralPosts.useInfiniteQuery(
+          {
+            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+          },
+          {
+            getNextPageParam: (lastPage) => lastPage?.nextCursor,
+          },
+        )
+      : trpc.post.infiniteUserPosts.useInfiniteQuery(
+          {
+            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+            authorId: options.authorId,
+            currentUserId: options.userId,
+          },
+          { getNextPageParam: (lastPage) => lastPage?.nextCursor },
         );
+
   const {
     data: rawData,
     isLoading,

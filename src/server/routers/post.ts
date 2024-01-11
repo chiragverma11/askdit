@@ -248,6 +248,54 @@ export const postRouter = router({
         nextCursor,
       };
     }),
+  infiniteUserPosts: publicProcedure
+    .input(
+      z.object({
+        authorId: z.string(),
+        currentUserId: z.string().optional(),
+        limit: z.number().min(1),
+        cursor: z.string().nullish(),
+        skip: z.number().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const limit = input.limit ?? INFINITE_SCROLL_PAGINATION_RESULTS;
+      const { authorId, currentUserId, skip, cursor } = input;
+
+      const posts = await db.post.findMany({
+        take: limit + 1,
+        skip: skip,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          author: true,
+          votes: true,
+          comments: true,
+          subreddit: true,
+          bookmarks: {
+            where: {
+              userId: currentUserId,
+            },
+          },
+        },
+        where: {
+          authorId: authorId,
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (posts.length > limit) {
+        const nextItem = posts.pop();
+        nextCursor = nextItem?.id;
+      }
+      return {
+        posts,
+        nextCursor,
+      };
+    }),
   delete: protectedProcedure
     .input(PostDeleteValidator)
     .mutation(async (opts) => {

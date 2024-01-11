@@ -168,3 +168,68 @@ export const getCommunityInfo = async ({ name }: { name: string }) => {
 
   return community;
 };
+
+export const getUserInfo = async ({ username }: { username: string }) => {
+  const userInfo = await db.user.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+      name: true,
+      image: true,
+    },
+  });
+
+  return userInfo;
+};
+
+export const getUserIdByUsername = async ({
+  username,
+}: {
+  username: string;
+}) => {
+  const user = await db.user.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return user?.id;
+};
+
+export const getUserPosts = async ({
+  username,
+  currentUserId,
+}: {
+  username: string;
+  currentUserId: string | undefined;
+}) => {
+  const authorId = await getUserIdByUsername({ username });
+
+  const userPosts = await db.post.findMany({
+    where: {
+      authorId,
+    },
+    include: {
+      author: true,
+      votes: true,
+      comments: true,
+      subreddit: true,
+      bookmarks: {
+        where: {
+          userId: currentUserId,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return { authorId, userPosts };
+};

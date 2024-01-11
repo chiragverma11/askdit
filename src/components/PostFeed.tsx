@@ -17,34 +17,53 @@ import { FC, useEffect, useRef } from "react";
 import Post from "./Post";
 import PostSkeleton from "./PostSkeleton";
 
+type InitialPostWithBookmark = (PrismaPost & {
+  author: User;
+  votes: Vote[];
+  subreddit: Subreddit;
+  comments: Comment[];
+  bookmarks: Bookmark[];
+})[];
+
+type InitialPostWithoutBookmark = (PrismaPost & {
+  author: User;
+  votes: Vote[];
+  subreddit: Subreddit;
+  comments: Comment[];
+})[];
+
 interface CommonPostProps {
-  initialPosts: (PrismaPost & {
-    author: User;
-    votes: Vote[];
-    subreddit: Subreddit;
-    comments: Comment[];
-    bookmarks: Bookmark[];
-  })[];
   session: Session | null;
 }
+
 interface CommunityPostsProps extends CommonPostProps {
   type: "communityPost";
   communityName: string;
+  initialPosts: InitialPostWithBookmark;
 }
 
 interface AuthenticatedPostsProps extends CommonPostProps {
   type: "authenticatedPost";
   communityIds?: string[];
+  initialPosts: InitialPostWithBookmark;
 }
 
 interface GeneralPostsProps extends CommonPostProps {
   type: "generalPost";
+  initialPosts: InitialPostWithoutBookmark;
+}
+
+interface UserPostsProps extends CommonPostProps {
+  type: "userPost";
+  authorId: string;
+  initialPosts: InitialPostWithBookmark;
 }
 
 type PostFeedProps =
   | CommunityPostsProps
   | AuthenticatedPostsProps
-  | GeneralPostsProps;
+  | GeneralPostsProps
+  | UserPostsProps;
 
 const PostFeed: FC<PostFeedProps> = ({ initialPosts, session, ...props }) => {
   const pathname = usePathname();
