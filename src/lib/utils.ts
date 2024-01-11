@@ -35,6 +35,21 @@ export function getVotesAmount({ votes }: { votes: (Vote | CommentVote)[] }) {
   return votesAmt;
 }
 
+export function getVotes({
+  votes,
+  currentUserId,
+}: {
+  votes: (Vote | CommentVote)[];
+  currentUserId: string | undefined;
+}) {
+  const votesAmt = getVotesAmount({ votes });
+
+  const currentVoteType = votes.find((vote) => vote.userId === currentUserId)
+    ?.type;
+
+  return { votesAmt, currentVoteType };
+}
+
 /**
  * To format distance in custom format
  * @see https://github.com/date-fns/date-fns/issues/1706

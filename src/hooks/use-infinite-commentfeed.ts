@@ -7,30 +7,47 @@ interface CommonInfiniteCommentsProps {
   disabled?: boolean;
 }
 
+interface InfiniteUserCommentsProps extends CommonInfiniteCommentsProps {
+  type: "userComment";
+  authorId: string;
+}
+
 interface InfinitePostCommentsProps extends CommonInfiniteCommentsProps {
   type: "postComment";
   postId: string;
 }
 
-type Options = InfinitePostCommentsProps;
+type Options = InfiniteUserCommentsProps | InfinitePostCommentsProps;
 
-type DataReturnType<T extends Options> = T extends InfinitePostCommentsProps
-  ? InfiniteData<RouterOutputs["comment"]["infiniteComments"]>
+type DataReturnType<T extends Options> = T extends InfiniteUserCommentsProps
+  ? InfiniteData<RouterOutputs["comment"]["infiniteUserComments"]>
   : InfiniteData<RouterOutputs["comment"]["infiniteComments"]>;
 
 export function useInfiniteCommentFeed<T extends Options>(options: T) {
   const trpcInfiniteQueryRequest =
-    trpc.comment.infiniteComments.useInfiniteQuery(
-      {
-        limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-        postId: options.postId,
-        userId: options.userId,
-      },
-      {
-        getNextPageParam: (lastPage) => lastPage?.nextCursor,
-        enabled: !options?.disabled,
-      },
-    );
+    options.type === "userComment"
+      ? trpc.comment.infiniteUserComments.useInfiniteQuery(
+          {
+            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+            authorId: options.authorId,
+            currentUserId: options.userId,
+          },
+          {
+            getNextPageParam: (lastPage) => lastPage?.nextCursor,
+            enabled: !options?.disabled,
+          },
+        )
+      : trpc.comment.infiniteComments.useInfiniteQuery(
+          {
+            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+            postId: options.postId,
+            userId: options.userId,
+          },
+          {
+            getNextPageParam: (lastPage) => lastPage?.nextCursor,
+            enabled: !options?.disabled,
+          },
+        );
 
   const {
     data: rawData,

@@ -1,4 +1,4 @@
-import { RouterOutputs } from "@/lib/trpc";
+import { type getUserComments } from "@/lib/prismaQueries";
 
 export type PartialK<T, K extends PropertyKey = PropertyKey> = Partial<
   Pick<T, Extract<keyof T, K>>
@@ -18,9 +18,14 @@ export type ChangeTypeOfKeys<
   [key in keyof T]: key extends Keys ? NewType : T[key];
 };
 
+// This is a type that will allow us to get the type of the Prisma Queries from functions
+export type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
+
 /**
  * Custom Types
  */
 
-export type InfinitePostCommentsOutput =
-  RouterOutputs["comment"]["infiniteComments"];
+export type UserComments = Pick<
+  ThenArg<ReturnType<typeof getUserComments>>,
+  "userComments"
+>["userComments"];

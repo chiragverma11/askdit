@@ -412,6 +412,63 @@ export const commentRouter = router({
 
       return new Response("Bookmarked", { status: 200 });
     }),
+  infiniteUserComments: publicProcedure
+    .input(
+      z.object({
+        authorId: z.string(),
+        currentUserId: z.string().optional(),
+        limit: z.number().min(1),
+        cursor: z.string().nullish(),
+        skip: z.number().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const limit = input.limit ?? INFINITE_SCROLL_COMMENT_RESULTS;
+      const { skip, authorId, currentUserId, cursor } = input;
+
+      const comments = await db.comment.findMany({
+        take: limit + 1,
+        skip: skip,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          author: true,
+          votes: true,
+          bookmarks: {
+            where: {
+              userId: currentUserId,
+            },
+          },
+          post: {
+            select: {
+              subreddit: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        where: {
+          authorId,
+          deleted: false,
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (comments.length > limit) {
+        const nextItem = comments.pop();
+        nextCursor = nextItem?.id;
+      }
+
+      return {
+        comments,
+        nextCursor,
+      };
+    }),
   getComment: publicProcedure
     .input(
       z.object({

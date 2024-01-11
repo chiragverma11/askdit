@@ -233,3 +233,44 @@ export const getUserPosts = async ({
 
   return { authorId, userPosts };
 };
+
+export const getUserComments = async ({
+  username,
+  currentUserId,
+}: {
+  username: string;
+  currentUserId: string | undefined;
+}) => {
+  const authorId = await getUserIdByUsername({ username });
+
+  const userComments = await db.comment.findMany({
+    where: {
+      authorId,
+      deleted: false,
+    },
+    include: {
+      author: true,
+      votes: true,
+      bookmarks: {
+        where: {
+          userId: currentUserId,
+        },
+      },
+      post: {
+        select: {
+          subreddit: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return { authorId, userComments };
+};
