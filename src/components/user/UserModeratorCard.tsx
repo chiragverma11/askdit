@@ -37,6 +37,10 @@ const UserModeratorsCard: FC<UserModeratorsCardProps> = async ({
     },
   });
 
+  if (moderatingCommunities.length === 0) {
+    return null;
+  }
+
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-default/40 bg-emphasis px-4 py-4">
       <div className="flex flex-col gap-4">
