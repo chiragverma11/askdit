@@ -12,6 +12,7 @@ import {
   PostValidator,
   PostVoteValidator,
 } from "@/lib/validators/post";
+import { VoteType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
@@ -283,6 +284,60 @@ export const postRouter = router({
         },
         where: {
           authorId: authorId,
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (posts.length > limit) {
+        const nextItem = posts.pop();
+        nextCursor = nextItem?.id;
+      }
+      return {
+        posts,
+        nextCursor,
+      };
+    }),
+  infiniteVotedPosts: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1),
+        voteType: z.nativeEnum(VoteType),
+        authorId: z.string(),
+        currentUserId: z.string().optional(),
+        cursor: z.string().nullish(),
+        skip: z.number().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const limit = input.limit ?? INFINITE_SCROLL_PAGINATION_RESULTS;
+      const { skip, voteType, authorId, currentUserId, cursor } = input;
+
+      const posts = await db.post.findMany({
+        take: limit + 1,
+        skip: skip,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          author: true,
+          votes: true,
+          comments: true,
+          subreddit: true,
+          bookmarks: {
+            where: {
+              userId: currentUserId,
+            },
+          },
+        },
+        where: {
+          votes: {
+            some: {
+              type: voteType,
+              userId: authorId,
+            },
+          },
         },
       });
 

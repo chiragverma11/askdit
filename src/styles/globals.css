@@ -88,6 +88,14 @@
     --ring: 240 5% 64.9%;
 
     --radius: 0.5rem;
+
+    --askdit-header-height: 56px;
+
+    --askdit-bottom-bar-height: 56.67px;
+
+    --mobile-height-adjusted: calc(
+      100vh - var(--askdit-header-height) - var(--askdit-bottom-bar-height)
+    );
   }
 
   .dark {

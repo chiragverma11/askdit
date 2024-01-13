@@ -1,3 +1,4 @@
+import { VoteType } from "@prisma/client";
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "./config";
 import { db } from "./db";
 
@@ -273,4 +274,40 @@ export const getUserComments = async ({
   });
 
   return { authorId, userComments };
+};
+
+export const getUserVotedPosts = async ({
+  userId,
+  voteType,
+}: {
+  userId: string;
+  voteType: VoteType;
+}) => {
+  const posts = await db.post.findMany({
+    where: {
+      votes: {
+        some: {
+          type: voteType,
+          userId: userId,
+        },
+      },
+    },
+    include: {
+      author: true,
+      votes: true,
+      comments: true,
+      subreddit: true,
+      bookmarks: {
+        where: {
+          userId: userId,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return posts;
 };

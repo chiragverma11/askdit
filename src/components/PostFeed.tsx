@@ -10,6 +10,7 @@ import {
   Subreddit,
   User,
   Vote,
+  VoteType,
 } from "@prisma/client";
 import { Session } from "next-auth";
 import { usePathname } from "next/navigation";
@@ -59,11 +60,19 @@ interface UserPostsProps extends CommonPostProps {
   initialPosts: InitialPostWithBookmark;
 }
 
+interface VotedPostsProps extends CommonPostProps {
+  type: "votedPost";
+  authorId: string;
+  voteType: VoteType;
+  initialPosts: InitialPostWithBookmark;
+}
+
 type PostFeedProps =
   | CommunityPostsProps
   | AuthenticatedPostsProps
   | GeneralPostsProps
-  | UserPostsProps;
+  | UserPostsProps
+  | VotedPostsProps;
 
 const PostFeed: FC<PostFeedProps> = ({ initialPosts, session, ...props }) => {
   const pathname = usePathname();

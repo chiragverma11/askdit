@@ -1,4 +1,4 @@
-import { ArrowLeft, Loader, LucideProps, Settings } from "lucide-react";
+import { ArrowLeft, Ban, Loader, LucideProps, Settings } from "lucide-react";
 import { RxGithubLogo } from "react-icons/rx";
 
 export const Icons = {
@@ -155,4 +155,5 @@ export const Icons = {
   github: RxGithubLogo,
   backArrow: ArrowLeft,
   settings: Settings,
+  blocked: Ban,
 };

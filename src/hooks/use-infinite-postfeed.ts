@@ -1,5 +1,6 @@
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
 import { RouterOutputs, trpc } from "@/lib/trpc";
+import { VoteType } from "@prisma/client";
 import { InfiniteData } from "@tanstack/react-query";
 
 interface CommonInfinitePostsProps {
@@ -25,11 +26,18 @@ interface InfiniteUserPostsProps extends CommonInfinitePostsProps {
   authorId: string;
 }
 
+interface InfinteVotedPostsProps extends CommonInfinitePostsProps {
+  type: "votedPost";
+  authorId: string;
+  voteType: VoteType;
+}
+
 type Options =
   | InfiniteCommunityPostsProps
   | InfiniteAuthenticatedPostsProps
   | InfiniteGeneralPostsProps
-  | InfiniteUserPostsProps;
+  | InfiniteUserPostsProps
+  | InfinteVotedPostsProps;
 
 type DataReturnType<T extends Options> = T extends InfiniteCommunityPostsProps
   ? InfiniteData<RouterOutputs["post"]["infiniteCommunityPosts"]>
@@ -37,7 +45,9 @@ type DataReturnType<T extends Options> = T extends InfiniteCommunityPostsProps
   ? InfiniteData<RouterOutputs["post"]["infiniteAuthenticatedPosts"]>
   : T extends InfiniteGeneralPostsProps
   ? InfiniteData<RouterOutputs["post"]["infiniteGeneralPosts"]>
-  : InfiniteData<RouterOutputs["post"]["infiniteUserPosts"]>;
+  : T extends InfiniteUserPostsProps
+  ? InfiniteData<RouterOutputs["post"]["infiniteUserPosts"]>
+  : InfiniteData<RouterOutputs["post"]["infiniteVotedPosts"]>;
 
 export function useInfinitePostFeed<T extends Options>(options: T) {
   const trpcInfiniteQueryRequest =
@@ -72,10 +82,20 @@ export function useInfinitePostFeed<T extends Options>(options: T) {
             getNextPageParam: (lastPage) => lastPage?.nextCursor,
           },
         )
-      : trpc.post.infiniteUserPosts.useInfiniteQuery(
+      : options.type === "userPost"
+      ? trpc.post.infiniteUserPosts.useInfiniteQuery(
           {
             limit: INFINITE_SCROLL_PAGINATION_RESULTS,
             authorId: options.authorId,
+            currentUserId: options.userId,
+          },
+          { getNextPageParam: (lastPage) => lastPage?.nextCursor },
+        )
+      : trpc.post.infiniteVotedPosts.useInfiniteQuery(
+          {
+            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+            authorId: options.authorId,
+            voteType: options.voteType,
             currentUserId: options.userId,
           },
           { getNextPageParam: (lastPage) => lastPage?.nextCursor },
