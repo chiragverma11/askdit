@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Session } from "next-auth";
 import { FC, useState } from "react";
@@ -17,6 +18,7 @@ const Communities: FC<CommunitiesProps> = ({ session, explore }) => {
   const [activeMenu, setActiveMenu] = useState<"Your Communities" | "Explore">(
     explore ? "Explore" : "Your Communities",
   );
+  const [parent, enableAnimations] = useAutoAnimate();
 
   return (
     <div className="flex flex-col gap-5">
@@ -52,7 +54,10 @@ const Communities: FC<CommunitiesProps> = ({ session, explore }) => {
           );
         })}
       </div>
-      <div className="flex max-h-[calc(72vh)] w-full flex-col items-center gap-4 overflow-y-auto px-4 pb-10 lg:max-h-none lg:px-0 lg:pb-0 landscape:pb-20 lg:landscape:pb-0">
+      <div
+        className="flex max-h-[calc(72vh)] w-full flex-col items-center gap-4 overflow-y-auto px-4 pb-10 lg:max-h-none lg:px-0 lg:pb-0 landscape:pb-20 lg:landscape:pb-0"
+        ref={parent}
+      >
         <AnimatePresence>
           {!session ? (
             <CommunitiesFallback type="unauthenticated" />
