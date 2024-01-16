@@ -1,4 +1,4 @@
-import { type getUserComments } from "@/lib/prismaQueries";
+import { getUserBookmarks, type getUserComments } from "@/lib/prismaQueries";
 
 export type PartialK<T, K extends PropertyKey = PropertyKey> = Partial<
   Pick<T, Extract<keyof T, K>>
@@ -29,3 +29,5 @@ export type UserComments = Pick<
   ThenArg<ReturnType<typeof getUserComments>>,
   "userComments"
 >["userComments"];
+
+export type UserBookmarks = ThenArg<ReturnType<typeof getUserBookmarks>>;

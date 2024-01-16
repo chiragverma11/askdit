@@ -311,3 +311,45 @@ export const getUserVotedPosts = async ({
 
   return posts;
 };
+
+export const getUserBookmarks = async ({ userId }: { userId: string }) => {
+  const userBookmarks = await db.bookmark.findMany({
+    where: {
+      userId,
+    },
+    include: {
+      post: {
+        include: {
+          author: true,
+          votes: true,
+          comments: true,
+          subreddit: true,
+        },
+      },
+      comment: {
+        where: {
+          deleted: false,
+        },
+        include: {
+          author: true,
+          votes: true,
+          post: {
+            select: {
+              subreddit: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return userBookmarks;
+};
