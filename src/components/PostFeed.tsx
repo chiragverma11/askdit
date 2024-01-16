@@ -35,6 +35,7 @@ type InitialPostWithoutBookmark = (PrismaPost & {
 
 interface CommonPostProps {
   session: Session | null;
+  variant?: "card" | "compact";
 }
 
 interface CommunityPostsProps extends CommonPostProps {
@@ -74,7 +75,12 @@ type PostFeedProps =
   | UserPostsProps
   | VotedPostsProps;
 
-const PostFeed: FC<PostFeedProps> = ({ initialPosts, session, ...props }) => {
+const PostFeed: FC<PostFeedProps> = ({
+  initialPosts,
+  variant = "card",
+  session,
+  ...props
+}) => {
   const pathname = usePathname();
 
   const lastPostRef = useRef<HTMLElement>(null);
@@ -107,6 +113,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, session, ...props }) => {
           return (
             <li ref={ref} key={post.id}>
               <Post
+                variant={variant}
                 post={post}
                 votesAmt={votesAmt}
                 isCommunity={props.type === "communityPost"}
@@ -121,6 +128,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, session, ...props }) => {
           return (
             <li key={post.id}>
               <Post
+                variant={variant}
                 post={post}
                 votesAmt={votesAmt}
                 isCommunity={props.type === "communityPost"}

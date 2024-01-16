@@ -1,4 +1,18 @@
-import { ArrowLeft, Ban, Loader, LucideProps, Settings } from "lucide-react";
+import {
+  AlignJustify,
+  ArrowLeft,
+  Ban,
+  Dot,
+  ExternalLink,
+  ImageIcon,
+  Link,
+  Loader,
+  LucideProps,
+  Maximize2,
+  MessageSquare,
+  Minimize2,
+  Settings,
+} from "lucide-react";
 import { RxGithubLogo } from "react-icons/rx";
 
 export const Icons = {
@@ -156,4 +170,12 @@ export const Icons = {
   backArrow: ArrowLeft,
   settings: Settings,
   blocked: Ban,
+  alignJustify: AlignJustify,
+  dot: Dot,
+  link:Link,
+  externalLink: ExternalLink,
+  imageIcon: ImageIcon,
+  maximize: Maximize2,
+  message: MessageSquare,
+  minimize: Minimize2,
 };
