@@ -1,5 +1,6 @@
 import PostFeed from "@/components/PostFeed";
 import NoAccess from "@/components/user/NoAccess";
+import NoUserContent from "@/components/user/NoUserContent";
 import { getAuthSession } from "@/lib/auth";
 import { getUserIdByUsername, getUserVotedPosts } from "@/lib/prismaQueries";
 import { FC } from "react";
@@ -26,6 +27,16 @@ const UserProfileDownvotedPage: FC<UserProfileDownvotedPageProps> = async ({
     userId: userId!,
     voteType: "DOWN",
   });
+
+  if (userDownvotedPosts.length === 0) {
+    return (
+      <NoUserContent
+        isUserSelf={session?.user.id === userId}
+        username={username}
+        profileMenu="downvoted"
+      />
+    );
+  }
 
   return (
     <PostFeed

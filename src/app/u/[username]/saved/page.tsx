@@ -1,4 +1,5 @@
 import NoAccess from "@/components/user/NoAccess";
+import NoUserContent from "@/components/user/NoUserContent";
 import UserBookmarkFeed from "@/components/user/UserBookmarkFeed";
 import { getAuthSession } from "@/lib/auth";
 import { getUserBookmarks, getUserIdByUsername } from "@/lib/prismaQueries";
@@ -23,6 +24,16 @@ const UserProfileSavedPage: FC<UserProfileSavedPageProps> = async ({
   }
 
   const userBookmarks = await getUserBookmarks({ userId: userId! });
+
+  if (userBookmarks.length === 0) {
+    return (
+      <NoUserContent
+        isUserSelf={session?.user.id === userId}
+        username={username}
+        profileMenu="saved"
+      />
+    );
+  }
 
   return <UserBookmarkFeed initialBookmarks={userBookmarks} userId={userId!} />;
 };
