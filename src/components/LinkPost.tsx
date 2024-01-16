@@ -93,7 +93,7 @@ export const LinkPostCompactPreview: FC<Pick<LinkPostProps, "content">> = ({
       ) : (
         <Icons.link className="h-5 w-5" />
       )}
-      <span className="absolute bottom-0 right-0 rounded-tl-md bg-zinc-300 p-1 text-inverted/75">
+      <span className="absolute bottom-0 right-0 rounded-tl-md bg-zinc-300 p-1 text-zinc-700">
         <Icons.externalLink className="h-3.5 w-3.5" strokeWidth={2.25} />
       </span>
     </Link>
