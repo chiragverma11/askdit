@@ -290,13 +290,18 @@ const SamePostUserComments = forwardRef<
 
 SamePostUserComments.displayName = "SamePostUserComments";
 
-const UserCommentSkeleton = () => {
+const UserCommentSkeleton = ({
+  disableAnimation = false,
+}: {
+  disableAnimation?: boolean;
+}) => {
   return (
     <SkeletonTheme
       baseColor="var(--skeleton-base)"
       highlightColor="var(--skeleton-highlight)"
       duration={2}
       inline={false}
+      enableAnimation={!disableAnimation}
     >
       <div className="flex w-full flex-col border-b border-t border-default/25 bg-emphasis text-xs md:rounded-lg md:border">
         <div>

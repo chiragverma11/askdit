@@ -4,23 +4,30 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 interface PostSkeletonProps {
   variant?: "card" | "compact";
+  disableAnimation?: boolean;
 }
 
-const PostSkeleton: FC<PostSkeletonProps> = ({ variant = "card" }) => {
+const PostSkeleton: FC<PostSkeletonProps> = ({
+  variant = "card",
+  disableAnimation = false,
+}) => {
   if (variant === "card") {
-    return <CardVariantPostSkeleton />;
+    return <CardVariantPostSkeleton disableAnimation={disableAnimation} />;
   } else if (variant === "compact") {
-    return <CompactVariantPostSkeleton />;
+    return <CompactVariantPostSkeleton disableAnimation={disableAnimation} />;
   }
 };
 
-const CardVariantPostSkeleton = () => {
+const CardVariantPostSkeleton: FC<
+  Pick<PostSkeletonProps, "disableAnimation">
+> = ({ disableAnimation }) => {
   return (
     <SkeletonTheme
       baseColor="var(--skeleton-base)"
       highlightColor="var(--skeleton-highlight)"
       duration={2}
       inline={false}
+      enableAnimation={!disableAnimation}
     >
       <div className="relative mx-auto flex w-full flex-col gap-2 border-b border-t border-default/25 bg-emphasis px-4 py-3 text-sm md:rounded-3xl md:border lg:p-4 lg:hover:border-default/60">
         <div className="flex w-full items-center">
@@ -51,13 +58,16 @@ const CardVariantPostSkeleton = () => {
   );
 };
 
-const CompactVariantPostSkeleton = () => {
+const CompactVariantPostSkeleton: FC<
+  Pick<PostSkeletonProps, "disableAnimation">
+> = ({ disableAnimation }) => {
   return (
     <SkeletonTheme
       baseColor="var(--skeleton-base)"
       highlightColor="var(--skeleton-highlight)"
       duration={2}
       inline={false}
+      enableAnimation={!disableAnimation}
     >
       <div className="relative mx-auto flex w-full flex-col gap-2 border-b border-t border-default/25 bg-emphasis px-4 py-3 text-sm md:rounded-lg md:border lg:p-3 lg:hover:border-default/60">
         <div className="flex flex-row-reverse justify-between gap-2 md:flex-row md:justify-normal">
