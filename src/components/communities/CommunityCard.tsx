@@ -1,14 +1,12 @@
 import { cn, getDefaultCommunityBg } from "@/lib/utils";
-import { ChangeTypeOfKeys } from "@/types/utilities";
 import { Subreddit } from "@prisma/client";
 import { Session } from "next-auth";
 import Link from "next/link";
 import { FC } from "react";
 import SubscribeLeaveToggle from "../SubscribeLeaveToggle";
 import UserAvatar from "../UserAvatar";
-
 interface CommunityCardProps {
-  community: ChangeTypeOfKeys<Subreddit, "createdAt" | "updatedAt", string> & {
+  community: Subreddit & {
     _count: { subscribers: number };
   };
   session: Session | null;
