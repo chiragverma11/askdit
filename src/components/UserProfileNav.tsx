@@ -143,7 +143,6 @@ const UserProfileNavDrawer: FC<UserProfileNavProps> = ({ user }) => {
             ? "ring-2 ring-brand-default/50 ring-offset-2 ring-offset-default/75"
             : null,
         )}
-        asChild
       >
         <UserAvatar user={user} />
       </DrawerTrigger>
