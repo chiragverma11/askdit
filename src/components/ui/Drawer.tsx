@@ -28,7 +28,7 @@ const DrawerOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DrawerPrimitive.Overlay
     ref={ref}
-    className={cn("fixed inset-0 z-50 bg-black/80", className)}
+    className={cn("fixed inset-0 z-[51] bg-black/80", className)}
     {...props}
   />
 ));
@@ -36,19 +36,23 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content> & {
+    disableThumb?: boolean;
+  }
+>(({ disableThumb, className, children, ...props }, ref) => (
   <DrawerPortal>
     <DrawerOverlay />
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
+        "fixed inset-x-0 bottom-0 z-[51] mt-24 flex h-auto flex-col rounded-t-2xl border bg-background",
         className,
       )}
       {...props}
     >
-      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
+      {!disableThumb && (
+        <div className="mx-auto mt-2 h-[5px] w-[45px] rounded-full bg-highlight" />
+      )}
       {children}
     </DrawerPrimitive.Content>
   </DrawerPortal>
@@ -104,6 +108,43 @@ const DrawerDescription = React.forwardRef<
 ));
 DrawerDescription.displayName = DrawerPrimitive.Description.displayName;
 
+interface DrawerItemProps extends React.ComponentPropsWithoutRef<"div"> {
+  asChild?: boolean;
+  children: React.ReactNode;
+}
+
+const DrawerItem = React.forwardRef<HTMLDivElement, DrawerItemProps>(
+  ({ asChild, className, children, ...props }, ref) => {
+    if (
+      asChild &&
+      React.isValidElement(children) &&
+      React.Children.count(children) === 1
+    ) {
+      return React.cloneElement(children as React.ReactElement, {
+        ref,
+        className: cn(
+          "flex items-center px-5 py-3",
+          className,
+          children.props.className,
+        ),
+        ...props,
+      });
+    }
+
+    return (
+      <div
+        className={cn("flex items-center px-5 py-3", className)}
+        ref={ref}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  },
+);
+
+DrawerItem.displayName = "DrawerItem";
+
 export {
   Drawer,
   DrawerPortal,
@@ -115,4 +156,5 @@ export {
   DrawerFooter,
   DrawerTitle,
   DrawerDescription,
+  DrawerItem,
 };
