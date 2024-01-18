@@ -17,7 +17,7 @@ interface CreatePostPageProps {
 const CreatePostPage: FC<CreatePostPageProps> = async ({ searchParams }) => {
   return (
     <MainContentWrapper>
-      <FeedWrapper className="md:max-w-[680px] md:px-0">
+      <FeedWrapper className="px-2 md:max-w-[680px] md:px-0">
         <h1 className="flex items-center gap-2 text-lg font-semibold">
           <BackButton />
           Create a Post
