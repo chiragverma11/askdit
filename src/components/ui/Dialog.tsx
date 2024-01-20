@@ -109,6 +109,43 @@ const DialogDescription = React.forwardRef<
 ));
 DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
+interface DialogItemProps extends React.ComponentPropsWithoutRef<"div"> {
+  asChild?: boolean;
+  children: React.ReactNode;
+}
+
+const DialogItem = React.forwardRef<HTMLDivElement, DialogItemProps>(
+  ({ asChild, className, children, ...props }, ref) => {
+    if (
+      asChild &&
+      React.isValidElement(children) &&
+      React.Children.count(children) === 1
+    ) {
+      return React.cloneElement(children as React.ReactElement, {
+        ref,
+        className: cn(
+          "flex items-center p-4",
+          className,
+          children.props.className,
+        ),
+        ...props,
+      });
+    }
+
+    return (
+      <div
+        className={cn("flex items-center p-4", className)}
+        ref={ref}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  },
+);
+
+DialogItem.displayName = "DialogItem";
+
 export {
   Dialog,
   DialogTrigger,
@@ -117,4 +154,5 @@ export {
   DialogFooter,
   DialogTitle,
   DialogDescription,
+  DialogItem,
 };
