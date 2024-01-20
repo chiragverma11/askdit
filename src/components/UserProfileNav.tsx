@@ -9,9 +9,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FC, useState } from "react";
 import { HiOutlineUserGroup } from "react-icons/hi";
+import AskditAuthorCard from "./AskditAuthorCard";
 import ThemeSwitch from "./ThemeSwitch";
 import UserAvatar from "./UserAvatar";
-import { Drawer, DrawerContent, DrawerItem, DrawerTrigger } from "./ui/Drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerFooter,
+  DrawerItem,
+  DrawerTrigger,
+} from "./ui/Drawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -114,6 +121,10 @@ const UserProfileNavDropdown: FC<UserProfileNavProps> = ({ user }) => {
           <LogOut className="mr-2 h-5 w-5 stroke-[1.75]" />
           Sign Out
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <div className="px-2 py-1">
+          <AskditAuthorCard className="py-0" card={false} />
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -147,7 +158,7 @@ const UserProfileNavDrawer: FC<UserProfileNavProps> = ({ user }) => {
         <UserAvatar user={user} />
       </DrawerTrigger>
       <DrawerContent
-        className="border-[0.5px] bg-emphasis text-sm dark:bg-default"
+        className="text-sm"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <div className="py-1">
@@ -159,7 +170,9 @@ const UserProfileNavDrawer: FC<UserProfileNavProps> = ({ user }) => {
               </p>
             </div>
           </DrawerItem>
+
           <Separator className="my-1" />
+
           <DrawerItem onClick={() => setOpen(false)} asChild>
             <Link
               href={`/u/${user.username}`}
@@ -201,7 +214,9 @@ const UserProfileNavDrawer: FC<UserProfileNavProps> = ({ user }) => {
               <ThemeSwitch />
             </div>
           </DrawerItem>
+
           <Separator className="my-1" />
+
           <DrawerItem onClick={() => setOpen(false)} asChild>
             <div
               onSelect={(event) => {
@@ -214,6 +229,12 @@ const UserProfileNavDrawer: FC<UserProfileNavProps> = ({ user }) => {
               Sign Out
             </div>
           </DrawerItem>
+
+          <Separator className="my-1" />
+
+          <DrawerFooter className="mt-0 py-2">
+            <AskditAuthorCard className="py-0" card={false} />
+          </DrawerFooter>
         </div>
       </DrawerContent>
     </Drawer>
