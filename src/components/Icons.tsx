@@ -12,6 +12,8 @@ import {
   MessageSquare,
   Minimize2,
   Settings,
+  MoreHorizontal,
+  QrCode,
 } from "lucide-react";
 import { RxGithubLogo } from "react-icons/rx";
 
@@ -172,10 +174,12 @@ export const Icons = {
   blocked: Ban,
   alignJustify: AlignJustify,
   dot: Dot,
-  link:Link,
+  link: Link,
   externalLink: ExternalLink,
   imageIcon: ImageIcon,
   maximize: Maximize2,
   message: MessageSquare,
   minimize: Minimize2,
+  moreHorizontal: MoreHorizontal,
+  qrCode: QrCode,
 };
