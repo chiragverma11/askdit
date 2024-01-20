@@ -45,7 +45,7 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-[51] mt-24 flex h-auto flex-col rounded-t-2xl border bg-background",
+        "fixed inset-x-0 bottom-0 z-[51] mt-24 flex h-auto flex-col rounded-t-2xl border-[0.5px] bg-emphasis dark:bg-default",
         className,
       )}
       {...props}
@@ -123,7 +123,7 @@ const DrawerItem = React.forwardRef<HTMLDivElement, DrawerItemProps>(
       return React.cloneElement(children as React.ReactElement, {
         ref,
         className: cn(
-          "flex items-center px-5 py-3",
+          "flex items-center p-4",
           className,
           children.props.className,
         ),
@@ -133,7 +133,7 @@ const DrawerItem = React.forwardRef<HTMLDivElement, DrawerItemProps>(
 
     return (
       <div
-        className={cn("flex items-center px-5 py-3", className)}
+        className={cn("flex items-center p-4", className)}
         ref={ref}
         {...props}
       >
@@ -147,14 +147,14 @@ DrawerItem.displayName = "DrawerItem";
 
 export {
   Drawer,
-  DrawerPortal,
-  DrawerOverlay,
-  DrawerTrigger,
   DrawerClose,
   DrawerContent,
-  DrawerHeader,
-  DrawerFooter,
-  DrawerTitle,
   DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
   DrawerItem,
+  DrawerOverlay,
+  DrawerPortal,
+  DrawerTitle,
+  DrawerTrigger,
 };
