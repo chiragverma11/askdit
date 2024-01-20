@@ -16,6 +16,7 @@ import {
   QrCode,
 } from "lucide-react";
 import { RxGithubLogo } from "react-icons/rx";
+import { TbShare3 } from "react-icons/tb";
 
 export const Icons = {
   logo: (props: LucideProps) => (
@@ -182,4 +183,5 @@ export const Icons = {
   minimize: Minimize2,
   moreHorizontal: MoreHorizontal,
   qrCode: QrCode,
+  share: TbShare3,
 };

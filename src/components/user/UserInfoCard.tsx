@@ -1,25 +1,36 @@
+import React, { FC } from "react";
+
 import { cn } from "@/lib/utils";
 import { User } from "@prisma/client";
 import { Session } from "next-auth";
 import Link from "next/link";
-import { FC } from "react";
 import { Icons } from "../Icons";
 import UserAvatar from "../UserAvatar";
 import { buttonVariants } from "../ui/Button";
 import { Separator } from "../ui/Separator";
+import ShareUserProfileButton from "./ShareUserProfileButton";
 
 type UserInfo = Pick<User, "id" | "name" | "username" | "image">;
 
-interface UserInfoCardProps {
+interface UserInfoCardProps extends React.ComponentPropsWithoutRef<"div"> {
   session: Session | null;
   userInfo: UserInfo;
 }
 
-const UserInfoCard: FC<UserInfoCardProps> = ({ session, userInfo }) => {
+const UserInfoCard: FC<UserInfoCardProps> = ({
+  session,
+  userInfo,
+  className,
+}) => {
   if (!userInfo) return null;
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-default/40 bg-emphasis px-4 py-4">
+    <div
+      className={cn(
+        "flex flex-col gap-4 rounded-xl border border-default/40 bg-emphasis px-4 py-4",
+        className,
+      )}
+    >
       <div className="flex flex-col gap-5">
         <div className="flex h-auto w-full flex-col items-center gap-4 text-sm">
           <UserTitle
@@ -67,7 +78,12 @@ const UserTitle: FC<UserTitleProps> = ({
         <Link href="/settings/profile" className="ml-auto">
           <Icons.settings className="h-5 w-5 text-default/80 transition-transform duration-200 ease-in-out hover:rotate-90" />
         </Link>
-      ) : null}
+      ) : (
+        <ShareUserProfileButton
+          title={`${name} (${username}) | Askdit`}
+          className="ml-auto text-default/80"
+        />
+      )}
     </div>
   );
 };
