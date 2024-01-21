@@ -1,7 +1,10 @@
 "use client";
 
+import { FC, useEffect, useRef } from "react";
+
 import { useInfinitePostFeed } from "@/hooks/use-infinite-postfeed";
 import { getVotesAmount } from "@/lib/utils";
+import { FeedViewType } from "@/types/utilities";
 import { useIntersection } from "@mantine/hooks";
 import {
   Bookmark,
@@ -14,7 +17,6 @@ import {
 } from "@prisma/client";
 import { Session } from "next-auth";
 import { usePathname } from "next/navigation";
-import { FC, useEffect, useRef } from "react";
 import Post from "./Post";
 import PostSkeleton from "./PostSkeleton";
 
@@ -35,7 +37,7 @@ type InitialPostWithoutBookmark = (PrismaPost & {
 
 interface CommonPostProps {
   session: Session | null;
-  variant?: "card" | "compact";
+  variant?: FeedViewType;
 }
 
 interface CommunityPostsProps extends CommonPostProps {

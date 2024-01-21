@@ -1,6 +1,9 @@
 "use client";
 
+import { FC, useState } from "react";
+
 import { cn, formatTimeToNow } from "@/lib/utils";
+import { FeedViewType } from "@/types/utilities";
 import {
   Bookmark,
   Comment,
@@ -11,7 +14,6 @@ import {
   VoteType,
 } from "@prisma/client";
 import Link from "next/link";
-import { FC, useState } from "react";
 import CommunityAvatar from "./CommunityAvatar";
 import EditorOutput from "./EditorOutput";
 import { Icons } from "./Icons";
@@ -30,7 +32,7 @@ interface PostProps extends React.ComponentPropsWithoutRef<"div"> {
     comments: Comment[];
     bookmarks?: Bookmark[];
   };
-  variant?: "card" | "compact";
+  variant?: FeedViewType;
   isCommunity?: boolean;
   votesAmt: number;
   currentVoteType?: VoteType;

@@ -31,3 +31,5 @@ export type UserComments = Pick<
 >["userComments"];
 
 export type UserBookmarks = ThenArg<ReturnType<typeof getUserBookmarks>>;
+
+export type FeedViewType = "card" | "compact";

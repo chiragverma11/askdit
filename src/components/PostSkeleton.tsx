@@ -1,9 +1,11 @@
 import { FC } from "react";
+
+import { FeedViewType } from "@/types/utilities";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 interface PostSkeletonProps {
-  variant?: "card" | "compact";
+  variant?: FeedViewType;
   disableAnimation?: boolean;
 }
 
