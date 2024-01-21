@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Session } from "next-auth";
 import { FC, useState } from "react";
 import "react-loading-skeleton/dist/skeleton.css";
+import { ScrollArea } from "../ui/Scroll-Area";
 import CommunitiesFallback from "./CommunitiesFallback";
 import ExploreCommunities from "./ExploreCommunities";
 import YourCommunities from "./YourCommunities";
@@ -54,20 +55,22 @@ const Communities: FC<CommunitiesProps> = ({ session, explore }) => {
           );
         })}
       </div>
-      <div
-        className="flex max-h-[calc(72vh)] w-full flex-col items-center gap-4 overflow-y-auto px-4 pb-10 lg:max-h-none lg:px-0 lg:pb-0 landscape:pb-20 lg:landscape:pb-0"
-        ref={parent}
-      >
-        <AnimatePresence>
-          {!session ? (
-            <CommunitiesFallback type="unauthenticated" />
-          ) : activeMenu === "Your Communities" ? (
-            <YourCommunities session={session} />
-          ) : (
-            <ExploreCommunities session={session} />
-          )}
-        </AnimatePresence>
-      </div>
+      <ScrollArea className="h-[calc(var(--mobile-height-adjusted)-56px)]">
+        <div
+          className="flex w-full flex-col items-center gap-4 px-4 pb-16 lg:max-h-none lg:px-0 lg:pb-0"
+          ref={parent}
+        >
+          <AnimatePresence>
+            {!session ? (
+              <CommunitiesFallback type="unauthenticated" />
+            ) : activeMenu === "Your Communities" ? (
+              <YourCommunities session={session} />
+            ) : (
+              <ExploreCommunities session={session} />
+            )}
+          </AnimatePresence>
+        </div>
+      </ScrollArea>
     </div>
   );
 };
