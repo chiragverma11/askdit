@@ -2,6 +2,8 @@ import { PostType } from "@prisma/client";
 import { z } from "zod";
 import { POST_TITLE_LENGTH, URL_WITH_OPTIONAL_PROTOCOL_REGEX } from "../config";
 
+export const FeedViewTypeSchema = z.enum(["card", "compact"]);
+
 export const PostValidator = z.object({
   title: z
     .string()

@@ -1,4 +1,6 @@
 import { getUserBookmarks, type getUserComments } from "@/lib/prismaQueries";
+import { FeedViewTypeSchema } from "@/lib/validators/post";
+import { z } from "zod";
 
 export type PartialK<T, K extends PropertyKey = PropertyKey> = Partial<
   Pick<T, Extract<keyof T, K>>
@@ -32,4 +34,4 @@ export type UserComments = Pick<
 
 export type UserBookmarks = ThenArg<ReturnType<typeof getUserBookmarks>>;
 
-export type FeedViewType = "card" | "compact";
+export type FeedViewType = z.infer<typeof FeedViewTypeSchema>;
