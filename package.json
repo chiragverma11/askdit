@@ -84,7 +84,8 @@
     "uploadthing": "^5.7.2",
     "url-metadata": "^3.3.0",
     "vaul": "^0.8.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zustand": "^4.5.0"
   },
   "devDependencies": {
     "@types/node": "^20",
