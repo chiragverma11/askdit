@@ -231,4 +231,37 @@ export const communityRouter = router({
 
       return searchCommunitiesResult;
     }),
+  moderatingCommunities: publicProcedure
+    .input(
+      z.object({
+        creatorId: z.string().min(1),
+        currentUserId: z.string().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { creatorId, currentUserId } = opts.input;
+
+      const moderatingCommunities = await db.subreddit.findMany({
+        where: {
+          creatorId,
+        },
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          _count: {
+            select: {
+              subscribers: true,
+            },
+          },
+          subscribers: {
+            where: {
+              userId: currentUserId,
+            },
+          },
+        },
+      });
+
+      return moderatingCommunities;
+    }),
 });

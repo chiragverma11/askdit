@@ -3,6 +3,7 @@ import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import SideMenuWrapper from "@/components/layout/SideMenuWrapper";
 import UserFeedSelector from "@/components/user/UserFeedSelector";
 import UserInfoCard from "@/components/user/UserInfoCard";
+import UserInfoMobile from "@/components/user/UserInfoMobile";
 import UserModeratorsCard, {
   UserModeratorCardSkeleton,
 } from "@/components/user/UserModeratorCard";
@@ -61,6 +62,10 @@ export default async function UserLayout({
   return (
     <MainContentWrapper>
       <FeedWrapper>
+        <UserInfoMobile
+          session={session}
+          userInfo={{ username, ...userInfo }}
+        />
         <UserFeedSelector
           isUserSelf={session?.user.id === userInfo?.id}
           username={username}
@@ -68,23 +73,16 @@ export default async function UserLayout({
         {children}
       </FeedWrapper>
       <SideMenuWrapper className="sticky top-[72px] h-fit justify-start">
-        {userInfo ? (
-          <UserInfoCard
-            session={session}
-            userInfo={{ username, ...userInfo }}
-          />
-        ) : null}
-        {userInfo?.id ? (
-          <Suspense
-            fallback={
-              <UserModeratorCardSkeleton
-                isUserSelf={session?.user.id === userInfo.id}
-              />
-            }
-          >
-            <UserModeratorsCard userId={userInfo?.id} session={session} />
-          </Suspense>
-        ) : null}
+        <UserInfoCard session={session} userInfo={{ username, ...userInfo }} />
+        <Suspense
+          fallback={
+            <UserModeratorCardSkeleton
+              isUserSelf={session?.user.id === userInfo.id}
+            />
+          }
+        >
+          <UserModeratorsCard userId={userInfo?.id} session={session} />
+        </Suspense>
       </SideMenuWrapper>
     </MainContentWrapper>
   );
