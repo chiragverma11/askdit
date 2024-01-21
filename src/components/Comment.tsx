@@ -3,13 +3,13 @@ import { RouterOutputs, trpc } from "@/lib/trpc";
 import { cn, formatTimeToNow, getVotesAmount } from "@/lib/utils";
 import { PartialK } from "@/types/utilities";
 import { VoteType } from "@prisma/client";
-import { Dot, Maximize2, MessageSquare } from "lucide-react";
 import { User } from "next-auth";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { FC, useState } from "react";
 import AddReply from "./AddReply";
 import CommentVote from "./CommentVote";
+import { Icons } from "./Icons";
 import MoreOptions from "./MoreOptions";
 import ShareButton from "./ShareButton";
 import UserAvatar from "./UserAvatar";
@@ -91,7 +91,7 @@ const Comment: FC<CommentProps> = ({
         ) : (
           <div className="flex items-center gap-1.5">
             {!showReplies ? (
-              <Maximize2
+              <Icons.maximize
                 className="h-3.5 w-3.5 rotate-90 cursor-pointer text-blue-500 dark:text-blue-400"
                 onClick={() =>
                   setShowReplies((prevShowReplies) => !prevShowReplies)
@@ -116,7 +116,7 @@ const Comment: FC<CommentProps> = ({
             </span>
           )}
           <div className="flex items-center text-subtle">
-            <Dot className="h-4 w-4" strokeWidth={4} />
+            <Icons.dot className="h-4 w-4" strokeWidth={4} />
             <span>{formatTimeToNow(new Date(comment.createdAt))}</span>
           </div>
         </div>
@@ -266,8 +266,8 @@ const ReplyButton: FC<ReplyButtonProps> = ({ onClick }) => {
       className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl px-3 py-2 hover:bg-highlight/40 dark:hover:bg-highlight/60"
       onClick={onClick}
     >
-      <MessageSquare className="h-5 w-5" />
-      <span>Reply</span>
+      <Icons.message className="h-5 w-5" />
+      <span className="hidden lg:inline">Reply</span>
     </span>
   );
 };

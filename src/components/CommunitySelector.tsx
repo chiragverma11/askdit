@@ -2,7 +2,6 @@
 
 import { Subreddit } from "@prisma/client";
 import { LineWobble } from "@uiball/loaders";
-import { ChevronDown } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 
@@ -25,6 +24,7 @@ import { useDebouncedValue } from "@mantine/hooks";
 import { useSession } from "next-auth/react";
 import { z } from "zod";
 import CommunityAvatar from "./CommunityAvatar";
+import { Icons } from "./Icons";
 
 interface CommunitySelectorProps {
   community?: Subreddit;
@@ -102,7 +102,7 @@ const CommunitySelector: React.FC<CommunitySelectorProps> = ({ community }) => {
               Choose a community
             </div>
           )}
-          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <Icons.chevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[250px] p-0">

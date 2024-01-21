@@ -3,13 +3,13 @@
 import { cn, formatTimeToNow, getVotes } from "@/lib/utils";
 import { UserComments } from "@/types/utilities";
 import { VoteType } from "@prisma/client";
-import { Dot, MessageSquare, MessagesSquare } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { FC, forwardRef, useState } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import CommentVote from "../CommentVote";
+import { Icons } from "../Icons";
 import MoreOptions from "../MoreOptions";
 import ShareButton from "../ShareButton";
 import UserAvatar from "../UserAvatar";
@@ -90,7 +90,7 @@ const UserComment: FC<UserCommentProps> = ({
               </span>
             </Link>
             <div className="flex items-center text-subtle">
-              <Dot className="h-4 w-4" strokeWidth={4} />
+              <Icons.dot className="h-4 w-4" strokeWidth={4} />
               <span>{formatTimeToNow(new Date(comment.createdAt))}</span>
             </div>
           </div>
@@ -160,7 +160,7 @@ const ReplyButton: FC<ReplyButtonProps> = ({ onClick }) => {
       className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl px-3 py-2 hover:bg-highlight/40 dark:hover:bg-highlight/60"
       onClick={onClick}
     >
-      <MessageSquare className="h-5 w-5" />
+      <Icons.message className="h-5 w-5" />
       <span className="hidden lg:inline">Reply</span>
     </span>
   );
@@ -195,7 +195,7 @@ const UserCommentHeader: FC<UserCommentHeaderProps> = ({
         ></Link>
         <div className="flex w-fit items-center">
           <div className="flex items-center gap-1">
-            <MessagesSquare className="mr-1 h-5 w-5" />
+            <Icons.messages className="mr-1 h-5 w-5" />
             <Link
               href={`/u/${authorUsername}`}
               className="z-[1] font-semibold text-default/90 hover:underline dark:hover:text-red-100"
@@ -210,7 +210,7 @@ const UserCommentHeader: FC<UserCommentHeaderProps> = ({
               Post
             </Link>
           </div>
-          <Dot className="h-4 w-4 text-subtle" strokeWidth={4} />
+          <Icons.dot className="h-4 w-4 text-subtle" strokeWidth={4} />
           <Link
             href={`/r/${communityName}/`}
             className="z-[1] font-semibold text-default/90 hover:underline dark:hover:text-red-100"
@@ -308,7 +308,7 @@ const UserCommentSkeleton = ({
           <div className="relative p-3 text-sm text-subtle dark:text-zinc-400 md:rounded-t-lg md:border">
             <div className="flex w-fit items-center gap-2">
               <div className="flex items-center gap-1">
-                <MessagesSquare className="mr-1 h-5 w-5" />
+                <Icons.messages className="mr-1 h-5 w-5" />
                 <Skeleton className="font-semibold" width={"13rem"} />
               </div>
               <Skeleton className="font-semibold" width={"5rem"} />

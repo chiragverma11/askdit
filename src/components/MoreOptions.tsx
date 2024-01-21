@@ -3,14 +3,9 @@
 import { toast } from "@/hooks/use-toast";
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
-import {
-  BookmarkMinus,
-  BookmarkPlus,
-  MoreHorizontal,
-  Trash,
-} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FC, useState } from "react";
+import { Icons } from "./Icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -146,7 +141,7 @@ const MoreOptions: FC<MoreOptionsProps> = ({
             e.preventDefault();
           }}
         >
-          <MoreHorizontal className="h-5 w-5" />
+          <Icons.moreHorizontal className="h-5 w-5" />
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -158,9 +153,9 @@ const MoreOptions: FC<MoreOptionsProps> = ({
         <DropdownMenuItem className="flex cursor-pointer items-center" asChild>
           <div onClick={handleBookmark}>
             {isBookmarked ? (
-              <BookmarkMinus className="mr-2 h-4 w-4" />
+              <Icons.bookmarkMinus className="mr-2 h-4 w-4" />
             ) : (
-              <BookmarkPlus className="mr-2 h-4 w-4" />
+              <Icons.bookmarkPlus className="mr-2 h-4 w-4" />
             )}
             {isBookmarked ? "Unsave" : "Save "}
           </div>
@@ -201,7 +196,7 @@ const ConfirmDeletionDialog: FC<ConfirmDeletionProps> = ({
           }}
         >
           <div className="flex min-w-full items-center">
-            <Trash className="mr-2 h-4 w-4" />
+            <Icons.trash className="mr-2 h-4 w-4" />
             Delete
           </div>
         </DropdownMenuItem>

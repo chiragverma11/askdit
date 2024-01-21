@@ -7,11 +7,11 @@ import { cn } from "@/lib/utils";
 import { DescriptionValidator } from "@/lib/validators/community";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useClickOutside } from "@mantine/hooks";
-import { Pencil } from "lucide-react";
 import React, { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
+import { Icons } from "./Icons";
 import { Button } from "./ui/Button";
 
 interface CommunityDescriptionProps {
@@ -61,7 +61,7 @@ const CommunityDescription: FC<CommunityDescriptionProps> = ({
           }}
         >
           {description}
-          {isAuthor ? <Pencil className="mx-1 inline h-4 w-4" /> : null}
+          {isAuthor ? <Icons.edit className="mx-1 inline h-4 w-4" /> : null}
         </div>
       ) : isAuthor ? (
         <div

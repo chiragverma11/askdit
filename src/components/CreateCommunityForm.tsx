@@ -23,13 +23,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
+import { COMMUNITY_NAME_REGEX } from "@/lib/config";
 import { trpc } from "@/lib/trpc";
-import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "../hooks/use-toast";
 import AuthLink from "./AuthLink";
+import { Icons } from "./Icons";
 import { ToastAction } from "./ui/Toast";
-import { COMMUNITY_NAME_REGEX } from "@/lib/config";
 
 const createCommunityFormSchema = z.object({
   communityName: z.string().regex(COMMUNITY_NAME_REGEX, {
@@ -112,7 +112,7 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
                 <TooltipProvider skipDelayDuration={500}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Info className="ml-2 inline h-4 w-4 text-inherit" />
+                      <Icons.info className="ml-2 inline h-4 w-4 text-inherit" />
                     </TooltipTrigger>
                     <TooltipContent
                       side="bottom"

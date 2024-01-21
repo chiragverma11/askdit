@@ -1,9 +1,9 @@
 import UserAvatar from "@/components/UserAvatar";
 import { cn } from "@/lib/utils";
-import { Link2, Image as LucideImage } from "lucide-react";
 import { type Session } from "next-auth";
 import Link from "next/link";
 import { FC } from "react";
+import { Icons } from "./Icons";
 import { buttonVariants } from "./ui/Button";
 
 interface CreatePostInputProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -64,7 +64,7 @@ const CreatePostInput: FC<CreatePostInputProps> = ({
               buttonVariants({ size: "icon", variant: "ghost" }),
             )}
           >
-            <LucideImage className="text-subtle" />
+            <Icons.imageIcon className="text-subtle" />
           </Link>
           <Link
             href={`${href}/?url`}
@@ -73,7 +73,7 @@ const CreatePostInput: FC<CreatePostInputProps> = ({
               buttonVariants({ size: "icon", variant: "ghost" }),
             )}
           >
-            <Link2 className="text-subtle" />
+            <Icons.link2 className="text-subtle" />
           </Link>
         </div>
       </div>

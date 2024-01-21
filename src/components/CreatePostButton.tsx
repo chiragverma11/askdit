@@ -1,11 +1,10 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import { usePathname } from "next/navigation";
-import { ComponentPropsWithoutRef, ElementRef, forwardRef } from "react";
-import { Button } from "./ui/Button";
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { usePathname, useRouter } from "next/navigation";
+import { ComponentPropsWithoutRef, ElementRef, forwardRef } from "react";
+import { Icons } from "./Icons";
+import { Button } from "./ui/Button";
 
 interface CreatePostButtonProps
   extends ComponentPropsWithoutRef<typeof Button> {}
@@ -37,7 +36,7 @@ const CreatePostButton = forwardRef<
       ref={ref}
       {...props}
     >
-      <Plus className="h-5 w-5" strokeWidth={2.5} />
+      <Icons.plus className="h-5 w-5" strokeWidth={2.5} />
       <span className="hidden lg:inline">Create Post</span>
     </Button>
   );

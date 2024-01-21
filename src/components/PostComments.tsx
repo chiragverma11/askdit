@@ -5,13 +5,13 @@ import { trpc } from "@/lib/trpc";
 import { cn, getVotesAmount } from "@/lib/utils";
 import { useIntersection } from "@mantine/hooks";
 import { DotWave } from "@uiball/loaders";
-import { MessagesSquare } from "lucide-react";
 import { User } from "next-auth";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { FC, useEffect, useRef } from "react";
 import AddComment from "./AddComment";
 import Comment from "./Comment";
+import { Icons } from "./Icons";
 import { Separator } from "./ui/Separator";
 
 interface PostCommentsProps {
@@ -153,7 +153,7 @@ const PostComments: FC<PostCommentsProps> = ({
 const NoComments = () => {
   return (
     <div className="flex h-full min-h-[16rem] w-full flex-col items-center justify-center gap-3">
-      <MessagesSquare className="h-8 w-8 text-subtle" strokeWidth={2} />
+      <Icons.messages className="h-8 w-8 text-subtle" strokeWidth={2} />
       <div className="flex flex-col items-center gap-2 font-semibold text-subtle">
         <p className="text-base">No Comments Yet</p>
         <p className="text-sm">Be the first to share what you think!</p>

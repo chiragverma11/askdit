@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@mantine/hooks";
-import { LogOut, Settings, User as UserIcon } from "lucide-react";
 import { User } from "next-auth";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
@@ -10,6 +9,7 @@ import { usePathname } from "next/navigation";
 import { FC, useState } from "react";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import AskditAuthorCard from "./AskditAuthorCard";
+import { Icons } from "./Icons";
 import ThemeSwitch from "./ThemeSwitch";
 import UserAvatar from "./UserAvatar";
 import {
@@ -81,7 +81,7 @@ const UserProfileNavDropdown: FC<UserProfileNavProps> = ({ user }) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href={`/u/${user.username}`}>
-            <UserIcon className="mr-2 h-5 w-5 stroke-[1.75]" />
+            <Icons.user className="mr-2 h-5 w-5 stroke-[1.75]" />
             Profile
             <span className="ml-1 text-xs text-muted-foreground">
               (u/{user.username})
@@ -96,7 +96,7 @@ const UserProfileNavDropdown: FC<UserProfileNavProps> = ({ user }) => {
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href={"/settings"}>
-            <Settings className="mr-2 h-5 w-5 stroke-[1.75]" />
+            <Icons.settings className="mr-2 h-5 w-5 stroke-[1.75]" />
             Settings
           </Link>
         </DropdownMenuItem>
@@ -118,7 +118,7 @@ const UserProfileNavDropdown: FC<UserProfileNavProps> = ({ user }) => {
             signOut({ callbackUrl: pathname });
           }}
         >
-          <LogOut className="mr-2 h-5 w-5 stroke-[1.75]" />
+          <Icons.logout className="mr-2 h-5 w-5 stroke-[1.75]" />
           Sign Out
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -178,7 +178,7 @@ const UserProfileNavDrawer: FC<UserProfileNavProps> = ({ user }) => {
               href={`/u/${user.username}`}
               className="hover:underline hover:underline-offset-2"
             >
-              <UserIcon className="mr-2 h-5 w-5 stroke-[1.75]" />
+              <Icons.user className="mr-2 h-5 w-5 stroke-[1.75]" />
               Profile
               <span className="ml-1 text-xs text-muted-foreground">
                 (u/{user.username})
@@ -199,7 +199,7 @@ const UserProfileNavDrawer: FC<UserProfileNavProps> = ({ user }) => {
               href={"/settings"}
               className="hover:underline hover:underline-offset-2"
             >
-              <Settings className="mr-2 h-5 w-5 stroke-[1.75]" />
+              <Icons.settings className="mr-2 h-5 w-5 stroke-[1.75]" />
               Settings
             </Link>
           </DrawerItem>
@@ -225,7 +225,7 @@ const UserProfileNavDrawer: FC<UserProfileNavProps> = ({ user }) => {
               }}
               className="hover:underline hover:underline-offset-2"
             >
-              <LogOut className="mr-2 h-5 w-5 stroke-[1.75]" />
+              <Icons.logout className="mr-2 h-5 w-5 stroke-[1.75]" />
               Sign Out
             </div>
           </DrawerItem>

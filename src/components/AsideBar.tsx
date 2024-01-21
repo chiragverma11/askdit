@@ -9,11 +9,11 @@ import {
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@mantine/hooks";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { Flame, Home, PenSquare } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FC, HTMLAttributes, useState } from "react";
 import { HiOutlineUserGroup } from "react-icons/hi";
+import { Icons } from "./Icons";
 import { buttonVariants } from "./ui/Button";
 
 const navItems = [
@@ -65,11 +65,11 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
 
             const IconComponent =
               item.name === Items.Home ? (
-                <Home className="h-6 w-6 text-inherit" />
+                <Icons.home className="h-6 w-6 text-inherit" />
               ) : item.name === Items.Popular ? (
-                <Flame className="h-6 w-6 text-inherit" />
+                <Icons.flame className="h-6 w-6 text-inherit" />
               ) : item.name === Items.Answer ? (
-                <PenSquare className="h-6 w-6 text-inherit" />
+                <Icons.penSquare className="h-6 w-6 text-inherit" />
               ) : item.name === Items.Communities ? (
                 <HiOutlineUserGroup className="h-6 w-6 text-inherit" />
               ) : null;

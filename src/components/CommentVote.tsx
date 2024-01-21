@@ -3,8 +3,8 @@
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { VoteType } from "@prisma/client";
-import { ArrowBigDown, ArrowBigUp } from "lucide-react";
 import { FC, HTMLAttributes, useEffect, useState } from "react";
+import { Icons } from "./Icons";
 
 interface CommentVoteProps extends HTMLAttributes<HTMLSpanElement> {
   commentId: string;
@@ -74,7 +74,7 @@ const CommentVote: FC<CommentVoteProps> = ({
               }
         }
       >
-        <ArrowBigUp
+        <Icons.upvote
           className={cn(
             "h-6 w-6",
             currentVoteType === "UP"
@@ -108,7 +108,7 @@ const CommentVote: FC<CommentVoteProps> = ({
               }
         }
       >
-        <ArrowBigDown
+        <Icons.downvote
           className={cn(
             "h-6 w-6",
             currentVoteType === "DOWN"

@@ -13,11 +13,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { getHotkeyHandler } from "@mantine/hooks";
 import { PostType } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Icons } from "./Icons";
 import SubmitPostTitle from "./SubmitPostTitle";
 import { Button } from "./ui/Button";
 
@@ -213,7 +213,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
                   !editorLoading ? "hidden" : "",
                 )}
               >
-                <Loader2
+                <Icons.loader
                   strokeWidth={2.5}
                   className="h-8 w-8 animate-spin text-blue-500/75 lg:h-auto lg:w-auto"
                 />

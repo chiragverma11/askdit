@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
-import { Search } from "lucide-react";
 import React, { FC } from "react";
+import { Icons } from "./Icons";
 
 interface SearchBarProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -13,7 +13,7 @@ const SearchBar: FC<SearchBarProps> = ({ className, ...props }) => {
       )}
       {...props}
     >
-      <Search className="h-5 w-5" />
+      <Icons.search className="h-5 w-5" />
       <input
         type="text"
         name="search_input"

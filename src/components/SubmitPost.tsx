@@ -3,11 +3,11 @@
 import { cn } from "@/lib/utils";
 import { $Enums, PostType, Subreddit } from "@prisma/client";
 import { motion } from "framer-motion";
-import { AlignJustify, ImageIcon, LinkIcon } from "lucide-react";
 import { FC, useState } from "react";
 import CommunitySelector from "./CommunitySelector";
 import CreateEditorPost from "./CreateEditorPost";
 import CreateLinkPost from "./CreateLinkPost";
+import { Icons } from "./Icons";
 import { Separator } from "./ui/Separator";
 
 interface SubmitPostProps {
@@ -78,14 +78,14 @@ const SubmitPostTypeSelect: FC<SubmitPostTypeSelectProps> = ({
             onClick={() => setPostType(type.type)}
           >
             {type.type === "POST" ? (
-              <AlignJustify
+              <Icons.alignJustify
                 className="h-3.5 w-3.5 rounded-[2px] p-[1px] outline outline-[1.5px]"
                 strokeWidth={3}
               />
             ) : type.type === "IMAGES" ? (
-              <ImageIcon className="h-5 w-5" />
+              <Icons.imageIcon className="h-5 w-5" />
             ) : (
-              <LinkIcon className="h-5 w-5" />
+              <Icons.link className="h-5 w-5" />
             )}
             {type.name}
             {isActive ? (

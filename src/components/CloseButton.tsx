@@ -1,10 +1,10 @@
 "use client";
 
-import { X } from "lucide-react";
-import { ComponentPropsWithoutRef, FC } from "react";
-import { Button } from "./ui/Button";
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { ComponentPropsWithoutRef, FC } from "react";
+import { Icons } from "./Icons";
+import { Button } from "./ui/Button";
 
 interface CloseButtonProps extends ComponentPropsWithoutRef<typeof Button> {}
 
@@ -22,7 +22,7 @@ const CloseButton: FC<CloseButtonProps> = ({
       onClick={() => router.back()}
       {...props}
     >
-      <X aria-label="Close" className="h-5 w-5 text-default" />
+      <Icons.close aria-label="Close" className="h-5 w-5 text-default" />
     </Button>
   );
 };

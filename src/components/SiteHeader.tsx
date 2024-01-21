@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/Tooltip";
 import { getAuthSession } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import { Bell } from "lucide-react";
 import Link from "next/link";
 import AuthLink from "./AuthLink";
 import CreatePostButton from "./CreatePostButton";
@@ -54,7 +53,7 @@ const SiteHeader = async () => {
                   className="relative w-12 border border-default/25 bg-emphasis font-semibold text-default transition-none hover:bg-subtle hover:transition-colors"
                   size={"sm"}
                 >
-                  <Bell className="h-6 w-6" strokeWidth={2.25} />
+                  <Icons.notification className="h-6 w-6" strokeWidth={2.25} />
                   <span className="absolute right-[0.90rem] top-2 h-2 w-2 rounded-full bg-brand-default"></span>
                 </Button>
               </TooltipTrigger>
