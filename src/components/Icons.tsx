@@ -28,6 +28,8 @@ import {
   Pencil,
   Plus,
   QrCode,
+  Rows2,
+  Rows3,
   Search,
   Settings,
   Trash,
@@ -222,4 +224,6 @@ export const Icons = {
   notification: Bell,
   user: User,
   logout: LogOut,
+  card: Rows2,
+  compact: Rows3,
 };
