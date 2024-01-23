@@ -1,6 +1,7 @@
 import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import SideMenuWrapper from "@/components/layout/SideMenuWrapper";
+import UserFeedFilterOptions from "@/components/user/UserFeedFilterOptions";
 import UserFeedSelector from "@/components/user/UserFeedSelector";
 import UserInfoCard from "@/components/user/UserInfoCard";
 import UserInfoMobile from "@/components/user/UserInfoMobile";
@@ -70,6 +71,7 @@ export default async function UserLayout({
           isUserSelf={session?.user.id === userInfo?.id}
           username={username}
         />
+        <UserFeedFilterOptions />
         {children}
       </FeedWrapper>
       <SideMenuWrapper className="sticky top-[72px] h-fit justify-start">
