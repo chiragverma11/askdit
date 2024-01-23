@@ -1,5 +1,6 @@
 import CommunityInfoCard from "@/components/CommunityInfoCard";
 import CommunityModeratorsCard from "@/components/CommunityModeratorsCard";
+import FeedFilterOptions from "@/components/FeedFilterOptions";
 import PostFeed from "@/components/PostFeed";
 import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
 import UserAvatar from "@/components/UserAvatar";
@@ -62,6 +63,7 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
           session={session}
           community={community}
         />
+        <FeedFilterOptions />
         <PostFeed
           type="communityPost"
           initialPosts={initialPosts}

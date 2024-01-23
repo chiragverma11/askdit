@@ -1,5 +1,6 @@
 import AskditAuthorCard from "@/components/AskditAuthorCard";
 import CreatePostInput from "@/components/CreatePostInput";
+import FeedFilterOptions from "@/components/FeedFilterOptions";
 import PostSkeleton from "@/components/PostSkeleton";
 import AuthenticatedFeed from "@/components/homepage/AuthenticatedFeed";
 import GeneralFeed from "@/components/homepage/GeneralFeed";
@@ -38,6 +39,7 @@ const HomeFeed: FC<HomeFeedProps> = ({ session }) => {
           href="/submit"
         />
       ) : null}
+      <FeedFilterOptions />
       <Suspense
         fallback={
           <ul className="space-y-1 pb-16 sm:space-y-2 md:space-y-3 lg:pb-0">
