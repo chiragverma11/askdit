@@ -1,5 +1,6 @@
 "use client";
 
+import { useFeedViewStore } from "@/store/feedViewStore";
 import { FC } from "react";
 import PostSkeleton from "../PostSkeleton";
 import { UserCommentSkeleton } from "./UserComment";
@@ -33,6 +34,8 @@ const NoUserContent: FC<NoUserContentProps> = ({
   username,
   profileMenu,
 }) => {
+  const feedViewType = useFeedViewStore((state) => state.feedViewType);
+
   const messagePrefix = `${
     isUserSelf ? "hmm... looks like you" : `u/${username}`
   } haven't `;
@@ -49,13 +52,13 @@ const NoUserContent: FC<NoUserContentProps> = ({
             {profileMenu === "comments" ? (
               <UserCommentSkeleton disableAnimation={true} />
             ) : (
-              <PostSkeleton variant="compact" disableAnimation={true} />
+              <PostSkeleton variant={feedViewType} disableAnimation={true} />
             )}
           </li>
         ))}
       </ul>
       <div className="absolute inset-0 bg-default/50 px-8 text-center">
-        <span className="mt-64 block text-lg font-semibold">
+        <span className="mt-48 block text-lg font-semibold">
           {messagePrefix + messageSuffix}
         </span>
       </div>

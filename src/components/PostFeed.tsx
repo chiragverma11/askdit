@@ -4,6 +4,7 @@ import { FC, useEffect, useRef } from "react";
 
 import { useInfinitePostFeed } from "@/hooks/use-infinite-postfeed";
 import { getVotesAmount } from "@/lib/utils";
+import { useFeedViewStore } from "@/store/feedViewStore";
 import { FeedViewType } from "@/types/utilities";
 import { useIntersection } from "@mantine/hooks";
 import {
@@ -79,11 +80,12 @@ type PostFeedProps =
 
 const PostFeed: FC<PostFeedProps> = ({
   initialPosts,
-  variant = "card",
+  variant,
   session,
   ...props
 }) => {
   const pathname = usePathname();
+  const feedViewType = useFeedViewStore((state) => state.feedViewType);
 
   const lastPostRef = useRef<HTMLElement>(null);
   const { ref, entry } = useIntersection({
@@ -115,7 +117,7 @@ const PostFeed: FC<PostFeedProps> = ({
           return (
             <li ref={ref} key={post.id}>
               <Post
-                variant={variant}
+                variant={variant ? variant : feedViewType}
                 post={post}
                 votesAmt={votesAmt}
                 isCommunity={props.type === "communityPost"}
@@ -130,7 +132,7 @@ const PostFeed: FC<PostFeedProps> = ({
           return (
             <li key={post.id}>
               <Post
-                variant={variant}
+                variant={variant ? variant : feedViewType}
                 post={post}
                 votesAmt={votesAmt}
                 isCommunity={props.type === "communityPost"}
@@ -146,7 +148,7 @@ const PostFeed: FC<PostFeedProps> = ({
       {isFetchingNextPage ? (
         <li className="relative -mb-24 lg:-mb-8">
           <div className="-mb-24 h-44 overflow-hidden lg:-mb-8 lg:h-40">
-            <PostSkeleton />
+            <PostSkeleton variant={variant ? variant : feedViewType} />
           </div>
         </li>
       ) : null}
