@@ -80,7 +80,7 @@ export const LinkPostCompactPreview: FC<Pick<LinkPostProps, "content">> = ({
       prefetch={false}
     >
       {content.ogImage ? (
-        <div className="h-full w-full overflow-hidden bg-background/50">
+        <div className=" relative h-full w-full overflow-hidden bg-background/50">
           <Image
             src={content.ogImage}
             alt=""
