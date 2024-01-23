@@ -24,7 +24,7 @@ const FeedViewTypeSelector: FC<FeedViewTypeSelectorProps> = ({
 
   return (
     <Select
-      defaultValue={feedViewType}
+      value={feedViewType}
       onValueChange={(value: FeedViewType) => {
         setFeedViewType(value);
       }}
