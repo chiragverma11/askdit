@@ -7,8 +7,8 @@ import { FC, useState } from "react";
 import CommunitySelector from "./CommunitySelector";
 import CreateEditorPost from "./CreateEditorPost";
 import CreateLinkPost from "./CreateLinkPost";
-import { Icons } from "./Icons";
-import { Separator } from "./ui/Separator";
+import { Icons } from "../Icons";
+import { Separator } from "../ui/Separator";
 
 interface SubmitPostProps {
   community: Subreddit | undefined;

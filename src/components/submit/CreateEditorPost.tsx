@@ -17,9 +17,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Icons } from "./Icons";
+import { Icons } from "../Icons";
 import SubmitPostTitle from "./SubmitPostTitle";
-import { Button } from "./ui/Button";
+import { Button } from "../ui/Button";
 
 interface CreateEditorPostProps {
   communityId: string | undefined;

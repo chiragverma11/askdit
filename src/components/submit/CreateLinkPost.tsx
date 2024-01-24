@@ -11,7 +11,7 @@ import { FC, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import SubmitPostTitle from "./SubmitPostTitle";
-import { Button } from "./ui/Button";
+import { Button } from "../ui/Button";
 
 interface CreateLinkPostProps {
   communityId: string | undefined;

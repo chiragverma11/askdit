@@ -23,8 +23,8 @@ import { trpc } from "@/lib/trpc";
 import { useDebouncedValue } from "@mantine/hooks";
 import { useSession } from "next-auth/react";
 import { z } from "zod";
-import CommunityAvatar from "./CommunityAvatar";
-import { Icons } from "./Icons";
+import CommunityAvatar from "../CommunityAvatar";
+import { Icons } from "../Icons";
 
 interface CommunitySelectorProps {
   community?: Subreddit;

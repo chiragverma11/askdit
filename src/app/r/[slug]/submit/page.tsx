@@ -1,5 +1,5 @@
 import BackButton from "@/components/BackButton";
-import SubmitPost from "@/components/SubmitPost";
+import SubmitPost from "@/components/submit/SubmitPost";
 import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import { getCommunityInfo } from "@/lib/prismaQueries";
