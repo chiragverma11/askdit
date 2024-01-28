@@ -71,11 +71,11 @@ const CommunitySelector: React.FC<CommunitySelectorProps> = ({ community }) => {
     setTimeout(async () => {
       const { success } =
         await searchCommunitiesQuerySchema.safeParseAsync(debouncedQuery);
-      if (success) {
+      if (success && session) {
         searchOtherCommunities();
       }
     }, 100);
-  }, [debouncedQuery, searchOtherCommunities]);
+  }, [debouncedQuery, searchOtherCommunities, session]);
 
   const redirectToCommunity = ({
     communityName,
