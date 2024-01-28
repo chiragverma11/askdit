@@ -46,7 +46,9 @@ const CommunitySelector: React.FC<CommunitySelectorProps> = ({ community }) => {
   const router = useRouter();
 
   const { data: yourCommunities, isLoading: isLoadingYourCommunities } =
-    trpc.community.yourCommunities.useQuery();
+    trpc.community.yourCommunities.useQuery(undefined, {
+      refetchOnWindowFocus: false,
+    });
 
   const {
     data: otherCommunities,
