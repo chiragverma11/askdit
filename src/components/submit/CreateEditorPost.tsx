@@ -18,8 +18,8 @@ import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Icons } from "../Icons";
-import SubmitPostTitle from "./SubmitPostTitle";
 import { Button } from "../ui/Button";
+import SubmitPostTitle from "./SubmitPostTitle";
 
 interface CreateEditorPostProps {
   communityId: string | undefined;
@@ -52,7 +52,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
     defaultValues: { title: "", content: null, communityId, type: postType },
   });
 
-  const { ref: titleRef, ...rest } = register("title");
+  const { ref: titleValidationRef, ...rest } = register("title");
 
   const { mutate: createPost, isLoading } =
     trpc.post.createCommunityPost.useMutation({
@@ -189,17 +189,10 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
           >
             <SubmitPostTitle
               titleLength={watch("title").length}
-              titleRef={titleRef}
-              rest={rest}
+              titleValidationRef={titleValidationRef}
+              useFormRegisterRest={rest}
               _titleRef={_titleRef}
-              onKeyDown={getHotkeyHandler([
-                [
-                  "mod+Enter",
-                  () => {
-                    submitButtonRef.current?.click();
-                  },
-                ],
-              ])}
+              submitButtonRef={submitButtonRef}
             />
           </motion.div>
           <div className="min-h-[215px]">

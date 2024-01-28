@@ -10,8 +10,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { FC, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import SubmitPostTitle from "./SubmitPostTitle";
 import { Button } from "../ui/Button";
+import SubmitPostTitle from "./SubmitPostTitle";
 
 interface CreateLinkPostProps {
   communityId: string | undefined;
@@ -51,7 +51,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
 
   const [debouncedUrl] = useDebouncedValue(watch("content.url"), 300);
 
-  const { ref: titleRef, ...rest } = register("title");
+  const { ref: titleValidationRef, ...rest } = register("title");
 
   const {
     data: metadata,
@@ -129,8 +129,8 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
           <div className="relative">
             <SubmitPostTitle
               titleLength={watch("title").length}
-              titleRef={titleRef}
-              rest={rest}
+              titleValidationRef={titleValidationRef}
+              useFormRegisterRest={rest}
               onKeyDown={getHotkeyHandler([
                 [
                   "mod+Enter",
