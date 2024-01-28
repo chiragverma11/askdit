@@ -89,7 +89,7 @@ const CommunitySelector: React.FC<CommunitySelectorProps> = ({ community }) => {
         <Button
           role="combobox"
           aria-expanded={open}
-          className="w-[250px] justify-between bg-emphasis text-default hover:bg-emphasis active:scale-100"
+          className="w-[250px] justify-between bg-emphasis text-default transition-none hover:bg-emphasis active:scale-100"
         >
           {selected ? (
             <SelectedCommunity
