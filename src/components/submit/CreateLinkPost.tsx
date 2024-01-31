@@ -3,7 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { addProtocol } from "@/lib/utils";
 import { PostLinkValidator } from "@/lib/validators/post";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getHotkeyHandler, useDebouncedValue } from "@mantine/hooks";
+import { useDebouncedValue } from "@mantine/hooks";
 import { PostType } from "@prisma/client";
 import { DotPulse } from "@uiball/loaders";
 import { usePathname, useRouter } from "next/navigation";
@@ -131,14 +131,6 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
               titleLength={watch("title").length}
               titleValidationRef={titleValidationRef}
               useFormRegisterRest={rest}
-              onKeyDown={getHotkeyHandler([
-                [
-                  "mod+Enter",
-                  () => {
-                    submitButtonRef.current?.click();
-                  },
-                ],
-              ])}
             />
           </div>
           <div className="min-h-[100px]">
