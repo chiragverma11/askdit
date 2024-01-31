@@ -32,7 +32,7 @@ const SubmitPostTitle: FC<SubmitPostTitleProps> = ({
   }, []);
 
   return (
-    <>
+    <div className="relative">
       <TextareaAutosize
         maxLength={POST_TITLE_LENGTH}
         ref={(e) => {
@@ -57,7 +57,7 @@ const SubmitPostTitle: FC<SubmitPostTitleProps> = ({
         {...useFormRegisterRest} // For form validation
       />
       <span className="pointer-events-none absolute bottom-4 right-0 text-xxs font-semibold text-subtle">{`${titleLength}/${POST_TITLE_LENGTH}`}</span>
-    </>
+    </div>
   );
 };
 

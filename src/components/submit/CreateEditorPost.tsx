@@ -182,19 +182,13 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
     <div className={className}>
       <form onSubmit={handleSubmit(onSubmit)} id="communityPostForm">
         <div className="prose prose-stone w-full dark:prose-invert">
-          <motion.div
-            className="relative"
-            initial={{ height: "40px" }}
-            animate={{ height: "auto" }}
-          >
-            <SubmitPostTitle
-              titleLength={watch("title").length}
-              titleValidationRef={titleValidationRef}
-              useFormRegisterRest={rest}
-              _titleRef={_titleRef}
-              submitButtonRef={submitButtonRef}
-            />
-          </motion.div>
+          <SubmitPostTitle
+            titleLength={watch("title").length}
+            titleValidationRef={titleValidationRef}
+            useFormRegisterRest={rest}
+            _titleRef={_titleRef}
+            submitButtonRef={submitButtonRef}
+          />
           <div className="min-h-[215px]">
             <AnimatePresence>
               <motion.div

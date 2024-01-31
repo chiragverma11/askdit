@@ -126,13 +126,11 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
     <div className={className}>
       <form onSubmit={handleSubmit(onSubmit)} id="communityPostLinkForm">
         <div className="prose prose-stone w-full dark:prose-invert">
-          <div className="relative">
-            <SubmitPostTitle
-              titleLength={watch("title").length}
-              titleValidationRef={titleValidationRef}
-              useFormRegisterRest={rest}
-            />
-          </div>
+          <SubmitPostTitle
+            titleLength={watch("title").length}
+            titleValidationRef={titleValidationRef}
+            useFormRegisterRest={rest}
+          />
           <div className="min-h-[100px]">
             <div className="relative">
               <input
