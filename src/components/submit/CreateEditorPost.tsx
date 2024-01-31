@@ -10,7 +10,7 @@ import { PostValidator } from "@/lib/validators/post";
 import "@/styles/editor.css";
 import EditorJS from "@editorjs/editorjs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getHotkeyHandler } from "@mantine/hooks";
+import { getHotkeyHandler, useIntersection } from "@mantine/hooks";
 import { PostType } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
@@ -39,6 +39,11 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
   const router = useRouter();
   const pathname = usePathname();
   const isMounted = useMounted();
+  const { ref: intersectionRef, entry } = useIntersection({
+    threshold: 0.1,
+  });
+
+  const isIntersecting = entry?.isIntersecting;
 
   const postType: PostType = "POST";
 
@@ -153,7 +158,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
       await initializeEditor();
     };
 
-    if (isMounted) {
+    if (isMounted && isIntersecting) {
       init();
 
       return () => {
@@ -161,7 +166,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
         editorRef.current = undefined;
       };
     }
-  }, [isMounted, initializeEditor]);
+  }, [isMounted, initializeEditor, isIntersecting]);
 
   const onSubmit = async (data: FormData) => {
     const editorBlock = await editorRef.current?.save();
@@ -179,7 +184,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
   };
 
   return (
-    <div className={className}>
+    <div className={className} ref={intersectionRef}>
       <form onSubmit={handleSubmit(onSubmit)} id="communityPostForm">
         <div className="prose prose-stone w-full dark:prose-invert">
           <SubmitPostTitle
