@@ -26,7 +26,6 @@ import {
   MoreHorizontal,
   PenSquare,
   Pencil,
-  Plus,
   QrCode,
   Rows2,
   Rows3,
@@ -36,6 +35,7 @@ import {
   User,
   X,
 } from "lucide-react";
+import { FaPlus } from "react-icons/fa6";
 import { RxGithubLogo } from "react-icons/rx";
 import { TbShare3 } from "react-icons/tb";
 
@@ -205,7 +205,7 @@ export const Icons = {
   moreHorizontal: MoreHorizontal,
   qrCode: QrCode,
   share: TbShare3,
-  plus: Plus,
+  plus: FaPlus,
   flame: Flame,
   home: Home,
   penSquare: PenSquare,
