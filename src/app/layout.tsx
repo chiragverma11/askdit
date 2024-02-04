@@ -38,7 +38,9 @@ export default function RootLayout({
               </div>
             </div>
 
-            <main className="flex grow justify-center">{children}</main>
+            <main className="flex max-w-[100vw] grow justify-center">
+              {children}
+            </main>
           </div>
 
           {authModal}
