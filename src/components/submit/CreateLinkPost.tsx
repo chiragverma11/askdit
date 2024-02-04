@@ -128,6 +128,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
         <div className="prose prose-stone w-full dark:prose-invert">
           <SubmitPostTitle
             titleLength={watch("title").length}
+            submitButtonRef={submitButtonRef}
             titleValidationRef={titleValidationRef}
             useFormRegisterRest={rest}
           />
