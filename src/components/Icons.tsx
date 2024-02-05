@@ -1,12 +1,15 @@
 import {
+  AlertCircle,
   AlignJustify,
   ArrowBigDown,
   ArrowBigUp,
+  ArrowDownToLine,
   ArrowLeft,
   Ban,
   Bell,
   BookmarkMinus,
   BookmarkPlus,
+  Check,
   ChevronDown,
   Dot,
   ExternalLink,
@@ -32,6 +35,7 @@ import {
   Search,
   Settings,
   Trash,
+  UploadCloud,
   User,
   X,
 } from "lucide-react";
@@ -226,4 +230,8 @@ export const Icons = {
   logout: LogOut,
   card: Rows2,
   compact: Rows3,
+  uploadCloud: UploadCloud,
+  dropFiles: ArrowDownToLine,
+  check: Check,
+  alertCircle: AlertCircle,
 };

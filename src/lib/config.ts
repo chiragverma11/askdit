@@ -24,6 +24,12 @@ export const COMMUNITY_DESCRIPTION_LENGTH = 500;
 export const URL_WITH_OPTIONAL_PROTOCOL_REGEX =
   /^(?:http(s)?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/;
 
+export const DROPZONE_MAX_FILES = 10;
+
+export const DROPZONE_MAX_FILE_SIZE_IN_BYTES = 4194304;
+
+export const MEDIA_CAPTION_LENGTH = 180;
+
 export const STORAGE_LIMIT_PER_USER = 125829120;
 
 export const APP_INFO: {
