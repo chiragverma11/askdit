@@ -125,11 +125,17 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
           config: {
             uploader: {
               async uploadByFile(file: File) {
-                const res = await ImageKitImageUploader({
+                const response = await ImageKitImageUploader({
                   file,
-                  fileName: file.name,
                   folder: IMAGEKIT_REGULAR_POST_UPLOAD_FOLDER,
                 });
+
+                if (response.success !== 1) {
+                  toast({
+                    title: "Upload failed",
+                    description: "Please try again later",
+                  });
+                }
                 return {
                   success: 1,
                   file: {

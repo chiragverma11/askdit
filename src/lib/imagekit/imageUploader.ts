@@ -9,19 +9,20 @@ interface AuthenticationParametersResponse {
 
 interface ImageKitImageUploaderProps {
   file: File;
-  fileName: string;
   folder: string;
 }
 
 export async function ImageKitImageUploader({
   file,
-  fileName,
   folder,
 }: ImageKitImageUploaderProps) {
   try {
-    const res = await fetch("/api/imagekit/authparameters", {
-      method: "GET",
-    });
+    const res = await fetch(
+      `/api/imagekit/authparameters?fileSize=${file.size}`,
+      {
+        method: "GET",
+      },
+    );
 
     const authenticationParameters: AuthenticationParametersResponse =
       await res.json();
@@ -33,14 +34,15 @@ export async function ImageKitImageUploader({
 
     const result = await imagekit.upload({
       file: file,
-      fileName: fileName,
+      fileName: file.name,
       folder: folder,
       token: authenticationParameters.token,
       signature: authenticationParameters.signature,
       expire: authenticationParameters.expire,
     });
-    return result;
+    return { success: 1, result };
   } catch (error) {
     console.log(error);
+    return { success: 0, error };
   }
 }
