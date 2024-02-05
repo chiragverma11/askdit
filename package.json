@@ -59,6 +59,7 @@
     "date-fns": "^3.2.0",
     "editorjs-drag-drop": "^1.1.13",
     "editorjs-react-renderer": "^3.5.1",
+    "embla-carousel-react": "8.0.0-rc22",
     "framer-motion": "^10.16.4",
     "imagekit": "^4.1.3",
     "imagekit-javascript": "^2.0.0",
