@@ -166,14 +166,7 @@ const CardVariantPost: FC<PostVariantProps> = ({
             : "prose-a:text-inherit",
         )}
       >
-        {post.type === "POST" ? (
-          <EditorOutput content={post.content} />
-        ) : (
-          <LinkPost
-            content={post.content as LinkContent["content"]}
-            title={post.title}
-          />
-        )}
+        <PostContent post={post} />
       </div>
       <div className="flex items-center gap-2 text-xs font-semibold text-subtle dark:text-zinc-400">
         <PostVote
@@ -366,16 +359,7 @@ const CompactVariantPost: FC<PostVariantProps> = ({
             : "prose-a:text-inherit",
         )}
       >
-        {showContent ? (
-          post.type === "POST" ? (
-            <EditorOutput content={post.content} />
-          ) : (
-            <LinkPost
-              content={post.content as LinkContent["content"]}
-              title={post.title}
-            />
-          )
-        ) : null}
+        {showContent && <PostContent post={post} />}
       </div>
       <div className="flex items-center gap-2 text-xs font-semibold text-subtle dark:text-zinc-400">
         <PostVote
@@ -431,6 +415,27 @@ const CompactVariantPostPreview: FC<Pick<PostVariantProps, "post">> = ({
       ) : null}
     </div>
   );
+};
+
+interface PostContentProps {
+  post: PostProps["post"];
+}
+
+const PostContent: FC<PostContentProps> = ({ post }) => {
+  if (post.type === "POST") {
+    return <EditorOutput content={post.content} />;
+  }
+
+  if (post.type === "LINK") {
+    return (
+      <LinkPost
+        content={post.content as LinkContent["content"]}
+        title={post.title}
+      />
+    );
+  }
+
+  return null;
 };
 
 export default Post;
