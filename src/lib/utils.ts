@@ -164,6 +164,14 @@ export const addProtocol = (url: string) => {
   return url;
 };
 
+export const addResolutionToImageUrl = (
+  url: string | undefined,
+  width: number | undefined,
+  height: number | undefined,
+) => {
+  return `${url}?width=${width}&height=${height}`;
+};
+
 type HierarchicalReplies = {
   take?: number | undefined;
   include: {

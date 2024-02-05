@@ -5,7 +5,7 @@ import { toast } from "@/hooks/use-toast";
 import { IMAGEKIT_REGULAR_POST_UPLOAD_FOLDER } from "@/lib/config";
 import { ImageKitImageUploader } from "@/lib/imagekit/imageUploader";
 import { trpc } from "@/lib/trpc";
-import { cn } from "@/lib/utils";
+import { addResolutionToImageUrl, cn } from "@/lib/utils";
 import { PostValidator } from "@/lib/validators/post";
 import "@/styles/editor.css";
 import EditorJS from "@editorjs/editorjs";
@@ -133,7 +133,11 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
                 return {
                   success: 1,
                   file: {
-                    url: `${res?.url}?width=${res?.width}&height=${res?.height}`,
+                    url: addResolutionToImageUrl(
+                      response.result?.url,
+                      response.result?.width,
+                      response.result?.height,
+                    ),
                   },
                 };
               },
