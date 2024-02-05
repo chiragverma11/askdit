@@ -422,13 +422,13 @@ const CompactVariantPostPreview: FC<Pick<PostVariantProps, "post">> = ({
           className="h-3.5 w-3.5 rounded-[2px] p-[1px] outline outline-[1.5px]"
           strokeWidth={3}
         />
-      ) : post.type === "IMAGES" ? (
+      ) : post.type === "MEDIA" ? (
         <Icons.imageIcon className="h-5 w-5" />
-      ) : (
+      ) : post.type === "LINK" ? (
         <LinkPostCompactPreview
           content={post.content as LinkContent["content"]}
         />
-      )}
+      ) : null}
     </div>
   );
 };

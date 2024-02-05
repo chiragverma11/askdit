@@ -19,7 +19,7 @@ enum VoteType {
 
 enum PostType {
   POST
-  IMAGES
+  MEDIA
   LINK
 }
 

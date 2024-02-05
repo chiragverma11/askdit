@@ -18,7 +18,7 @@ interface SubmitPostProps {
 const SubmitPost: FC<SubmitPostProps> = ({ community, searchParams }) => {
   const [postType, setPostType] = useState<PostType>(
     searchParams?.media === "true"
-      ? "IMAGES"
+      ? "MEDIA"
       : searchParams?.url || searchParams?.url === ""
       ? "LINK"
       : "POST",
@@ -60,7 +60,7 @@ const SubmitPostTypeSelect: FC<SubmitPostTypeSelectProps> = ({
 }) => {
   const PostTypes: { name: string; type: PostType }[] = [
     { name: "Post", type: "POST" },
-    { name: "Images", type: "IMAGES" },
+    { name: "Images", type: "MEDIA" },
     { name: "Link", type: "LINK" },
   ];
 
@@ -84,7 +84,7 @@ const SubmitPostTypeSelect: FC<SubmitPostTypeSelectProps> = ({
                 className="h-3.5 w-3.5 rounded-[2px] p-[1px] outline outline-[1.5px]"
                 strokeWidth={3}
               />
-            ) : type.type === "IMAGES" ? (
+            ) : type.type === "MEDIA" ? (
               <Icons.imageIcon className="h-5 w-5" />
             ) : (
               <Icons.link className="h-5 w-5" />
