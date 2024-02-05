@@ -35,3 +35,14 @@ export type UserComments = Pick<
 export type UserBookmarks = ThenArg<ReturnType<typeof getUserBookmarks>>;
 
 export type FeedViewType = z.infer<typeof FeedViewTypeSchema>;
+
+type UploadStatus = "uploading" | "uploaded" | "idle" | "failed";
+
+export type Media = {
+  file: File;
+  preview: string;
+  id?: string;
+  url?: string;
+  caption?: string;
+  uploadStatus: UploadStatus;
+};
