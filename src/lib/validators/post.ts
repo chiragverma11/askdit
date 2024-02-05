@@ -1,6 +1,10 @@
 import { PostType } from "@prisma/client";
 import { z } from "zod";
-import { POST_TITLE_LENGTH, URL_WITH_OPTIONAL_PROTOCOL_REGEX } from "../config";
+import {
+  MEDIA_CAPTION_LENGTH,
+  POST_TITLE_LENGTH,
+  URL_WITH_OPTIONAL_PROTOCOL_REGEX,
+} from "../config";
 
 export const FeedViewTypeSchema = z.enum(["card", "compact"]);
 
@@ -34,6 +38,29 @@ export const PostLinkValidator = z.object({
   }),
   communityId: z.string(),
   type: z.nativeEnum(PostType),
+});
+
+export const MediaPostValidator = z.object({
+  title: z
+    .string()
+    .min(1, {
+      message: "Title must be at least 1 character long",
+    })
+    .max(POST_TITLE_LENGTH, {
+      message: `Title must be less than ${POST_TITLE_LENGTH} characters long`,
+    }),
+  content: z.object({
+    type: z.enum(["IMAGE"]),
+    images: z
+      .object({
+        id: z.string(),
+        url: z.string().url(),
+        caption: z.string().max(MEDIA_CAPTION_LENGTH).optional(),
+      })
+      .array(),
+  }),
+  communityId: z.string(),
+  type: z.nativeEnum(PostType).default("MEDIA"),
 });
 
 export const PostVoteValidator = z.object({

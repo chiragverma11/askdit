@@ -19,6 +19,8 @@ export const COMMUNITIES_SEARCH_RESULT = 10;
 export const IMAGEKIT_REGULAR_POST_UPLOAD_FOLDER =
   "/askdit/post/regular/images";
 
+export const IMAGEKIT_MEDIA_POST_UPLOAD_FOLDER = "/askdit/post/media/images";
+
 export const COMMUNITY_DESCRIPTION_LENGTH = 500;
 
 export const URL_WITH_OPTIONAL_PROTOCOL_REGEX =

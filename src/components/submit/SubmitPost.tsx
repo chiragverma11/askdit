@@ -4,11 +4,12 @@ import { cn } from "@/lib/utils";
 import { $Enums, PostType, Subreddit } from "@prisma/client";
 import { motion } from "framer-motion";
 import { FC, useState } from "react";
+import { Icons } from "../Icons";
+import { Separator } from "../ui/Separator";
 import CommunitySelector from "./CommunitySelector";
 import CreateEditorPost from "./CreateEditorPost";
 import CreateLinkPost from "./CreateLinkPost";
-import { Icons } from "../Icons";
-import { Separator } from "../ui/Separator";
+import CreateMediaPost from "./CreateMediaPost";
 
 interface SubmitPostProps {
   community: Subreddit | undefined;
@@ -35,8 +36,9 @@ const SubmitPost: FC<SubmitPostProps> = ({ community, searchParams }) => {
             className={cn(postType === "POST" ? "block" : "hidden")}
             communityId={community?.id}
           />
-          <PostImages
-            className={cn(postType === "IMAGES" ? "block" : "hidden")}
+          <CreateMediaPost
+            className={cn(postType === "MEDIA" ? "block" : "hidden")}
+            communityId={community?.id}
           />
           <CreateLinkPost
             className={cn(postType === "LINK" ? "block" : "hidden")}
@@ -109,12 +111,6 @@ const SubmitPostTypeSelect: FC<SubmitPostTypeSelectProps> = ({
       })}
     </div>
   );
-};
-
-interface PostImagesProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-const PostImages: FC<PostImagesProps> = ({ className }) => {
-  return <div className={cn(className)}>PostImages</div>;
 };
 
 export default SubmitPost;
