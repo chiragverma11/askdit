@@ -69,11 +69,13 @@ const SubmitPostTypeSelect: FC<SubmitPostTypeSelectProps> = ({
       {PostTypes.map((type) => {
         const isActive = type.type === postType;
         return (
-          <span
+          <button
             key={type.type}
             className={cn(
               "relative flex flex-1 cursor-pointer items-center justify-center gap-2 px-6 py-3 font-semibold",
-              isActive ? "text-red-500 dark:text-red-400" : "text-subtle",
+              isActive
+                ? "bg-brand-default/10 text-red-500 transition-colors dark:text-red-400"
+                : "text-subtle",
             )}
             onClick={() => setPostType(type.type)}
           >
@@ -90,7 +92,7 @@ const SubmitPostTypeSelect: FC<SubmitPostTypeSelectProps> = ({
             {type.name}
             {isActive ? (
               <motion.div
-                className="absolute inset-0 border-b-2 border-red-500 bg-brand-default/10"
+                className="absolute inset-x-0 bottom-0 z-10 h-0.5 rounded-full bg-brand-default"
                 layoutId="selectPostType"
                 aria-hidden="true"
                 transition={{
@@ -98,11 +100,11 @@ const SubmitPostTypeSelect: FC<SubmitPostTypeSelectProps> = ({
                   bounce: 0.01,
                   stiffness: 140,
                   damping: 18,
-                  duration: 0.25,
+                  duration: 0.2,
                 }}
               />
             ) : null}
-          </span>
+          </button>
         );
       })}
     </div>
