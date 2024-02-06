@@ -18,6 +18,10 @@ import CommunityAvatar from "./CommunityAvatar";
 import EditorOutput from "./EditorOutput";
 import { Icons } from "./Icons";
 import LinkPost, { LinkPostCompactPreview, type LinkContent } from "./LinkPost";
+import MediaPost, {
+  MediaPostCompactPreview,
+  type MediaContent,
+} from "./MediaPost";
 import MoreOptions from "./MoreOptions";
 import PostVote from "./PostVote";
 import ShareButton from "./ShareButton";
@@ -407,7 +411,9 @@ const CompactVariantPostPreview: FC<Pick<PostVariantProps, "post">> = ({
           strokeWidth={3}
         />
       ) : post.type === "MEDIA" ? (
-        <Icons.imageIcon className="h-5 w-5" />
+        <MediaPostCompactPreview
+          content={post.content as MediaContent["content"]}
+        />
       ) : post.type === "LINK" ? (
         <LinkPostCompactPreview
           content={post.content as LinkContent["content"]}
@@ -433,6 +439,10 @@ const PostContent: FC<PostContentProps> = ({ post }) => {
         title={post.title}
       />
     );
+  }
+
+  if (post.type === "MEDIA") {
+    return <MediaPost content={post.content as MediaContent["content"]} />;
   }
 
   return null;

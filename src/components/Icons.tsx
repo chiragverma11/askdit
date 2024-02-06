@@ -14,6 +14,7 @@ import {
   Dot,
   ExternalLink,
   Flame,
+  GalleryHorizontalEnd,
   Home,
   ImageIcon,
   Info,
@@ -234,4 +235,5 @@ export const Icons = {
   dropFiles: ArrowDownToLine,
   check: Check,
   alertCircle: AlertCircle,
+  galleryHorizontalEnd: GalleryHorizontalEnd,
 };
