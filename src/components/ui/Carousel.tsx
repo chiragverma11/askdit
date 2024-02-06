@@ -4,7 +4,7 @@ import * as React from "react";
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Circle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
@@ -28,6 +28,9 @@ type CarouselContextProps = {
   scrollNext: () => void;
   canScrollPrev: boolean;
   canScrollNext: boolean;
+  totalSlides: number;
+  currentSlide: number;
+  scrollTo: (index: number, jump?: boolean) => void;
 } & CarouselProps;
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null);
@@ -68,6 +71,9 @@ const Carousel = React.forwardRef<
     const [canScrollPrev, setCanScrollPrev] = React.useState(false);
     const [canScrollNext, setCanScrollNext] = React.useState(false);
 
+    const [totalSlides, setTotalSlides] = React.useState(0);
+    const [currentSlide, setCurrentSlide] = React.useState(0);
+
     const onSelect = React.useCallback((api: CarouselApi) => {
       if (!api) {
         return;
@@ -75,6 +81,8 @@ const Carousel = React.forwardRef<
 
       setCanScrollPrev(api.canScrollPrev());
       setCanScrollNext(api.canScrollNext());
+
+      setCurrentSlide(api.selectedScrollSnap());
     }, []);
 
     const scrollPrev = React.useCallback(() => {
@@ -84,6 +92,13 @@ const Carousel = React.forwardRef<
     const scrollNext = React.useCallback(() => {
       api?.scrollNext();
     }, [api]);
+
+    const scrollTo = React.useCallback(
+      (index: number, jump?: boolean) => {
+        api?.scrollTo(index, jump);
+      },
+      [api],
+    );
 
     const handleKeyDown = React.useCallback(
       (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -111,6 +126,8 @@ const Carousel = React.forwardRef<
         return;
       }
 
+      setTotalSlides(api.scrollSnapList().length);
+
       onSelect(api);
       api.on("reInit", onSelect);
       api.on("select", onSelect);
@@ -132,6 +149,9 @@ const Carousel = React.forwardRef<
           scrollNext,
           canScrollPrev,
           canScrollNext,
+          totalSlides,
+          currentSlide,
+          scrollTo,
         }}
       >
         <div
@@ -252,6 +272,79 @@ const CarouselNext = React.forwardRef<
 });
 CarouselNext.displayName = "CarouselNext";
 
+const CarouselSlideCounter = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  const { currentSlide, totalSlides } = useCarousel();
+  const [show, setShow] = React.useState(false);
+
+  React.useEffect(() => {
+    setShow(true);
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      role="counter"
+      aria-roledescription="slide-counter"
+      className={cn(
+        "absolute right-2 top-2 flex select-none justify-center rounded-full bg-black/40 px-2 py-1 text-white transition-opacity duration-300",
+        show ? "opacity-100" : "opacity-0",
+        className,
+      )}
+      {...props}
+    >
+      <span className="text-sm tabular-nums">
+        {currentSlide + 1}/{totalSlides}
+      </span>
+    </div>
+  );
+});
+CarouselSlideCounter.displayName = "CarouselSlideCounter";
+
+const CarouselSlideSelectorDot = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  const { currentSlide, totalSlides, scrollTo } = useCarousel();
+  const [show, setShow] = React.useState(false);
+
+  React.useEffect(() => {
+    setShow(true);
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      role="selector"
+      aria-roledescription="slide-selector"
+      className={cn(
+        "absolute bottom-4 left-0 right-0 z-[1] flex justify-center gap-1.5 rounded-full text-white transition-opacity duration-300",
+        show ? "opacity-100" : "opacity-0",
+        className,
+      )}
+      {...props}
+    >
+      {Array.from({ length: totalSlides }).map((_, index) => {
+        const isSelected = currentSlide === index;
+
+        return (
+          <Circle
+            key={index}
+            className={cn(
+              "h-2.5 w-2.5 stroke-[2.5]",
+              isSelected && "fill-white",
+            )}
+            onClick={() => scrollTo(index)}
+          />
+        );
+      })}
+    </div>
+  );
+});
+CarouselSlideSelectorDot.displayName = "CarouselSlideSelectorDot";
+
 export {
   type CarouselApi,
   Carousel,
@@ -259,4 +352,6 @@ export {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselSlideCounter,
+  CarouselSlideSelectorDot,
 };
