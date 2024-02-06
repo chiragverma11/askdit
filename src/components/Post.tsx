@@ -287,12 +287,17 @@ const CompactVariantPost: FC<PostVariantProps> = ({
               {post.title}
             </p>
           </div>
-          <div className="flex w-full items-center">
+          <div className="z-[1] flex w-full items-center gap-2">
+            <CompactVariantShowHideButton
+              post={post}
+              showContent={showContent}
+              setShowContent={setShowContent}
+            />
             {isCommunity ? (
-              <div className="z-[1] inline-flex items-center gap-2 rounded-lg">
-                <div className="flex items-center">
+              <div className="z-[1] inline-flex items-center gap-2 rounded-lg text-xs">
+                <div className="flex flex-wrap items-start">
                   <Link href={`/u/${post.author.username}`} prefetch={false}>
-                    <span className="text-sm font-semibold text-default/90 hover:underline dark:hover:text-red-100">{`u/${post.author.username}`}</span>
+                    <span className="font-semibold text-default/90 hover:underline dark:hover:text-red-100">{`u/${post.author.username}`}</span>
                   </Link>
                   <div className="flex items-center text-subtle">
                     <Icons.dot className="h-4 w-4" strokeWidth={4} />
@@ -302,33 +307,6 @@ const CompactVariantPost: FC<PostVariantProps> = ({
               </div>
             ) : (
               <div className="z-[1] inline-flex items-center gap-2 rounded-lg">
-                {post.type === "LINK" ? (
-                  <Link
-                    href={(post.content as LinkContent["content"]).url}
-                    className={cn(
-                      buttonVariants({ variant: "subtle", size: "icon" }),
-                      "h-auto w-auto bg-transparent p-1 text-subtle hover:bg-highlight dark:text-zinc-400",
-                    )}
-                    target="_blank"
-                    prefetch={false}
-                  >
-                    <Icons.externalLink className="h-5 w-5" />
-                  </Link>
-                ) : (
-                  <Button
-                    onClick={() => setShowContent(!showContent)}
-                    className="h-auto w-auto bg-transparent p-1 text-subtle hover:bg-highlight dark:text-zinc-400"
-                    variant={"subtle"}
-                    size={"icon"}
-                  >
-                    {showContent ? (
-                      <Icons.minimize className="h-5 w-5 rotate-90" />
-                    ) : (
-                      <Icons.maximize className="h-5 w-5 rotate-90" />
-                    )}
-                  </Button>
-                )}
-
                 <div className="flex flex-col text-xs ">
                   <div className="flex items-center">
                     <Link href={`/r/${post.subreddit.name}`} prefetch={false}>
@@ -420,6 +398,49 @@ const CompactVariantPostPreview: FC<Pick<PostVariantProps, "post">> = ({
         />
       ) : null}
     </div>
+  );
+};
+
+interface CompactVariantShowHideButtonProps {
+  showContent: boolean;
+  setShowContent: React.Dispatch<React.SetStateAction<boolean>>;
+  post: PostVariantProps["post"];
+}
+
+const CompactVariantShowHideButton: FC<CompactVariantShowHideButtonProps> = ({
+  setShowContent,
+  showContent,
+  post,
+}) => {
+  if (post.type === "LINK") {
+    return (
+      <Link
+        href={(post.content as LinkContent["content"]).url}
+        className={cn(
+          buttonVariants({ variant: "subtle", size: "icon" }),
+          "h-auto w-auto bg-transparent p-1 text-subtle hover:bg-highlight dark:text-zinc-400",
+        )}
+        target="_blank"
+        prefetch={false}
+      >
+        <Icons.externalLink className="h-5 w-5" />
+      </Link>
+    );
+  }
+
+  return (
+    <Button
+      onClick={() => setShowContent(!showContent)}
+      className="h-auto w-auto bg-transparent p-1 text-subtle hover:bg-highlight dark:text-zinc-400"
+      variant={"subtle"}
+      size={"icon"}
+    >
+      {showContent ? (
+        <Icons.minimize className="h-5 w-5 rotate-90" />
+      ) : (
+        <Icons.maximize className="h-5 w-5 rotate-90" />
+      )}
+    </Button>
   );
 };
 
