@@ -7,7 +7,7 @@ import { useDebouncedValue } from "@mantine/hooks";
 import { PostType } from "@prisma/client";
 import { DotPulse } from "@uiball/loaders";
 import { usePathname, useRouter } from "next/navigation";
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../ui/Button";
@@ -29,6 +29,8 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const pathname = usePathname();
+
+  const disabled = useMemo(() => (communityId ? false : true), [communityId]);
 
   const postType: PostType = "LINK";
 
@@ -131,6 +133,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
             submitButtonRef={submitButtonRef}
             titleValidationRef={titleValidationRef}
             useFormRegisterRest={rest}
+            disabled={disabled}
           />
           <div className="min-h-[100px]">
             <div className="relative">
@@ -158,7 +161,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
               className="self-end px-6 py-1 font-semibold"
               isLoading={isLoading}
               ref={submitButtonRef}
-              disabled={isFetchingMetadata}
+              disabled={isFetchingMetadata || disabled}
             >
               Post
             </Button>

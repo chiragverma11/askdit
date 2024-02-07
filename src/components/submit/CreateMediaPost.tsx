@@ -34,6 +34,8 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
   const router = useRouter();
   const pathname = usePathname();
 
+  const disabled = useMemo(() => (communityId ? false : true), [communityId]);
+
   const postType: PostType = "MEDIA";
 
   const { register, watch, trigger, setValue, getValues } = useForm<FormData>({
@@ -190,6 +192,7 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
             submitButtonRef={submitButtonRef}
             titleValidationRef={titleRef}
             useFormRegisterRest={rest}
+            disabled={disabled}
           />
           <div className="min-h-[200px] py-3">
             <div className="relative">
@@ -206,6 +209,7 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
               className="self-end px-6 py-1 font-semibold"
               isLoading={isLoading || uploading}
               ref={submitButtonRef}
+              disabled={disabled}
             >
               {uploading ? "Uploading" : "Post"}
             </Button>

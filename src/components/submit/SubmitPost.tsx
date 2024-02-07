@@ -31,7 +31,14 @@ const SubmitPost: FC<SubmitPostProps> = ({ community, searchParams }) => {
       <div className="w-full overflow-hidden rounded-xl border border-default/10 bg-emphasis shadow-xl">
         <SubmitPostTypeSelect postType={postType} setPostType={setPostType} />
         <Separator className="bg-highlight/40 dark:bg-highlight/60" />
-        <div className="px-5 py-5 lg:p-10 lg:pb-6">
+        <div
+          className={cn(
+            "px-5 py-5 lg:p-10 lg:pb-6",
+            !community?.id
+              ? "pointer-events-none relative after:absolute after:inset-0 after:z-[1] after:flex after:items-center after:justify-center after:bg-default/60 after:text-lg after:font-medium after:text-default/75 after:backdrop-blur-sm after:content-['Choose_a_community']"
+              : "",
+          )}
+        >
           <CreateEditorPost
             className={cn(postType === "POST" ? "block" : "hidden")}
             communityId={community?.id}

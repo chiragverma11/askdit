@@ -14,7 +14,7 @@ import { getHotkeyHandler, useIntersection } from "@mantine/hooks";
 import { PostType } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Icons } from "../Icons";
@@ -43,6 +43,8 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
   const { ref: intersectionRef, entry } = useIntersection({
     threshold: 0.1,
   });
+
+  const disabled = useMemo(() => (communityId ? false : true), [communityId]);
 
   const isIntersecting = entry?.isIntersecting;
 
@@ -170,7 +172,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
       isIntersecting && !intersected && setIntersected(true);
     };
 
-    if (isMounted && isIntersecting && !intersected) {
+    if (isMounted && isIntersecting && !disabled && !intersected) {
       init();
 
       return () => {
@@ -178,7 +180,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
         editorRef.current = undefined;
       };
     }
-  }, [isMounted, initializeEditor, isIntersecting, intersected]);
+  }, [isMounted, initializeEditor, isIntersecting, intersected, disabled]);
 
   const onSubmit = async (data: FormData) => {
     const editorBlock = await editorRef.current?.save();
@@ -205,6 +207,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
             useFormRegisterRest={rest}
             _titleRef={_titleRef}
             submitButtonRef={submitButtonRef}
+            disabled={disabled}
           />
           <div className="min-h-[215px]">
             <AnimatePresence>
@@ -214,7 +217,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
                 exit={{ opacity: 0 }}
                 className={cn(
                   "full flex items-center justify-center",
-                  !editorLoading ? "hidden" : "",
+                  !editorLoading || disabled ? "hidden" : "",
                 )}
               >
                 <Icons.loader
@@ -249,6 +252,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
               className="self-end px-6 py-1 font-semibold"
               isLoading={isLoading}
               ref={submitButtonRef}
+              disabled={disabled}
             >
               Post
             </Button>
