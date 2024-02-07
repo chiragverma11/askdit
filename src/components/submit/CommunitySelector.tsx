@@ -20,19 +20,25 @@ import {
   PopoverTrigger,
 } from "@/components/ui/Popover";
 import { trpc } from "@/lib/trpc";
+import { cn } from "@/lib/utils";
 import { useDebouncedValue } from "@mantine/hooks";
 import { useSession } from "next-auth/react";
 import { z } from "zod";
 import CommunityAvatar from "../CommunityAvatar";
 import { Icons } from "../Icons";
 
-interface CommunitySelectorProps {
+interface CommunitySelectorProps
+  extends React.ComponentPropsWithoutRef<"button"> {
   community?: Subreddit;
 }
 
 const searchCommunitiesQuerySchema = z.string().min(1);
 
-const CommunitySelector: React.FC<CommunitySelectorProps> = ({ community }) => {
+const CommunitySelector: React.FC<CommunitySelectorProps> = ({
+  community,
+  className,
+  ...props
+}) => {
   const [open, setOpen] = React.useState(false);
   const [selected, setSelected] = React.useState(community?.name || "");
   const [search, setSearch] = React.useState(community?.name || "");
@@ -91,7 +97,11 @@ const CommunitySelector: React.FC<CommunitySelectorProps> = ({ community }) => {
         <Button
           role="combobox"
           aria-expanded={open}
-          className="w-[250px] justify-between bg-emphasis text-default transition-none hover:bg-emphasis active:scale-100"
+          className={cn(
+            "w-[250px] justify-between border border-default/10 bg-emphasis text-default transition-none hover:bg-emphasis active:scale-100",
+            className,
+          )}
+          {...props}
         >
           {selected ? (
             <SelectedCommunity

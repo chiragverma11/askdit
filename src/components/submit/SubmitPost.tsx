@@ -28,7 +28,7 @@ const SubmitPost: FC<SubmitPostProps> = ({ community, searchParams }) => {
   return (
     <div className="mb-16 mt-4 w-full space-y-2 lg:mb-auto">
       <CommunitySelector community={community} />
-      <div className=" w-full rounded-xl border-zinc-200 bg-emphasis shadow-xl">
+      <div className="w-full overflow-hidden rounded-xl border border-default/10 bg-emphasis shadow-xl">
         <SubmitPostTypeSelect postType={postType} setPostType={setPostType} />
         <Separator className="bg-highlight/40 dark:bg-highlight/60" />
         <div className="px-5 py-5 lg:p-10 lg:pb-6">
