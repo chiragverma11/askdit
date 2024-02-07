@@ -1,20 +1,16 @@
 "use client";
 
-import { useMounted } from "@/hooks/use-mounted";
+import { useEditor } from "@/hooks/use-editor";
 import { toast } from "@/hooks/use-toast";
-import { IMAGEKIT_REGULAR_POST_UPLOAD_FOLDER } from "@/lib/config";
-import { ImageKitImageUploader } from "@/lib/imagekit/imageUploader";
 import { trpc } from "@/lib/trpc";
-import { addResolutionToImageUrl, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { PostValidator } from "@/lib/validators/post";
 import "@/styles/editor.css";
-import EditorJS from "@editorjs/editorjs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getHotkeyHandler, useIntersection } from "@mantine/hooks";
 import { PostType } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Icons } from "../Icons";
@@ -32,30 +28,16 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
   communityId,
   className,
 }) => {
-  const [editorLoading, setEditorLoading] = useState(true);
-  const [intersected, setIntersected] = useState(false);
-  const editorRef = useRef<EditorJS>();
   const _titleRef = useRef<HTMLTextAreaElement | null>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const pathname = usePathname();
-  const isMounted = useMounted();
-  const { ref: intersectionRef, entry } = useIntersection({
-    threshold: 0.1,
-  });
 
   const disabled = useMemo(() => (communityId ? false : true), [communityId]);
 
-  const isIntersecting = entry?.isIntersecting;
-
   const postType: PostType = "POST";
 
-  const {
-    register,
-    watch,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
+  const { register, watch, handleSubmit } = useForm<FormData>({
     resolver: zodResolver(PostValidator),
     defaultValues: { title: "", content: null, communityId, type: postType },
   });
@@ -77,113 +59,15 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
       },
     });
 
-  const initializeEditor = useCallback(async () => {
-    const EditorJS = (await import("@editorjs/editorjs")).default;
-    const Header = (await import("@editorjs/header")).default;
-    const Paragraph = (await import("@editorjs/paragraph")).default;
-    const List = (await import("@editorjs/list")).default;
-    const ImageTool = (await import("@editorjs/image")).default;
-    const Embed = (await import("@editorjs/embed")).default;
-    // const LinkTool = (await import("@editorjs/link")).default;
-    const CodeTool = (await import("@editorjs/code")).default;
-    const InlineCode = (await import("@editorjs/inline-code")).default;
-    const Table = (await import("@editorjs/table")).default;
-    const Strikethrough = (await import("@sotaproject/strikethrough")).default;
-    const DragDrop = (await import("editorjs-drag-drop")).default;
-
-    const editor = new EditorJS({
-      holder: "editorjs",
-      onReady() {
-        setEditorLoading(false);
-        editorRef.current = editor;
-        new DragDrop(editor);
-        _titleRef.current?.focus();
-      },
-      placeholder: "Type here to write your post... (optional)",
-      inlineToolbar: true,
-
-      tools: {
-        header: {
-          class: Header,
-          inlineToolbar: ["link"],
-          config: {
-            placeholder: "Header",
-            levels: [2, 3, 4],
-            defaultLevel: 3,
-          },
-        },
-        paragraph: {
-          class: Paragraph,
-          inlineToolbar: true,
-        },
-        // linkTool: {
-        //   class: LinkTool,
-        //   config: {
-        //     endpoint: "/api/link",
-        //   },
-        // },
-        list: List,
-        image: {
-          class: ImageTool,
-          config: {
-            uploader: {
-              async uploadByFile(file: File) {
-                const response = await ImageKitImageUploader({
-                  file,
-                  folder: IMAGEKIT_REGULAR_POST_UPLOAD_FOLDER,
-                });
-
-                if (response.success !== 1) {
-                  toast({
-                    title: "Upload failed",
-                    description: "Please try again later",
-                  });
-                }
-                return {
-                  success: 1,
-                  file: {
-                    url: addResolutionToImageUrl(
-                      response.result?.url,
-                      response.result?.width,
-                      response.result?.height,
-                    ),
-                  },
-                };
-              },
-            },
-          },
-        },
-        code: CodeTool,
-        table: Table,
-        embed: Embed,
-        inlineCode: {
-          class: InlineCode,
-          shortcut: "CTRL+SHIFT+M",
-        },
-        strikethrough: Strikethrough,
-      },
-      // data: { blocks: [] },
-    });
-  }, []);
-
-  useEffect(() => {
-    const init = async () => {
-      await initializeEditor();
-      isIntersecting && !intersected && setIntersected(true);
-    };
-
-    if (isMounted && isIntersecting && !disabled && !intersected) {
-      init();
-
-      return () => {
-        editorRef.current?.destroy();
-        editorRef.current = undefined;
-      };
-    }
-  }, [isMounted, initializeEditor, isIntersecting, intersected, disabled]);
+  const { api, Editor, editorContainerRef, isEditorLoading } = useEditor({
+    onEditorReady: () => {
+      _titleRef.current?.focus();
+    },
+    disabled,
+  });
 
   const onSubmit = async (data: FormData) => {
-    const editorBlock = await editorRef.current?.save();
+    const editorBlock = await api?.save();
 
     if (communityId) {
       const payload = {
@@ -198,7 +82,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
   };
 
   return (
-    <div className={className} ref={intersectionRef}>
+    <div className={className} ref={editorContainerRef}>
       <form onSubmit={handleSubmit(onSubmit)} id="communityPostForm">
         <div className="prose prose-stone w-full dark:prose-invert">
           <SubmitPostTitle
@@ -217,7 +101,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
                 exit={{ opacity: 0 }}
                 className={cn(
                   "full flex items-center justify-center",
-                  !editorLoading || disabled ? "hidden" : "",
+                  !isEditorLoading || disabled ? "hidden" : "",
                 )}
               >
                 <Icons.loader
@@ -226,17 +110,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
                 />
               </motion.div>
             </AnimatePresence>
-            <div
-              id="editorjs"
-              onKeyDown={getHotkeyHandler([
-                [
-                  "mod+Enter",
-                  () => {
-                    submitButtonRef.current?.click();
-                  },
-                ],
-              ])}
-            ></div>
+            <Editor />
           </div>
           <div className="mt-2 flex w-full items-center justify-between">
             <p className="hidden text-sm text-gray-500 md:inline">
