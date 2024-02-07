@@ -33,6 +33,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
   className,
 }) => {
   const [editorLoading, setEditorLoading] = useState(true);
+  const [intersected, setIntersected] = useState(false);
   const editorRef = useRef<EditorJS>();
   const _titleRef = useRef<HTMLTextAreaElement | null>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
@@ -166,9 +167,10 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
   useEffect(() => {
     const init = async () => {
       await initializeEditor();
+      isIntersecting && !intersected && setIntersected(true);
     };
 
-    if (isMounted && isIntersecting) {
+    if (isMounted && isIntersecting && !intersected) {
       init();
 
       return () => {
@@ -176,7 +178,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
         editorRef.current = undefined;
       };
     }
-  }, [isMounted, initializeEditor, isIntersecting]);
+  }, [isMounted, initializeEditor, isIntersecting, intersected]);
 
   const onSubmit = async (data: FormData) => {
     const editorBlock = await editorRef.current?.save();
