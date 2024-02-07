@@ -76,6 +76,9 @@ module.exports = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      ringColor: {
+        default: "hsl(var(--askdit-border) / <alpha-value>)",
+      },
       fontSize: {
         xxs: [
           "0.625rem",
