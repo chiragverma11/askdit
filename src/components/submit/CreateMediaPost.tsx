@@ -23,6 +23,8 @@ interface CreateMediaPostProps {
 
 type FormData = z.infer<typeof MediaPostValidator>;
 
+type FormDataKeysContentExcluded = Exclude<keyof FormData, "content">;
+
 const CreateMediaPost: FC<CreateMediaPostProps> = ({
   communityId,
   className,
@@ -48,9 +50,6 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
   const setFileUploadStatus = useMediaDropzoneStore(
     (state) => state.setFileUploadStatus,
   );
-
-  console.log(watch("content"));
-  console.log(files);
 
   const { ref: titleRef, ...rest } = register("title");
 
@@ -129,6 +128,20 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const fieldNames: FormDataKeysContentExcluded[] = Object.keys(
+      getValues(),
+    ).filter((key) => key !== "content") as FormDataKeysContentExcluded[];
+
+    // Trigger validation for all fields except 'content'
+    const isFormValidExceptContent = await trigger(fieldNames);
+
+    if (!isFormValidExceptContent) {
+      toast({
+        description: "Fill out required fields",
+      });
+      return;
+    }
+
     const filesUploaded = await uploadFiles();
 
     if (!filesUploaded) {
@@ -142,7 +155,6 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
 
     // Retrieve a fresh reference to the files from the Zustand store
     const updatedFiles = useMediaDropzoneStore.getState().files;
-    console.log("handleSubmitForm", updatedFiles);
 
     const updatedContent: FormData["content"] = {
       type: "IMAGE",
