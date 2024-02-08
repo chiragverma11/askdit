@@ -1,13 +1,15 @@
 import { env } from "@/env.mjs";
 import { getAuthSession } from "@/lib/auth";
-import { STORAGE_LIMIT_PER_USER } from "@/lib/config";
+import {
+  DROPZONE_MAX_FILE_SIZE_IN_BYTES,
+  STORAGE_LIMIT_PER_USER,
+} from "@/lib/config";
 import { db } from "@/lib/db";
 import ImageKit from "imagekit";
-import { type NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getAuthSession();
 
@@ -26,18 +28,9 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const fileSize = request.nextUrl.searchParams.get("fileSize");
-
-    if (!fileSize) {
-      return new Response(
-        JSON.stringify({ message: "File size is required" }),
-        { status: 400 },
-      );
-    }
-
     if (
       userWithStorageUsed &&
-      userWithStorageUsed.storageUsed + parseInt(fileSize) >=
+      userWithStorageUsed.storageUsed + DROPZONE_MAX_FILE_SIZE_IN_BYTES >=
         STORAGE_LIMIT_PER_USER
     ) {
       return new Response(

@@ -17,12 +17,9 @@ export async function ImageKitImageUploader({
   folder,
 }: ImageKitImageUploaderProps) {
   try {
-    const res = await fetch(
-      `/api/imagekit/authparameters?fileSize=${file.size}`,
-      {
-        method: "GET",
-      },
-    );
+    const res = await fetch("/api/imagekit/authparameters", {
+      method: "GET",
+    });
 
     const authenticationParameters: AuthenticationParametersResponse =
       await res.json();
