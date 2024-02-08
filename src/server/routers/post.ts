@@ -490,4 +490,26 @@ export const postRouter = router({
         },
       };
     }),
+  getUserStorageUsed: protectedProcedure.query(async (opts) => {
+    const { user } = opts.ctx;
+
+    const userWithStorageUsed = await db.user.findUnique({
+      where: {
+        id: user.id,
+      },
+      select: {
+        storageUsed: true,
+        storageUnit: true,
+      },
+    });
+
+    if (!userWithStorageUsed) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    return {
+      storageUsed: userWithStorageUsed.storageUsed,
+      StorageUnitType: userWithStorageUsed.storageUnit,
+    };
+  }),
 });
