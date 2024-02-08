@@ -62,7 +62,7 @@ const CommunitySelector: React.FC<CommunitySelectorProps> = ({
     isFetching: isFetchingOtherCommunities,
   } = trpc.community.searchCommunities.useQuery(
     { query: debouncedQuery, userId: session?.user.id },
-    { enabled: false, retry: false, retryOnMount: false },
+    { enabled: false, refetchOnWindowFocus: false },
   );
 
   const selectedCommunity =
