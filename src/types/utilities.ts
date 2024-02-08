@@ -43,6 +43,7 @@ export type Media = {
   preview: string;
   id?: string;
   url?: string;
+  size?: number;
   caption?: string;
   uploadStatus: UploadStatus;
 };

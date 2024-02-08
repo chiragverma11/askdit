@@ -11,6 +11,7 @@ interface UploadedStatusProps extends BaseStatusProps {
   status: "uploaded";
   id: string;
   url: string;
+  size: number;
 }
 
 // Specific type for when the status is not 'uploaded'
@@ -65,6 +66,7 @@ export const useMediaDropzoneStore = create<
               uploadStatus: props.status,
               id: props.id,
               url: props.url,
+              size: props.size,
             };
           } else {
             return {
