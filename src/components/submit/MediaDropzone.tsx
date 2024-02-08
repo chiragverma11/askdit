@@ -1,8 +1,8 @@
 import { useToast } from "@/hooks/use-toast";
 import {
-    DROPZONE_MAX_FILES,
-    DROPZONE_MAX_FILE_SIZE_IN_BYTES,
-    MEDIA_CAPTION_LENGTH,
+  DROPZONE_MAX_FILES,
+  DROPZONE_MAX_FILE_SIZE_IN_BYTES,
+  MEDIA_CAPTION_LENGTH,
 } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import { useMediaDropzoneStore } from "@/store/mediaDropzoneStore";
@@ -265,6 +265,10 @@ const RemoveFileButton: FC<RemoveFileButtonProps> = ({ file }) => {
       setNextPreview();
     }
   };
+
+  if (file.uploadStatus === "uploading" || file.uploadStatus === "uploaded") {
+    return null;
+  }
 
   return (
     <Button
