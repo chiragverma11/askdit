@@ -69,16 +69,9 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
   const onSubmit = async (data: FormData) => {
     const editorBlock = await api?.save();
 
-    if (communityId) {
-      const payload = {
-        title: data.title,
-        content: editorBlock,
-        communityId,
-        type: postType,
-      };
+    data.content = editorBlock;
 
-      createPost(payload);
-    }
+    createPost(data);
   };
 
   return (

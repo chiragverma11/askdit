@@ -83,16 +83,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
   const onSubmit = async (data: FormData) => {
     data.content.url = addProtocol(data.content.url);
 
-    if (communityId) {
-      const payload = {
-        title: data.title,
-        content: data.content,
-        communityId,
-        type: postType,
-      };
-
-      createPost(payload);
-    }
+    createPost(data);
   };
 
   useEffect(() => {
