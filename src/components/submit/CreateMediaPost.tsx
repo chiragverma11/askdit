@@ -1,5 +1,8 @@
 import { toast } from "@/hooks/use-toast";
-import { IMAGEKIT_MEDIA_POST_UPLOAD_FOLDER } from "@/lib/config";
+import {
+  IMAGEKIT_MEDIA_POST_UPLOAD_FOLDER,
+  STORAGE_LIMIT_PER_USER,
+} from "@/lib/config";
 import { ImageKitImageUploader } from "@/lib/imagekit/imageUploader";
 import { trpc } from "@/lib/trpc";
 import { addResolutionToImageUrl } from "@/lib/utils";
@@ -55,6 +58,11 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
 
   const { ref: titleRef, ...rest } = register("title");
 
+  const { data: userWithStorage } = trpc.post.getUserStorageUsed.useQuery(
+    undefined,
+    { refetchOnWindowFocus: false },
+  );
+
   const { mutate: createPost, isLoading } =
     trpc.post.createCommunityPost.useMutation({
       onSuccess(data) {
@@ -71,8 +79,21 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
     });
 
   const uploadFiles = async () => {
+    if (!userWithStorage) {
+      return false;
+    }
+
+    const totalFilesSize = files.reduce((acc, file) => acc + file.file.size, 0);
+
+    if (
+      userWithStorage.storageUsed + totalFilesSize >=
+      STORAGE_LIMIT_PER_USER
+    ) {
+      return false;
+    }
+
     const uploadPromises = files.map(async (media) => {
-      if (media.uploadStatus === "uploaded" && media.url) {
+      if (media.uploadStatus === "uploaded" && media.url && media.id) {
         return;
       }
 
@@ -117,18 +138,15 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
   };
 
   const onSubmit = async (data: FormData) => {
-    if (communityId) {
-      const payload: typeof data = {
-        ...data,
-        communityId,
-      };
-
-      createPost(payload);
-    }
+    createPost(data);
   };
 
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    /**
+     * data validation
+     */
 
     const fieldNames: FormDataKeysContentExcluded[] = Object.keys(
       getValues(),
@@ -144,6 +162,10 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
       return;
     }
 
+    /**
+     * uploading files/media
+     */
+
     const filesUploaded = await uploadFiles();
 
     if (!filesUploaded) {
@@ -154,6 +176,10 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
       });
       return;
     }
+
+    /**
+     * updating state
+     */
 
     // Retrieve a fresh reference to the files from the Zustand store
     const updatedFiles = useMediaDropzoneStore.getState().files;
@@ -174,11 +200,14 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
 
     setValue("content", updatedContent);
 
-    // Manually trigger form validation
+    /**
+     * submitting form
+     */
+
     const result = await trigger();
 
     if (result) {
-      const formData = getValues(); // Get the updated form data
+      const formData = getValues();
       onSubmit(formData);
     }
   };
