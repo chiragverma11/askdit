@@ -127,6 +127,9 @@ model Post {
   votes       Vote[]
   bookmarks   Bookmark[]
 
+  storageUsed Int             @default(0)
+  storageUnit StorageUnitType @default(BYTES)
+
   @@index([subredditId])
   @@index([authorId])
 }
