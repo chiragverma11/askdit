@@ -93,7 +93,12 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
     }
 
     const uploadPromises = files.map(async (media) => {
-      if (media.uploadStatus === "uploaded" && media.url && media.id) {
+      if (
+        media.uploadStatus === "uploaded" &&
+        media.url &&
+        media.id &&
+        media.size
+      ) {
         return;
       }
 
@@ -120,6 +125,7 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
             res.result?.width,
             res.result?.height,
           ),
+          size: res.result?.size || media.file.size,
         });
         return res;
       } catch (error) {
@@ -184,21 +190,31 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
     // Retrieve a fresh reference to the files from the Zustand store
     const updatedFiles = useMediaDropzoneStore.getState().files;
 
+    const uploadedFiles = updatedFiles.filter(
+      (file): file is Media & { id: string; url: string; size: string } =>
+        file.url !== undefined &&
+        file.id !== undefined &&
+        file.size !== undefined,
+    );
+
     const updatedContent: FormData["content"] = {
       type: "IMAGE",
-      images: updatedFiles
-        .filter(
-          (file): file is Media & { id: string; url: string } =>
-            file.url !== undefined && file.id !== undefined,
-        )
-        .map((file) => ({
-          id: file.id,
-          url: file.url,
-          caption: file.caption,
-        })),
+      images: uploadedFiles.map((file) => ({
+        id: file.id,
+        url: file.url,
+        caption: file.caption,
+        size: file.size,
+      })),
     };
 
     setValue("content", updatedContent);
+
+    const storageUsed = uploadedFiles.reduce(
+      (acc, file) => acc + (file.size || file.file.size),
+      0,
+    );
+
+    setValue("storageUsed", storageUsed);
 
     /**
      * submitting form

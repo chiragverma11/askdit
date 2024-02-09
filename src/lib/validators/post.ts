@@ -20,6 +20,7 @@ export const PostValidator = z.object({
   content: z.any(),
   communityId: z.string(),
   type: z.nativeEnum(PostType),
+  storageUsed: z.number(),
 });
 
 export const PostLinkValidator = z.object({
@@ -38,6 +39,7 @@ export const PostLinkValidator = z.object({
   }),
   communityId: z.string(),
   type: z.nativeEnum(PostType),
+  storageUsed: z.number().default(0),
 });
 
 export const MediaPostValidator = z.object({
@@ -56,11 +58,13 @@ export const MediaPostValidator = z.object({
         id: z.string(),
         url: z.string().url(),
         caption: z.string().max(MEDIA_CAPTION_LENGTH).optional(),
+        size: z.number(),
       })
       .array(),
   }),
   communityId: z.string(),
   type: z.nativeEnum(PostType).default("MEDIA"),
+  storageUsed: z.number(),
 });
 
 export const PostVoteValidator = z.object({

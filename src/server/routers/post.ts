@@ -21,7 +21,7 @@ export const postRouter = router({
   createCommunityPost: protectedProcedure
     .input(PostValidator)
     .mutation(async (opts) => {
-      const { communityId, title, content, type } = opts.input;
+      const { communityId, title, content, type, storageUsed } = opts.input;
       const { user } = opts.ctx;
 
       const community = await db.subreddit.findFirst({
@@ -37,16 +37,34 @@ export const postRouter = router({
         });
       }
 
-      const post = await db.post.create({
-        data: {
-          title: title,
-          content: content,
-          subredditId: communityId,
-          type: type,
-          authorId: user.id,
-        },
-      });
+      const post = await db.$transaction(async (tx) => {
+        const post = await tx.post.create({
+          data: {
+            title: title,
+            content: content,
+            subredditId: communityId,
+            type: type,
+            authorId: user.id,
+            storageUsed: storageUsed,
+          },
+        });
 
+        if (storageUsed > 0) {
+          console.log("updating user storageUsed");
+          await tx.user.update({
+            where: {
+              id: user.id,
+            },
+            data: {
+              storageUsed: {
+                increment: storageUsed,
+              },
+            },
+          });
+        }
+
+        return post;
+      });
       return { postId: post.id, message: "Post created successfully" };
     }),
   votePost: protectedProcedure
@@ -371,10 +389,26 @@ export const postRouter = router({
           code: "UNAUTHORIZED",
         });
       }
-      await db.post.delete({
-        where: {
-          id: postId,
-        },
+
+      await db.$transaction(async (tx) => {
+        await tx.post.delete({
+          where: {
+            id: postId,
+          },
+        });
+
+        if (post.storageUsed > 0) {
+          if (post.type === "MEDIA" || post.type === "POST") {
+            await tx.user.update({
+              where: { id: user.id },
+              data: {
+                storageUsed: {
+                  decrement: post.storageUsed,
+                },
+              },
+            });
+          }
+        }
       });
 
       return new Response("OK");

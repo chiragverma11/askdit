@@ -39,7 +39,13 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
 
   const { register, watch, handleSubmit } = useForm<FormData>({
     resolver: zodResolver(PostValidator),
-    defaultValues: { title: "", content: null, communityId, type: postType },
+    defaultValues: {
+      title: "",
+      content: null,
+      communityId,
+      type: postType,
+      storageUsed: 0,
+    },
   });
 
   const { ref: titleValidationRef, ...rest } = register("title");
