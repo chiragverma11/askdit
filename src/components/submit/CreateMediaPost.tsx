@@ -140,6 +140,8 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
 
     await Promise.all(uploadPromises);
 
+    setUploading(false);
+
     return true;
   };
 
