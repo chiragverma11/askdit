@@ -9,15 +9,17 @@ const CustomImageRenderer = ({ data }: any) => {
   const src = data.file?.url;
 
   const params = new URL(src).searchParams;
-  const width = params.get("width");
-  const height = params.get("height");
+  const width =
+    (data.file?.width as number | undefined) || Number(params.get("width"));
+  const height =
+    (data.file?.height as number | undefined) || Number(params.get("height"));
 
   const aspectRatio = useMemo(
-    () => Math.max(Number(width) / Number(height), 8 / 9),
+    () => Math.max(width / height, 8 / 9),
     [width, height],
   );
 
-  if (width !== null && height !== null) {
+  if (width && height) {
     return (
       <Link
         href={src}
