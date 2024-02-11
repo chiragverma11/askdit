@@ -1,5 +1,6 @@
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
 import { db } from "@/lib/db";
+import { ImageKitImageBulkDeleter } from "@/lib/imagekit/imagesDeleter";
 import {
   getRelativeUrl,
   getUrlMetadata,
@@ -7,11 +8,13 @@ import {
   isValidUrl,
 } from "@/lib/utils";
 import {
+  MediaPostValidator,
   PostBookmarkValidator,
   PostDeleteValidator,
   PostValidator,
   PostVoteValidator,
 } from "@/lib/validators/post";
+import { EditorJSContent } from "@/types/utilities";
 import { VoteType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -50,7 +53,6 @@ export const postRouter = router({
         });
 
         if (storageUsed > 0) {
-          console.log("updating user storageUsed");
           await tx.user.update({
             where: {
               id: user.id,
@@ -398,16 +400,36 @@ export const postRouter = router({
         });
 
         if (post.storageUsed > 0) {
-          if (post.type === "MEDIA" || post.type === "POST") {
-            await tx.user.update({
-              where: { id: user.id },
-              data: {
-                storageUsed: {
-                  decrement: post.storageUsed,
-                },
+          await tx.user.update({
+            where: { id: user.id },
+            data: {
+              storageUsed: {
+                decrement: post.storageUsed,
               },
+            },
+          });
+
+          let imageIds: string[] = [];
+
+          if (post.type === "MEDIA") {
+            type MediaPostContent = z.infer<
+              typeof MediaPostValidator
+            >["content"];
+
+            const mediaPostContent = post.content as MediaPostContent;
+
+            mediaPostContent.images.forEach((image) => {
+              imageIds.push(image.id);
+            });
+          } else if (post.type === "POST") {
+            if (!post.content) return;
+
+            (post.content as EditorJSContent).blocks.forEach((block) => {
+              if (block.type === "image") imageIds.push(block.data.file.id);
             });
           }
+
+          await ImageKitImageBulkDeleter({ fileIds: imageIds });
         }
       });
 

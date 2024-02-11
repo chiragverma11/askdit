@@ -47,3 +47,15 @@ export type Media = {
   caption?: string;
   uploadStatus: UploadStatus;
 };
+
+type EditorJSBlock = {
+  id: string;
+  type: string;
+  data: Record<string, any>;
+};
+
+export type EditorJSContent = {
+  time: number;
+  blocks: EditorJSBlock[];
+  version: string;
+};
