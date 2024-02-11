@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { PostType } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
-import { FC, useMemo, useRef } from "react";
+import { FC, useCallback, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Icons } from "../Icons";
@@ -65,20 +65,27 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
       },
     });
 
-  const { api, Editor, editorContainerRef, isEditorLoading } = useEditor({
-    onEditorReady: () => {
-      _titleRef.current?.focus();
+  const { api, Editor, editorContainerRef, isEditorLoading, storageUsed } =
+    useEditor({
+      onEditorReady: () => {
+        _titleRef.current?.focus();
+      },
+      disabled,
+    });
+
+  const onSubmit = useCallback(
+    async (data: FormData) => {
+      if (!api) return;
+
+      const editorOutputData = await api.save();
+
+      data.content = editorOutputData;
+      data.storageUsed = storageUsed;
+
+      createPost(data);
     },
-    disabled,
-  });
-
-  const onSubmit = async (data: FormData) => {
-    const editorBlock = await api?.save();
-
-    data.content = editorBlock;
-
-    createPost(data);
-  };
+    [api, storageUsed, createPost],
+  );
 
   return (
     <div className={className} ref={editorContainerRef}>

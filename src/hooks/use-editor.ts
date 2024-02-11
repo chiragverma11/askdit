@@ -4,7 +4,6 @@ import Editor from "@/components/editor/Editor";
 import { toast } from "@/hooks/use-toast";
 import { IMAGEKIT_REGULAR_POST_UPLOAD_FOLDER } from "@/lib/config";
 import { ImageKitImageUploader } from "@/lib/imagekit/imageUploader";
-import { addResolutionToImageUrl } from "@/lib/utils";
 import EditorJS from "@editorjs/editorjs";
 import { useIntersection } from "@mantine/hooks";
 
@@ -16,6 +15,7 @@ interface EditorProps {
 export function useEditor({ onEditorReady, disabled }: EditorProps) {
   const [isEditorLoading, setIsEditorLoading] = React.useState(true);
   const [isIntersected, setIsIntersected] = React.useState(false);
+  const [storageUsed, setStorageUsed] = React.useState(0);
 
   const { ref: editorContainerRef, entry } = useIntersection({
     threshold: 0.1,
@@ -84,15 +84,21 @@ export function useEditor({ onEditorReady, disabled }: EditorProps) {
                     title: "Upload failed",
                     description: "Please try again later",
                   });
+                  return { success: 0 };
                 }
+
+                setStorageUsed(
+                  (prev) => prev + (response.result?.size || file.size),
+                );
+
                 return {
                   success: 1,
                   file: {
-                    url: addResolutionToImageUrl(
-                      response.result?.url,
-                      response.result?.width,
-                      response.result?.height,
-                    ),
+                    url: response.result?.url,
+                    id: response.result?.fileId,
+                    width: response.result?.width,
+                    height: response.result?.height,
+                    size: response.result?.size || file.size,
                   },
                 };
               },
@@ -132,5 +138,6 @@ export function useEditor({ onEditorReady, disabled }: EditorProps) {
     isEditorLoading,
     editorContainerRef,
     Editor,
+    storageUsed,
   };
 }
