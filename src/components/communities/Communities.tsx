@@ -55,9 +55,9 @@ const Communities: FC<CommunitiesProps> = ({ session, explore }) => {
           );
         })}
       </div>
-      <ScrollArea className="h-[calc(var(--mobile-height-adjusted)-56px)]">
+      <ScrollArea className="h-[calc(var(--mobile-height-adjusted)-68px)] lg:h-[calc(var(--height-adjusted)-68px)]">
         <div
-          className="flex w-full flex-col items-center gap-4 px-4 pb-16 lg:max-h-none lg:px-0 lg:pb-0"
+          className="flex w-full flex-col items-center gap-4 px-4 pb-16 lg:max-h-none lg:pb-4 lg:pr-4"
           ref={parent}
         >
           <AnimatePresence>
