@@ -22,7 +22,7 @@ const CreatePostButton = forwardRef<
   return (
     <Button
       className={cn(
-        "flex items-center gap-1 bg-red-500 px-1 font-semibold text-white hover:bg-red-500/75 lg:px-4",
+        "flex items-center gap-1 px-1 font-semibold text-white lg:px-4",
         className,
       )}
       size={"sm"}
