@@ -93,6 +93,8 @@
 
     --askdit-bottom-bar-height: 56.67px;
 
+    --height-adjusted: calc(100vh - var(--askdit-header-height));
+
     --mobile-height-adjusted: calc(
       100vh - var(--askdit-header-height) - var(--askdit-bottom-bar-height)
     );
