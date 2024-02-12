@@ -1,4 +1,3 @@
-import { useToast } from "@/hooks/use-toast";
 import {
   DROPZONE_MAX_FILES,
   DROPZONE_MAX_FILE_SIZE_IN_BYTES,
@@ -11,6 +10,7 @@ import Image from "next/image";
 import React, { FC, useCallback, useEffect } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import TextareaAutosize from "react-textarea-autosize";
+import { toast } from "sonner";
 import { Icons } from "../Icons";
 import { Button } from "../ui/Button";
 
@@ -24,8 +24,6 @@ const MediaDropzone: FC<MediaDropzoneProps> = ({ className }) => {
   const setPreview = useMediaDropzoneStore((state) => state.setPreview);
 
   const cleanup = useMediaDropzoneStore((state) => state.cleanup);
-
-  const { toast } = useToast();
 
   const addAcceptedFilesWithPreview = useCallback(
     (acceptedFiles: File[]) => {
@@ -66,9 +64,7 @@ const MediaDropzone: FC<MediaDropzoneProps> = ({ className }) => {
             rejection.errors?.some((error) => error.code === "file-too-large"),
         )
       ) {
-        toast({
-          variant: "destructive",
-          title: "File too large!",
+        toast.error("File too large!", {
           description: "You can't upload files larger than 4MB",
         });
       }
@@ -80,9 +76,7 @@ const MediaDropzone: FC<MediaDropzoneProps> = ({ className }) => {
             rejection.errors?.some((error) => error.code === "too-many-files"),
         )
       ) {
-        toast({
-          variant: "destructive",
-          title: "Too many files!",
+        toast.error("Too many files!", {
           description: "You have hit the limit of 10 images",
         });
       }
@@ -104,7 +98,7 @@ const MediaDropzone: FC<MediaDropzoneProps> = ({ className }) => {
         }
       }
     },
-    [addAcceptedFilesWithPreview, files, toast],
+    [addAcceptedFilesWithPreview, files],
   );
 
   const onDrop = useCallback(

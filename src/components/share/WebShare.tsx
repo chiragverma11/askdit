@@ -7,12 +7,12 @@ import React, {
   useState,
 } from "react";
 
-import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { ChangeTypeOfKeys } from "@/types/utilities";
 import { useClipboard, useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { toast } from "sonner";
 import { Icons } from "../Icons";
 import {
   Dialog,
@@ -147,12 +147,11 @@ const WebShareDrawer: FC<WebShareDrawerProps> = ({
 }) => {
   const [showQr, setShowQr] = useState(false);
   const clipboard = useClipboard();
-  const { toast } = useToast();
 
   function copyLink() {
     clipboard.copy(data.url);
     if (!clipboard.error) {
-      toast({ description: "Link Copied!" });
+      toast.info("Link Copied!");
     }
   }
 
@@ -256,12 +255,11 @@ const WebShareDialog: FC<WebShareDrawerProps> = ({
 }) => {
   const [showQr, setShowQr] = useState(false);
   const clipboard = useClipboard();
-  const { toast } = useToast();
 
   function copyLink() {
     clipboard.copy(data.url);
     if (!clipboard.error) {
-      toast({ description: "Link Copied!" });
+      toast.info("Link Copied!");
     }
   }
 

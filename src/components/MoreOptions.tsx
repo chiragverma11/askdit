@@ -1,10 +1,10 @@
 "use client";
 
-import { toast } from "@/hooks/use-toast";
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { FC, useState } from "react";
+import { toast } from "sonner";
 import { Icons } from "./Icons";
 import {
   AlertDialog,
@@ -52,7 +52,7 @@ const MoreOptions: FC<MoreOptionsProps> = ({
 
   const { mutate: deletePost } = trpc.post.delete.useMutation({
     onSuccess: () => {
-      toast({ description: "Post deleted successfully" });
+      toast.success("Post deleted successfully");
       if (pathName === redirectUrl) {
         return utils.post.infiniteCommunityPosts.invalidate();
       }
@@ -62,7 +62,7 @@ const MoreOptions: FC<MoreOptionsProps> = ({
 
   const { mutate: deleteComment } = trpc.comment.delete.useMutation({
     onSuccess: () => {
-      toast({ description: "Comment deleted successfully" });
+      toast.success("Comment deleted successfully");
       if (onCommentDelete) {
         onCommentDelete();
       }
@@ -87,11 +87,11 @@ const MoreOptions: FC<MoreOptionsProps> = ({
           { postId: id, remove: isBookmarked },
           {
             onSuccess: () => {
-              toast({
-                description: isBookmarked
+              toast.success(
+                isBookmarked
                   ? "Post unsaved successfully"
                   : "Post saved successfully",
-              });
+              );
             },
           },
         )
@@ -99,11 +99,11 @@ const MoreOptions: FC<MoreOptionsProps> = ({
           { commentId: id, remove: isBookmarked },
           {
             onSuccess: () => {
-              toast({
-                description: isBookmarked
+              toast.success(
+                isBookmarked
                   ? "Comment unsaved successfully"
                   : "Comment saved successfully",
-              });
+              );
             },
           },
         );

@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import React, { FC, useState, useTransition } from "react";
+import { toast } from "sonner";
 import AuthLink from "./AuthLink";
 import { Button, buttonVariants } from "./ui/Button";
-import { useToast } from "@/hooks/use-toast";
 
 interface SubscribeLeaveToggleProps
   extends React.ComponentPropsWithoutRef<typeof Button> {
@@ -31,13 +31,12 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
 }) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const { toast, dismiss } = useToast();
   const [isSub, setIsSub] = useState<boolean>(isSubscribed);
 
   const { mutate: subscribe, isLoading: isSubLoading } =
     trpc.community.subscribe.useMutation({
       onSuccess: () => {
-        toast({ description: `Successfully joined r/${subredditName}` });
+        toast.success(`Successfully joined r/${subredditName}`);
         !disableRefresh &&
           startTransition(() => {
             router.refresh();
@@ -51,7 +50,7 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
   const { mutate: unsubscribe, isLoading: isUnsubLoading } =
     trpc.community.unsubscribe.useMutation({
       onSuccess: () => {
-        toast({ description: `Successfully left r/${subredditName}` });
+        toast.success(`Successfully left r/${subredditName}`);
         !disableRefresh &&
           startTransition(() => {
             router.refresh();

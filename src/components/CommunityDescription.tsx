@@ -1,6 +1,5 @@
 "use client";
 
-import { useToast } from "@/hooks/use-toast";
 import { COMMUNITY_DESCRIPTION_LENGTH } from "@/lib/config";
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
@@ -10,6 +9,7 @@ import { useClickOutside } from "@mantine/hooks";
 import React, { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Icons } from "./Icons";
 import { Button } from "./ui/Button";
@@ -88,8 +88,6 @@ const AddCommunityDescription = React.forwardRef<
   HTMLDivElement,
   AddDescriptionProps
 >(({ description, communityId, setDescription, close }, ref) => {
-  const { toast } = useToast();
-
   const { handleSubmit, register, watch } = useForm<AddDescriptionRequestType>({
     resolver: zodResolver(DescriptionValidator),
     defaultValues: {
@@ -105,7 +103,7 @@ const AddCommunityDescription = React.forwardRef<
       onSuccess: ({ description }) => {
         setDescription(description);
         close();
-        toast({ description: "Description updated successfully" });
+        toast.success("Description updated successfully");
       },
     });
 

@@ -1,4 +1,3 @@
-import { toast } from "@/hooks/use-toast";
 import { trpc } from "@/lib/trpc";
 import { addProtocol } from "@/lib/utils";
 import { PostLinkValidator } from "@/lib/validators/post";
@@ -9,6 +8,7 @@ import { DotPulse } from "@uiball/loaders";
 import { usePathname, useRouter } from "next/navigation";
 import { FC, useEffect, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "../ui/Button";
 import SubmitPostTitle from "./SubmitPostTitle";
@@ -73,9 +73,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
           .slice(0, -1)
           .concat(["post", data.postId])
           .join("/");
-        toast({
-          description: "Your post has been created successfully.",
-        });
+        toast.success("Your post has been created successfully.");
         router.push(newPathname);
       },
     });

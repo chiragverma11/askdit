@@ -1,7 +1,6 @@
 "use client";
 
 import { useEditor } from "@/hooks/use-editor";
-import { toast } from "@/hooks/use-toast";
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { PostValidator } from "@/lib/validators/post";
@@ -12,6 +11,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import { FC, useCallback, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Icons } from "../Icons";
 import { Button } from "../ui/Button";
@@ -58,9 +58,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
           .slice(0, -1)
           .concat(["post", data.postId])
           .join("/");
-        toast({
-          description: "Your post has been created successfully.",
-        });
+        toast.success("Your post has been created successfully.");
         router.push(newPathname);
       },
     });

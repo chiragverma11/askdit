@@ -1,4 +1,3 @@
-import { toast } from "@/hooks/use-toast";
 import {
   IMAGEKIT_MEDIA_POST_UPLOAD_FOLDER,
   STORAGE_LIMIT_PER_USER,
@@ -14,6 +13,7 @@ import { PostType } from "@prisma/client";
 import { usePathname, useRouter } from "next/navigation";
 import { FC, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "../ui/Button";
 import MediaDropzone from "./MediaDropzone";
@@ -71,9 +71,7 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
           .slice(0, -1)
           .concat(["post", data.postId])
           .join("/");
-        toast({
-          description: "Your post has been created successfully.",
-        });
+        toast.success("Your post has been created successfully.");
         router.push(newPathname);
       },
     });
@@ -129,8 +127,7 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
         });
         return res;
       } catch (error) {
-        toast({
-          title: "Upload failed",
+        toast.error("Upload failed", {
           description: "Please try again later",
         });
         setFileUploadStatus({ file: media, status: "failed" });
@@ -164,9 +161,7 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
     const isFormValidExceptContent = await trigger(fieldNames);
 
     if (!isFormValidExceptContent) {
-      toast({
-        description: "Fill out required fields",
-      });
+      toast.warning("Fill out required fields");
       return;
     }
 
@@ -178,8 +173,7 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
 
     if (!filesUploaded) {
       setUploading(false);
-      toast({
-        title: "Failed to post",
+      toast.error("Failed to post", {
         description: "Please try again",
       });
       return;

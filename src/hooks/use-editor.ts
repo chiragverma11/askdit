@@ -1,11 +1,11 @@
 import * as React from "react";
 
 import Editor from "@/components/editor/Editor";
-import { toast } from "@/hooks/use-toast";
 import { IMAGEKIT_REGULAR_POST_UPLOAD_FOLDER } from "@/lib/config";
 import { ImageKitImageUploader } from "@/lib/imagekit/imageUploader";
 import EditorJS from "@editorjs/editorjs";
 import { useIntersection } from "@mantine/hooks";
+import { toast } from "sonner";
 
 interface EditorProps {
   onEditorReady?: () => void;
@@ -80,8 +80,7 @@ export function useEditor({ onEditorReady, disabled }: EditorProps) {
                 });
 
                 if (response.success !== 1) {
-                  toast({
-                    title: "Upload failed",
+                  toast.error("Upload failed", {
                     description: "Please try again later",
                   });
                   return { success: 0 };
