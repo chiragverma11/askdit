@@ -14,7 +14,7 @@ const MainContentWrapper: FC<MainContentWrapperProps> = ({
   return (
     <div
       className={cn(
-        "flex w-full justify-center gap-4 py-2 lg:max-w-[980px] lg:justify-between lg:px-4 lg:py-4",
+        "flex w-full justify-center gap-4 pt-2 lg:max-w-[980px] lg:justify-between lg:px-4 lg:pt-4",
         className,
       )}
       {...props}
