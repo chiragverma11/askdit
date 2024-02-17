@@ -1,10 +1,9 @@
-import { cn, getDefaultCommunityBg } from "@/lib/utils";
 import { Subreddit } from "@prisma/client";
 import { Session } from "next-auth";
 import Link from "next/link";
 import { FC } from "react";
+import CommunityAvatar from "../CommunityAvatar";
 import SubscribeLeaveToggle from "../SubscribeLeaveToggle";
-import UserAvatar from "../UserAvatar";
 interface CommunityCardProps {
   community: Subreddit & {
     _count: { subscribers: number };
@@ -28,23 +27,11 @@ const CommunityCard: FC<CommunityCardProps> = ({
         className="flex w-full items-center justify-between"
       >
         <div className="flex items-center gap-3">
-          {community.image ? (
-            <UserAvatar
-              user={{ name: community.name, image: community.image }}
-              className="h-10 w-10"
-            />
-          ) : (
-            <span
-              className={cn(
-                "flex aspect-square h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-zinc-950",
-                getDefaultCommunityBg({
-                  communityName: community.name,
-                }),
-              )}
-            >
-              r/
-            </span>
-          )}
+          <CommunityAvatar
+            className="h-10 w-10 text-2xl"
+            communityName={community.name}
+            image={community.image}
+          />
           <div className="flex flex-col">
             <h1 className="text-lg font-semibold md:text-xl">
               r/{community.name}
