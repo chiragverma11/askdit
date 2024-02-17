@@ -9,11 +9,13 @@ interface AuthenticationParametersResponse {
 
 interface ImageKitImageUploaderProps {
   file: File;
+  fileName?: string;
   folder: string;
 }
 
 export async function ImageKitImageUploader({
   file,
+  fileName,
   folder,
 }: ImageKitImageUploaderProps) {
   try {
@@ -31,7 +33,7 @@ export async function ImageKitImageUploader({
 
     const result = await imagekit.upload({
       file: file,
-      fileName: file.name,
+      fileName: fileName ? fileName : file.name,
       folder: folder,
       token: authenticationParameters.token,
       signature: authenticationParameters.signature,
