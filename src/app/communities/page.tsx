@@ -21,7 +21,7 @@ const CommunitiesPage: FC<CommunitiesPageProps> = async ({ searchParams }) => {
   const { explore } = searchParams;
 
   return (
-    <MainContentWrapper>
+    <MainContentWrapper className="lg:pb-0">
       <FeedWrapper>
         <Communities
           session={session}
