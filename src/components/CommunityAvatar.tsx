@@ -11,6 +11,7 @@ const CommunityAvatar: FC<CommunityAvatarProps> = ({
   image,
   communityName,
   className,
+  ...props
 }) => {
   if (!image) {
     return (
@@ -31,10 +32,12 @@ const CommunityAvatar: FC<CommunityAvatarProps> = ({
   return (
     <UserAvatar
       className={cn("h-8 w-8", className)}
+      imageClassName="object-cover"
       user={{
         name: communityName,
         image: image,
       }}
+      {...props}
     />
   );
 };
