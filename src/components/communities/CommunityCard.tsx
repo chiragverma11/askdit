@@ -18,14 +18,12 @@ const CommunityCard: FC<CommunityCardProps> = ({
   isSubscribed,
 }) => {
   return (
-    <div
+    <Link
+      href={`/r/${community.name}`}
       key={community.id}
       className="w-full rounded-xl border border-default/20 bg-emphasis px-4 py-4"
     >
-      <Link
-        href={`/r/${community.name}`}
-        className="flex w-full items-center justify-between"
-      >
+      <div className="flex w-full items-center justify-between">
         <div className="flex items-center gap-3">
           <CommunityAvatar
             className="h-10 w-10 text-2xl"
@@ -51,8 +49,8 @@ const CommunityCard: FC<CommunityCardProps> = ({
           disableRefresh={true}
           disabled={session?.user.id === community.creatorId}
         />
-      </Link>
-    </div>
+      </div>
+    </Link>
   );
 };
 
