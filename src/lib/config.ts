@@ -34,6 +34,11 @@ export const MEDIA_CAPTION_LENGTH = 180;
 
 export const STORAGE_LIMIT_PER_USER = 125829120;
 
+export const MAX_PROFILE_IMAGE_SIZE_IN_BYTES = 524288;
+
+export const IMAGEKIT_COMMUNITY_PROFILE_UPLOAD_FOLDER =
+  "/askdit/community/profile/images";
+
 export const APP_INFO: {
   author: { name: string; github: string };
   github: string;
