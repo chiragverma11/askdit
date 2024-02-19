@@ -28,11 +28,8 @@ import {
 } from "./ui/DropdownMenu";
 import { Separator } from "./ui/Separator";
 
-interface CustomUser extends User {
-  username: String;
-}
 interface UserProfileNavProps {
-  user: Pick<CustomUser, "name" | "image" | "email" | "username">;
+  user: Pick<User, "name" | "image" | "email" | "username">;
 }
 
 const UserProfileNav: FC<UserProfileNavProps> = ({ user }) => {
@@ -205,26 +202,21 @@ const UserProfileNavDrawer: FC<UserProfileNavProps> = ({ user }) => {
           </DrawerItem>
           <Separator className="my-1" />
           <DrawerItem asChild>
-            <div
-              className="flex cursor-pointer items-center justify-between"
-              onSelect={(event) => {
-                event.preventDefault();
-              }}
-            >
+            <div className="flex cursor-pointer items-center justify-between">
               <ThemeSwitch />
             </div>
           </DrawerItem>
 
           <Separator className="my-1" />
 
-          <DrawerItem onClick={() => setOpen(false)} asChild>
-            <div
-              onSelect={(event) => {
-                event.preventDefault();
-                signOut({ callbackUrl: pathname });
-              }}
-              className="hover:underline hover:underline-offset-2"
-            >
+          <DrawerItem
+            onClick={() => {
+              signOut({ callbackUrl: pathname });
+              setOpen(false);
+            }}
+            asChild
+          >
+            <div className="hover:underline hover:underline-offset-2">
               <Icons.logout className="mr-2 h-5 w-5 stroke-[1.75]" />
               Sign Out
             </div>
