@@ -45,7 +45,7 @@ const CommunityCard: FC<CommunityCardProps> = ({
           isSubscribed={isSubscribed}
           subredditId={community.id}
           subredditName={community.name}
-          session={session}
+          isAuthenticated={session ? true : false}
           disableRefresh={true}
           disabled={session?.user.id === community.creatorId}
         />

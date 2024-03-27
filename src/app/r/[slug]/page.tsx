@@ -123,7 +123,7 @@ const CommunityHeader = ({
             isSubscribed={isSubscribed}
             subredditId={community?.id}
             subredditName={community?.name}
-            session={session}
+            isAuthenticated={session ? true : false}
             className="w-20 rounded-full"
             disabled={session?.user.id === community?.creatorId}
           />

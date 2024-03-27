@@ -79,7 +79,7 @@ const UserModeratorsCard: FC<UserModeratorsCardProps> = async ({
                     subscription.subredditId === community.id
                   );
                 })}
-                session={session}
+                isAuthenticated={session ? true : false}
                 subredditId={community.id}
                 subredditName={community.name}
                 disabled={session?.user.id === userId}

@@ -14,7 +14,7 @@ interface SubscribeLeaveToggleProps
   isSubscribed: boolean;
   subredditId: string;
   subredditName: string;
-  session: Session | null;
+  isAuthenticated: boolean;
   disableRefresh?: boolean;
   disabled?: boolean;
 }
@@ -23,7 +23,7 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
   isSubscribed,
   subredditId,
   subredditName,
-  session,
+  isAuthenticated,
   className,
   disableRefresh,
   disabled = false,
@@ -77,7 +77,7 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
       disabled={disabled}
       {...props}
     />
-  ) : session ? (
+  ) : isAuthenticated ? (
     <Button
       size={"xs"}
       className={cn("rounded-lg px-3", className)}
