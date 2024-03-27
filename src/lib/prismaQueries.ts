@@ -59,7 +59,7 @@ export const getGeneralFeedPosts = async () => {
 export const getAuthenticatedFeedPosts = async ({
   userId,
 }: {
-  userId: string;
+  userId: string | undefined;
 }) => {
   const userSubscriptions = await db.subscription.findMany({
     where: {
