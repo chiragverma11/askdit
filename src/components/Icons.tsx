@@ -39,6 +39,7 @@ import {
   UploadCloud,
   User,
   X,
+  XCircle,
 } from "lucide-react";
 import { FaPlus } from "react-icons/fa6";
 import { RxGithubLogo } from "react-icons/rx";
@@ -215,6 +216,7 @@ export const Icons = {
   home: Home,
   penSquare: PenSquare,
   close: X,
+  closeCircle: XCircle,
   downvote: ArrowBigDown,
   upvote: ArrowBigUp,
   edit: Pencil,

@@ -32,7 +32,7 @@ const SiteHeader = async () => {
             <Icons.logoWithDarkText className="hidden h-8 w-full dark:hidden lg:block lg:h-6" />
           </Link>
           <nav className="flex w-3/4 items-center justify-end gap-2 lg:justify-around lg:gap-0">
-            <SearchBar className="hidden lg:inline-flex" />
+            <SearchBar />
 
             <Tooltip>
               <TooltipTrigger asChild>
