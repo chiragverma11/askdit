@@ -16,7 +16,6 @@ import {
   Vote,
   VoteType,
 } from "@prisma/client";
-import { Session } from "next-auth";
 import { usePathname } from "next/navigation";
 import Post from "./Post";
 import PostSkeleton from "./PostSkeleton";
@@ -37,7 +36,7 @@ type InitialPostWithoutBookmark = (PrismaPost & {
 })[];
 
 interface CommonPostProps {
-  session: Session | null;
+  userId: string | undefined;
   variant?: FeedViewType;
 }
 
@@ -81,7 +80,7 @@ type PostFeedProps =
 const PostFeed: FC<PostFeedProps> = ({
   initialPosts,
   variant,
-  session,
+  userId,
   ...props
 }) => {
   const pathname = usePathname();
@@ -94,7 +93,7 @@ const PostFeed: FC<PostFeedProps> = ({
   });
 
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    useInfinitePostFeed({ ...props, userId: session?.user.id });
+    useInfinitePostFeed({ ...props, userId: userId });
 
   useEffect(() => {
     if (hasNextPage && entry?.isIntersecting) {
@@ -109,9 +108,7 @@ const PostFeed: FC<PostFeedProps> = ({
       {posts.map((post, index) => {
         const votesAmt = getVotesAmount({ votes: post?.votes });
 
-        const currentVote = post?.votes.find(
-          (vote) => vote.userId === session?.user.id,
-        );
+        const currentVote = post?.votes.find((vote) => vote.userId === userId);
 
         if (index === posts.length - 1) {
           return (
@@ -122,9 +119,9 @@ const PostFeed: FC<PostFeedProps> = ({
                 votesAmt={votesAmt}
                 isCommunity={props.type === "communityPost"}
                 currentVoteType={currentVote?.type}
-                isLoggedIn={session?.user ? true : false}
+                isLoggedIn={userId ? true : false}
                 pathName={pathname}
-                isAuthor={post.authorId === session?.user.id}
+                isAuthor={post.authorId === userId}
               />
             </li>
           );
@@ -137,9 +134,9 @@ const PostFeed: FC<PostFeedProps> = ({
                 votesAmt={votesAmt}
                 isCommunity={props.type === "communityPost"}
                 currentVoteType={currentVote?.type}
-                isLoggedIn={session?.user ? true : false}
+                isLoggedIn={userId ? true : false}
                 pathName={pathname}
-                isAuthor={post.authorId === session?.user.id}
+                isAuthor={post.authorId === userId}
               />
             </li>
           );

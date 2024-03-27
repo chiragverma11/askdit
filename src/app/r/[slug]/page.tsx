@@ -67,7 +67,7 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
           type="communityPost"
           initialPosts={initialPosts}
           communityName={slug}
-          session={session}
+          userId={session?.user.id}
         />
       </FeedWrapper>
       <SideMenuWrapper className="sticky top-[72px] h-fit justify-start">

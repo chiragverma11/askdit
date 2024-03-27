@@ -23,7 +23,7 @@ const AuthenticatedFeed: FC<AuthenticatedFeedProps> = async ({ session }) => {
     <PostFeed
       type="authenticatedPost"
       initialPosts={posts}
-      session={session}
+      userId={session?.user.id}
       communityIds={communityIds}
     />
   );

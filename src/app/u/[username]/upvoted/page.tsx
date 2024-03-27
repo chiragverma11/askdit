@@ -41,7 +41,7 @@ const UserProfileUpvotedPage: FC<UserProfileUpvotedPageProps> = async ({
   return (
     <PostFeed
       initialPosts={userUpvotedPosts}
-      session={session}
+      userId={session?.user.id}
       type="votedPost"
       authorId={userId!}
       voteType="UP"

@@ -35,7 +35,7 @@ const UserProfilePostsPage: FC<UserProfilePageProps> = async ({ params }) => {
       type="userPost"
       authorId={authorId!}
       initialPosts={userPosts}
-      session={session}
+      userId={session?.user.id}
     />
   );
 };

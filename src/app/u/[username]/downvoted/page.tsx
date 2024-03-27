@@ -41,7 +41,7 @@ const UserProfileDownvotedPage: FC<UserProfileDownvotedPageProps> = async ({
   return (
     <PostFeed
       initialPosts={userDownvotedPosts}
-      session={session}
+      userId={session?.user.id}
       type="votedPost"
       authorId={userId!}
       voteType="DOWN"
