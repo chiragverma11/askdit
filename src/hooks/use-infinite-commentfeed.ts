@@ -17,37 +17,53 @@ interface InfinitePostCommentsProps extends CommonInfiniteCommentsProps {
   postId: string;
 }
 
-type Options = InfiniteUserCommentsProps | InfinitePostCommentsProps;
+interface InfiniteSearchCommentsProps extends CommonInfiniteCommentsProps {
+  type: "searchComment";
+  query: string;
+}
+
+type Options = InfiniteUserCommentsProps | InfinitePostCommentsProps | InfiniteSearchCommentsProps;
 
 type DataReturnType<T extends Options> = T extends InfiniteUserCommentsProps
   ? InfiniteData<RouterOutputs["comment"]["infiniteUserComments"]>
-  : InfiniteData<RouterOutputs["comment"]["infiniteComments"]>;
+  : T extends InfinitePostCommentsProps ? InfiniteData<RouterOutputs["comment"]["infiniteComments"]> :
+  InfiniteData<RouterOutputs["search"]["infiniteSearchComments"]>;
 
 export function useInfiniteCommentFeed<T extends Options>(options: T) {
   const trpcInfiniteQueryRequest =
     options.type === "userComment"
       ? trpc.comment.infiniteUserComments.useInfiniteQuery(
-          {
-            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-            authorId: options.authorId,
-            currentUserId: options.userId,
-          },
-          {
-            getNextPageParam: (lastPage) => lastPage?.nextCursor,
-            enabled: !options?.disabled,
-          },
-        )
-      : trpc.comment.infiniteComments.useInfiniteQuery(
-          {
-            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-            postId: options.postId,
-            userId: options.userId,
-          },
-          {
-            getNextPageParam: (lastPage) => lastPage?.nextCursor,
-            enabled: !options?.disabled,
-          },
-        );
+        {
+          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+          authorId: options.authorId,
+          currentUserId: options.userId,
+        },
+        {
+          getNextPageParam: (lastPage) => lastPage?.nextCursor,
+          enabled: !options?.disabled,
+        },
+      )
+      : options.type === "postComment" ? trpc.comment.infiniteComments.useInfiniteQuery(
+        {
+          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+          postId: options.postId,
+          userId: options.userId,
+        },
+        {
+          getNextPageParam: (lastPage) => lastPage?.nextCursor,
+          enabled: !options?.disabled,
+        },
+      ) : trpc.search.infiniteSearchComments.useInfiniteQuery(
+        {
+          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+          query: options.query,
+          userId: options.userId,
+        },
+        {
+          getNextPageParam: (lastPage) => lastPage?.nextCursor,
+          enabled: !options?.disabled,
+        },
+      );
 
   const {
     data: rawData,

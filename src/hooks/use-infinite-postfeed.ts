@@ -32,22 +32,30 @@ interface InfinteVotedPostsProps extends CommonInfinitePostsProps {
   voteType: VoteType;
 }
 
+interface InfiniteSearchPostsProps {
+  type: "searchPost";
+  query: string;
+}
+
 type Options =
   | InfiniteCommunityPostsProps
   | InfiniteAuthenticatedPostsProps
   | InfiniteGeneralPostsProps
   | InfiniteUserPostsProps
-  | InfinteVotedPostsProps;
+  | InfinteVotedPostsProps
+  | InfiniteSearchPostsProps;
 
 type DataReturnType<T extends Options> = T extends InfiniteCommunityPostsProps
   ? InfiniteData<RouterOutputs["post"]["infiniteCommunityPosts"]>
   : T extends InfiniteAuthenticatedPostsProps
-  ? InfiniteData<RouterOutputs["post"]["infiniteAuthenticatedPosts"]>
-  : T extends InfiniteGeneralPostsProps
-  ? InfiniteData<RouterOutputs["post"]["infiniteGeneralPosts"]>
-  : T extends InfiniteUserPostsProps
-  ? InfiniteData<RouterOutputs["post"]["infiniteUserPosts"]>
-  : InfiniteData<RouterOutputs["post"]["infiniteVotedPosts"]>;
+    ? InfiniteData<RouterOutputs["post"]["infiniteAuthenticatedPosts"]>
+    : T extends InfiniteGeneralPostsProps
+      ? InfiniteData<RouterOutputs["post"]["infiniteGeneralPosts"]>
+      : T extends InfiniteUserPostsProps
+        ? InfiniteData<RouterOutputs["post"]["infiniteUserPosts"]>
+        : T extends InfinteVotedPostsProps
+          ? InfiniteData<RouterOutputs["post"]["infiniteVotedPosts"]>
+          : InfiniteData<RouterOutputs["search"]["infiniteSearchPosts"]>;
 
 export function useInfinitePostFeed<T extends Options>(options: T) {
   const trpcInfiniteQueryRequest =
@@ -63,43 +71,48 @@ export function useInfinitePostFeed<T extends Options>(options: T) {
           },
         )
       : options.type === "authenticatedPost"
-      ? trpc.post.infiniteAuthenticatedPosts.useInfiniteQuery(
-          {
-            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-            communityIds: options.communityIds || [],
-            userId: options.userId,
-          },
-          {
-            getNextPageParam: (lastPage) => lastPage?.nextCursor,
-          },
-        )
-      : options.type === "generalPost"
-      ? trpc.post.infiniteGeneralPosts.useInfiniteQuery(
-          {
-            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-          },
-          {
-            getNextPageParam: (lastPage) => lastPage?.nextCursor,
-          },
-        )
-      : options.type === "userPost"
-      ? trpc.post.infiniteUserPosts.useInfiniteQuery(
-          {
-            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-            authorId: options.authorId,
-            currentUserId: options.userId,
-          },
-          { getNextPageParam: (lastPage) => lastPage?.nextCursor },
-        )
-      : trpc.post.infiniteVotedPosts.useInfiniteQuery(
-          {
-            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-            authorId: options.authorId,
-            voteType: options.voteType,
-            currentUserId: options.userId,
-          },
-          { getNextPageParam: (lastPage) => lastPage?.nextCursor },
-        );
+        ? trpc.post.infiniteAuthenticatedPosts.useInfiniteQuery(
+            {
+              limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+              communityIds: options.communityIds || [],
+              userId: options.userId,
+            },
+            {
+              getNextPageParam: (lastPage) => lastPage?.nextCursor,
+            },
+          )
+        : options.type === "generalPost"
+          ? trpc.post.infiniteGeneralPosts.useInfiniteQuery(
+              {
+                limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+              },
+              {
+                getNextPageParam: (lastPage) => lastPage?.nextCursor,
+              },
+            )
+          : options.type === "userPost"
+            ? trpc.post.infiniteUserPosts.useInfiniteQuery(
+                {
+                  limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+                  authorId: options.authorId,
+                  currentUserId: options.userId,
+                },
+                { getNextPageParam: (lastPage) => lastPage?.nextCursor },
+              )
+            : options.type === "votedPost"
+              ? trpc.post.infiniteVotedPosts.useInfiniteQuery(
+                  {
+                    limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+                    authorId: options.authorId,
+                    voteType: options.voteType,
+                    currentUserId: options.userId,
+                  },
+                  { getNextPageParam: (lastPage) => lastPage?.nextCursor },
+                )
+              : trpc.search.infiniteSearchPosts.useInfiniteQuery({
+                  limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+                  query: options.query,
+                });
 
   const {
     data: rawData,

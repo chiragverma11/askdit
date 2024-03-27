@@ -19,6 +19,7 @@ import {
 import { usePathname } from "next/navigation";
 import Post from "./Post";
 import PostSkeleton from "./PostSkeleton";
+import { getSearchPosts } from "@/lib/prismaQueries";
 
 type InitialPostWithBookmark = (PrismaPost & {
   author: User;
@@ -70,12 +71,19 @@ interface VotedPostsProps extends CommonPostProps {
   initialPosts: InitialPostWithBookmark;
 }
 
+interface SearchPostsProps extends CommonPostProps {
+  type: "searchPost";
+  query: string;
+  initialPosts: Awaited<ReturnType<typeof getSearchPosts>>;
+}
+
 type PostFeedProps =
   | CommunityPostsProps
   | AuthenticatedPostsProps
   | GeneralPostsProps
   | UserPostsProps
-  | VotedPostsProps;
+  | VotedPostsProps
+  | SearchPostsProps;
 
 const PostFeed: FC<PostFeedProps> = ({
   initialPosts,
