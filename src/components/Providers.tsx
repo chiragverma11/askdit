@@ -25,7 +25,11 @@ const Providers: FC<ProvidersProps> = ({ children }) => {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <SessionProvider>
+        <SessionProvider
+          refetchOnWindowFocus={false}
+          refetchWhenOffline={false}
+          refetchInterval={2 * 60}
+        >
           <NextThemesProvider
             attribute="class"
             defaultTheme="system"
