@@ -22,6 +22,7 @@ const SearchFeed: FC<SearchFeedProps> = async ({ type, query, userId }) => {
         initialPosts={searchPosts}
         query={query}
         userId={userId}
+        variant="compact"
       />
     );
   }
