@@ -51,3 +51,11 @@ export const APP_INFO: {
   },
   github: "https://github.com/chiragverma11/askdit",
 };
+
+export const REDIS_CACHE_EXPIRATION_SECONDS = 60 * 15;
+
+/**
+ * Redis Cache Prefixes
+ */
+
+export const USER_CACHE_KEY_PREFIX = "user:";
