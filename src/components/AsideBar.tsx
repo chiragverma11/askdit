@@ -30,7 +30,7 @@ const Items = {
   Communities: "Communities",
 } as const;
 
-interface AsideBarProps extends HTMLAttributes<HTMLElement> {}
+interface AsideBarProps extends HTMLAttributes<HTMLElement> { }
 
 const AsideBar: FC<AsideBarProps> = ({ className }) => {
   const pathname = usePathname() || "/";
@@ -40,7 +40,7 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
   const lg = useMediaQuery("(min-width: 1024px)");
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    const previousValue = scrollY.getPrevious();
+    const previousValue = scrollY.getPrevious() || 0;
     if (latest > previousValue && latest > 150) {
       setLessVisible(true);
     } else {

@@ -20,7 +20,7 @@ export const bookmarkRouter = router({
       const { userId, cursor, skip } = input;
       const { user } = opts.ctx;
 
-      if (user.id !== userId) {
+      if (user?.id !== userId) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You can only view your own bookmarks",

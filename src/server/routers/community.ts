@@ -203,7 +203,7 @@ export const communityRouter = router({
       return { message: "Description added", description: newDescription };
     }),
   searchCommunities: publicProcedure
-    .input(z.object({ query: z.string().min(1), userId: z.string() }))
+    .input(z.object({ query: z.string().min(1), userId: z.string().optional() }))
     .query(async (opts) => {
       const { query, userId } = opts.input;
 

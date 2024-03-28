@@ -63,12 +63,11 @@ const CommunityInfoCard: FC<CommunityInfoCardProps> = ({
           {parent === "post" ? (
             <SubscribeLeaveToggle
               isSubscribed={isSubscribed}
-              session={session}
+              isAuthenticated={session ? true : false}
               subredditId={community.id}
               subredditName={community.name}
               className="h-10 w-full"
               disabled={session?.user.id === community?.creatorId}
-              // variant={"outline"}
             />
           ) : null}
           <Link

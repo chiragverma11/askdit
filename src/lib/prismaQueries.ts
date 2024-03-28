@@ -107,7 +107,7 @@ export const getCommunityPost = async ({
   userId,
 }: {
   postId: string;
-  userId: string;
+  userId: string | undefined;
 }) => {
   const communityPost = await db.post.findFirst({
     where: {
