@@ -1,9 +1,10 @@
-import { CommentVote, Vote } from "@prisma/client";
+import { CommentVote, Prisma, Vote } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { formatDistanceToNowStrict } from "date-fns";
 import { enIN } from "date-fns/locale";
 import { twMerge } from "tailwind-merge";
 import urlMetadata from "url-metadata";
+import { COMMENT_MIN_REPLIES } from "./config";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -32,6 +33,21 @@ export function getVotesAmount({ votes }: { votes: (Vote | CommentVote)[] }) {
   }, 0);
 
   return votesAmt;
+}
+
+export function getVotes({
+  votes,
+  currentUserId,
+}: {
+  votes: (Vote | CommentVote)[];
+  currentUserId: string | undefined;
+}) {
+  const votesAmt = getVotesAmount({ votes });
+
+  const currentVoteType = votes.find((vote) => vote.userId === currentUserId)
+    ?.type;
+
+  return { votesAmt, currentVoteType };
 }
 
 /**
@@ -146,4 +162,115 @@ export const addProtocol = (url: string) => {
     url = "http://" + url;
   }
   return url;
+};
+
+export const addResolutionToImageUrl = (
+  url: string | undefined,
+  width: number | undefined,
+  height: number | undefined,
+) => {
+  return `${url}?width=${width}&height=${height}`;
+};
+
+type HierarchicalReplies = {
+  take?: number | undefined;
+  include: {
+    author: boolean;
+    votes: boolean;
+    bookmarks: boolean | { where: { userId: string } };
+    _count: { select: { replies: boolean } };
+    replies: HierarchicalReplies;
+  };
+};
+
+export const createHierarchicalRepliesInclude = ({
+  level,
+  take,
+  userId,
+}: {
+  level: number;
+  take?: number;
+  userId?: string;
+}): HierarchicalReplies => {
+  if (level <= 0) {
+    return undefined as unknown as HierarchicalReplies;
+  }
+
+  // Recursive case: create the replies object for the current level
+  const replies: HierarchicalReplies = {
+    take: take
+      ? take >= COMMENT_MIN_REPLIES
+        ? take
+        : COMMENT_MIN_REPLIES
+      : undefined,
+    include: {
+      author: true,
+      votes: true,
+      bookmarks: userId
+        ? {
+            where: {
+              userId: userId,
+            },
+          }
+        : false,
+      _count: {
+        select: {
+          replies: true,
+        },
+      },
+      replies: createHierarchicalRepliesInclude({
+        level: level - 1,
+        userId,
+        take: take
+          ? take >= COMMENT_MIN_REPLIES
+            ? take - 1
+            : COMMENT_MIN_REPLIES
+          : undefined,
+      }),
+    },
+  };
+
+  return replies;
+};
+
+export const createHierarchicalCommentReplyToSelect = ({
+  level,
+}: {
+  level: number;
+}): Prisma.CommentSelect => {
+  // Base case: if level is 0, return an empty replyTo object
+  if (level < 0) {
+    return {};
+  }
+
+  // Recursive case: create the replyTo object for the current level
+  const select: Prisma.CommentSelect = {
+    id: level === 0 ? true : false,
+    replyTo:
+      level !== 0
+        ? {
+            select: createHierarchicalCommentReplyToSelect({
+              level: level - 1,
+            }),
+          }
+        : false,
+  };
+
+  return select;
+};
+
+export const getTopContextParentCommentId = (
+  comment: any,
+): { parentCommentId: string | undefined; findOnContext: number } => {
+  let currentComment = comment;
+  let findOnContext = 0;
+
+  while (currentComment && currentComment.replyTo) {
+    currentComment = currentComment.replyTo;
+    findOnContext++;
+  }
+  return {
+    parentCommentId: currentComment ? currentComment.id : undefined,
+    findOnContext,
+  };
 };

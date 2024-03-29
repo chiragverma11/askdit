@@ -1,5 +1,6 @@
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
 import { db } from "@/lib/db";
+import { ImageKitImageBulkDeleter } from "@/lib/imagekit/imagesDeleter";
 import {
   getRelativeUrl,
   getUrlMetadata,
@@ -7,10 +8,14 @@ import {
   isValidUrl,
 } from "@/lib/utils";
 import {
+  MediaPostValidator,
+  PostBookmarkValidator,
   PostDeleteValidator,
   PostValidator,
   PostVoteValidator,
 } from "@/lib/validators/post";
+import { EditorJSContent } from "@/types/utilities";
+import { VoteType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
@@ -19,33 +24,49 @@ export const postRouter = router({
   createCommunityPost: protectedProcedure
     .input(PostValidator)
     .mutation(async (opts) => {
-      const { communityId, title, content, type } = opts.input;
+      const { communityId, title, content, type, storageUsed } = opts.input;
       const { user } = opts.ctx;
 
-      const subscription = await db.subscription.findFirst({
+      const community = await db.subreddit.findFirst({
         where: {
-          subredditId: communityId,
-          userId: user.id,
+          id: communityId,
         },
       });
 
-      if (!subscription) {
+      if (!community) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Subscribe to Post",
+          code: "NOT_FOUND",
+          message: "Community doesn't exist.",
         });
       }
 
-      const post = await db.post.create({
-        data: {
-          title: title,
-          content: content,
-          subredditId: communityId,
-          type: type,
-          authorId: user.id,
-        },
-      });
+      const post = await db.$transaction(async (tx) => {
+        const post = await tx.post.create({
+          data: {
+            title: title,
+            content: content,
+            subredditId: communityId,
+            type: type,
+            authorId: user.id,
+            storageUsed: storageUsed,
+          },
+        });
 
+        if (storageUsed > 0) {
+          await tx.user.update({
+            where: {
+              id: user.id,
+            },
+            data: {
+              storageUsed: {
+                increment: storageUsed,
+              },
+            },
+          });
+        }
+
+        return post;
+      });
       return { postId: post.id, message: "Post created successfully" };
     }),
   votePost: protectedProcedure
@@ -114,6 +135,7 @@ export const postRouter = router({
     .input(
       z.object({
         communityName: z.string(),
+        userId: z.string().optional(),
         limit: z.number().min(1),
         cursor: z.string().nullish(),
         skip: z.number().optional(),
@@ -122,7 +144,7 @@ export const postRouter = router({
     .query(async (opts) => {
       const { input } = opts;
       const limit = input.limit ?? INFINITE_SCROLL_PAGINATION_RESULTS;
-      const { skip, communityName, cursor } = input;
+      const { skip, communityName, userId, cursor } = input;
 
       const posts = await db.post.findMany({
         take: limit + 1,
@@ -136,6 +158,11 @@ export const postRouter = router({
           votes: true,
           comments: true,
           subreddit: true,
+          bookmarks: {
+            where: {
+              userId: userId,
+            },
+          },
         },
         where: {
           subreddit: {
@@ -159,6 +186,7 @@ export const postRouter = router({
       z.object({
         limit: z.number().min(1),
         communityIds: z.string().array(),
+        userId: z.string().optional(),
         cursor: z.string().nullish(),
         skip: z.number().optional(),
       }),
@@ -166,7 +194,7 @@ export const postRouter = router({
     .query(async (opts) => {
       const { input } = opts;
       const limit = input.limit ?? INFINITE_SCROLL_PAGINATION_RESULTS;
-      const { skip, communityIds, cursor } = input;
+      const { skip, communityIds, userId, cursor } = input;
 
       const posts = await db.post.findMany({
         take: limit + 1,
@@ -180,6 +208,11 @@ export const postRouter = router({
           votes: true,
           comments: true,
           subreddit: true,
+          bookmarks: {
+            where: {
+              userId: userId,
+            },
+          },
         },
         where: {
           subredditId: {
@@ -236,6 +269,108 @@ export const postRouter = router({
         nextCursor,
       };
     }),
+  infiniteUserPosts: publicProcedure
+    .input(
+      z.object({
+        authorId: z.string(),
+        currentUserId: z.string().optional(),
+        limit: z.number().min(1),
+        cursor: z.string().nullish(),
+        skip: z.number().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const limit = input.limit ?? INFINITE_SCROLL_PAGINATION_RESULTS;
+      const { authorId, currentUserId, skip, cursor } = input;
+
+      const posts = await db.post.findMany({
+        take: limit + 1,
+        skip: skip,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          author: true,
+          votes: true,
+          comments: true,
+          subreddit: true,
+          bookmarks: {
+            where: {
+              userId: currentUserId,
+            },
+          },
+        },
+        where: {
+          authorId: authorId,
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (posts.length > limit) {
+        const nextItem = posts.pop();
+        nextCursor = nextItem?.id;
+      }
+      return {
+        posts,
+        nextCursor,
+      };
+    }),
+  infiniteVotedPosts: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1),
+        voteType: z.nativeEnum(VoteType),
+        authorId: z.string(),
+        currentUserId: z.string().optional(),
+        cursor: z.string().nullish(),
+        skip: z.number().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const limit = input.limit ?? INFINITE_SCROLL_PAGINATION_RESULTS;
+      const { skip, voteType, authorId, currentUserId, cursor } = input;
+
+      const posts = await db.post.findMany({
+        take: limit + 1,
+        skip: skip,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          author: true,
+          votes: true,
+          comments: true,
+          subreddit: true,
+          bookmarks: {
+            where: {
+              userId: currentUserId,
+            },
+          },
+        },
+        where: {
+          votes: {
+            some: {
+              type: voteType,
+              userId: authorId,
+            },
+          },
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (posts.length > limit) {
+        const nextItem = posts.pop();
+        nextCursor = nextItem?.id;
+      }
+      return {
+        posts,
+        nextCursor,
+      };
+    }),
   delete: protectedProcedure
     .input(PostDeleteValidator)
     .mutation(async (opts) => {
@@ -256,13 +391,91 @@ export const postRouter = router({
           code: "UNAUTHORIZED",
         });
       }
-      await db.post.delete({
-        where: {
-          id: postId,
-        },
+
+      await db.$transaction(async (tx) => {
+        await tx.post.delete({
+          where: {
+            id: postId,
+          },
+        });
+
+        if (post.storageUsed > 0) {
+          await tx.user.update({
+            where: { id: user.id },
+            data: {
+              storageUsed: {
+                decrement: post.storageUsed,
+              },
+            },
+          });
+
+          let imageIds: string[] = [];
+
+          if (post.type === "MEDIA") {
+            type MediaPostContent = z.infer<
+              typeof MediaPostValidator
+            >["content"];
+
+            const mediaPostContent = post.content as MediaPostContent;
+
+            mediaPostContent.images.forEach((image) => {
+              imageIds.push(image.id);
+            });
+          } else if (post.type === "POST") {
+            if (!post.content) return;
+
+            (post.content as EditorJSContent).blocks.forEach((block) => {
+              if (block.type === "image") imageIds.push(block.data.file.id);
+            });
+          }
+
+          await ImageKitImageBulkDeleter({ fileIds: imageIds });
+        }
       });
 
       return new Response("OK");
+    }),
+  bookmark: protectedProcedure
+    .input(PostBookmarkValidator)
+    .mutation(async (opts) => {
+      const { postId, remove } = opts.input;
+      const { user } = opts.ctx;
+
+      if (remove) {
+        const bookmark = await db.bookmark.findFirst({
+          where: {
+            postId,
+            userId: user.id,
+          },
+        });
+
+        if (!bookmark) {
+          return new Response("Bookmark not found", { status: 404 });
+        }
+
+        await db.bookmark.delete({
+          where: { id: bookmark.id },
+        });
+
+        return new Response("Bookmark removed", { status: 200 });
+      }
+
+      const post = await db.post.findUnique({
+        where: { id: postId },
+      });
+
+      if (!post) {
+        return new Response("Post not found", { status: 404 });
+      }
+
+      await db.bookmark.create({
+        data: {
+          userId: user.id,
+          postId,
+        },
+      });
+
+      return new Response("Bookmarked", { status: 200 });
     }),
   getUrlMetadata: protectedProcedure
     .input(z.object({ url: z.string() }))
@@ -333,4 +546,26 @@ export const postRouter = router({
         },
       };
     }),
+  getUserStorageUsed: protectedProcedure.query(async (opts) => {
+    const { user } = opts.ctx;
+
+    const userWithStorageUsed = await db.user.findUnique({
+      where: {
+        id: user.id,
+      },
+      select: {
+        storageUsed: true,
+        storageUnit: true,
+      },
+    });
+
+    if (!userWithStorageUsed) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    return {
+      storageUsed: userWithStorageUsed.storageUsed,
+      StorageUnitType: userWithStorageUsed.storageUnit,
+    };
+  }),
 });

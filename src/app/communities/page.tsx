@@ -5,19 +5,28 @@ import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import SideMenuWrapper from "@/components/layout/SideMenuWrapper";
 import { getAuthSession } from "@/lib/auth";
 import { Metadata } from "next";
+import { FC } from "react";
 import "react-loading-skeleton/dist/skeleton.css";
 
 export const metadata: Metadata = {
   title: "Communities",
 };
 
-const CommunitiesPage = async () => {
+interface CommunitiesPageProps {
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+const CommunitiesPage: FC<CommunitiesPageProps> = async ({ searchParams }) => {
   const session = await getAuthSession();
+  const { explore } = searchParams;
 
   return (
-    <MainContentWrapper>
+    <MainContentWrapper className="lg:pb-0">
       <FeedWrapper>
-        <Communities session={session} />
+        <Communities
+          session={session}
+          explore={explore === "true" ? true : false}
+        />
       </FeedWrapper>
       <SideMenuWrapper>
         <GeneralSideMenuCard

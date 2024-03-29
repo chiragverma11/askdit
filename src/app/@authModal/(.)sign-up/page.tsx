@@ -1,18 +1,18 @@
-import CloseModal from "@/components/CloseModal";
-import Modal from "@/components/Modal";
+import CloseButton from "@/components/CloseButton";
 import SignUp from "@/components/SignUp";
+import { Modal, ModalContent } from "@/components/ui/Modal";
 
 const SignUpModal = () => {
   return (
     <Modal>
-      <div className="container mx-auto flex h-full max-w-lg items-center">
-        <div className="relative h-max w-full rounded-2xl bg-emphasis px-2 py-16 dark:bg-subtle">
+      <div className="container flex h-full max-w-lg items-center px-6 lg:px-8">
+        <ModalContent>
           <div className="absolute right-4 top-4">
-            <CloseModal />
+            <CloseButton />
           </div>
 
           <SignUp />
-        </div>
+        </ModalContent>
       </div>
     </Modal>
   );

@@ -1,42 +1,98 @@
 "use client";
 
-import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
-import { trpc } from "@/lib/trpc";
+import { FC, useEffect, useRef } from "react";
+
+import { useInfinitePostFeed } from "@/hooks/use-infinite-postfeed";
 import { getVotesAmount } from "@/lib/utils";
+import { useFeedViewStore } from "@/store/feedViewStore";
+import { FeedViewType } from "@/types/utilities";
 import { useIntersection } from "@mantine/hooks";
 import {
+  Bookmark,
   Comment,
   Post as PrismaPost,
   Subreddit,
   User,
   Vote,
+  VoteType,
 } from "@prisma/client";
-import { Session } from "next-auth";
 import { usePathname } from "next/navigation";
-import { FC, useEffect, useRef } from "react";
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
 import Post from "./Post";
+import PostSkeleton from "./PostSkeleton";
+import { getSearchPosts } from "@/lib/prismaQueries";
 
-interface PostFeedProps {
-  initialPosts: (PrismaPost & {
-    author: User;
-    votes: Vote[];
-    subreddit: Subreddit;
-    comments: Comment[];
-  })[];
-  communityName?: string;
-  session: Session | null;
-  communityIds?: string[];
+type InitialPostWithBookmark = (PrismaPost & {
+  author: User;
+  votes: Vote[];
+  subreddit: Subreddit;
+  comments: Comment[];
+  bookmarks: Bookmark[];
+})[];
+
+type InitialPostWithoutBookmark = (PrismaPost & {
+  author: User;
+  votes: Vote[];
+  subreddit: Subreddit;
+  comments: Comment[];
+})[];
+
+interface CommonPostProps {
+  userId: string | undefined;
+  variant?: FeedViewType;
 }
+
+interface CommunityPostsProps extends CommonPostProps {
+  type: "communityPost";
+  communityName: string;
+  initialPosts: InitialPostWithBookmark;
+}
+
+interface AuthenticatedPostsProps extends CommonPostProps {
+  type: "authenticatedPost";
+  communityIds?: string[];
+  initialPosts: InitialPostWithBookmark;
+}
+
+interface GeneralPostsProps extends CommonPostProps {
+  type: "generalPost";
+  initialPosts: InitialPostWithoutBookmark;
+}
+
+interface UserPostsProps extends CommonPostProps {
+  type: "userPost";
+  authorId: string;
+  initialPosts: InitialPostWithBookmark;
+}
+
+interface VotedPostsProps extends CommonPostProps {
+  type: "votedPost";
+  authorId: string;
+  voteType: VoteType;
+  initialPosts: InitialPostWithBookmark;
+}
+
+interface SearchPostsProps extends CommonPostProps {
+  type: "searchPost";
+  query: string;
+  initialPosts: Awaited<ReturnType<typeof getSearchPosts>>;
+}
+
+type PostFeedProps =
+  | CommunityPostsProps
+  | AuthenticatedPostsProps
+  | GeneralPostsProps
+  | UserPostsProps
+  | VotedPostsProps
+  | SearchPostsProps;
 
 const PostFeed: FC<PostFeedProps> = ({
   initialPosts,
-  communityName,
-  session,
-  communityIds,
+  variant,
+  userId,
+  ...props
 }) => {
   const pathname = usePathname();
+  const feedViewType = useFeedViewStore((state) => state.feedViewType);
 
   const lastPostRef = useRef<HTMLElement>(null);
   const { ref, entry } = useIntersection({
@@ -44,37 +100,8 @@ const PostFeed: FC<PostFeedProps> = ({
     threshold: 0.1,
   });
 
-  const trpcInfiniteQueryRequest = communityName
-    ? trpc.post.infiniteCommunityPosts.useInfiniteQuery(
-        {
-          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-          communityName: communityName!,
-        },
-        {
-          getNextPageParam: (lastPage) => lastPage?.nextCursor,
-        },
-      )
-    : session
-    ? trpc.post.infiniteAuthenticatedPosts.useInfiniteQuery(
-        {
-          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-          communityIds: communityIds!,
-        },
-        {
-          getNextPageParam: (lastPage) => lastPage?.nextCursor,
-        },
-      )
-    : trpc.post.infiniteGeneralPosts.useInfiniteQuery(
-        {
-          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-        },
-        {
-          getNextPageParam: (lastPage) => lastPage?.nextCursor,
-        },
-      );
-
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    trpcInfiniteQueryRequest;
+    useInfinitePostFeed({ ...props, userId: userId });
 
   useEffect(() => {
     if (hasNextPage && entry?.isIntersecting) {
@@ -89,21 +116,20 @@ const PostFeed: FC<PostFeedProps> = ({
       {posts.map((post, index) => {
         const votesAmt = getVotesAmount({ votes: post?.votes });
 
-        const currentVote = post?.votes.find(
-          (vote) => vote.userId === session?.user.id,
-        );
+        const currentVote = post?.votes.find((vote) => vote.userId === userId);
 
         if (index === posts.length - 1) {
           return (
             <li ref={ref} key={post.id}>
               <Post
+                variant={variant ? variant : feedViewType}
                 post={post}
                 votesAmt={votesAmt}
-                isCommunity={communityName ? true : false}
+                isCommunity={props.type === "communityPost"}
                 currentVoteType={currentVote?.type}
-                isLoggedIn={session?.user ? true : false}
+                isLoggedIn={userId ? true : false}
                 pathName={pathname}
-                isAuthor={post.authorId === session?.user.id}
+                isAuthor={post.authorId === userId}
               />
             </li>
           );
@@ -111,13 +137,14 @@ const PostFeed: FC<PostFeedProps> = ({
           return (
             <li key={post.id}>
               <Post
+                variant={variant ? variant : feedViewType}
                 post={post}
                 votesAmt={votesAmt}
-                isCommunity={communityName ? true : false}
+                isCommunity={props.type === "communityPost"}
                 currentVoteType={currentVote?.type}
-                isLoggedIn={session?.user ? true : false}
+                isLoggedIn={userId ? true : false}
                 pathName={pathname}
-                isAuthor={post.authorId === session?.user.id}
+                isAuthor={post.authorId === userId}
               />
             </li>
           );
@@ -126,48 +153,11 @@ const PostFeed: FC<PostFeedProps> = ({
       {isFetchingNextPage ? (
         <li className="relative -mb-24 lg:-mb-8">
           <div className="-mb-24 h-44 overflow-hidden lg:-mb-8 lg:h-40">
-            <PostSkeleton />
+            <PostSkeleton variant={variant ? variant : feedViewType} />
           </div>
         </li>
       ) : null}
     </ul>
-  );
-};
-
-const PostSkeleton = () => {
-  return (
-    <SkeletonTheme
-      baseColor="var(--skeleton-base)"
-      highlightColor="var(--skeleton-highlight)"
-      duration={2}
-      inline={false}
-    >
-      <div className="relative mx-auto flex w-full flex-col gap-2 border-b border-t border-default/25 bg-emphasis px-4 py-3 text-sm md:rounded-3xl md:border lg:p-4 lg:hover:border-default/60">
-        <div className="flex w-full items-center">
-          <div className="inline-flex items-center gap-2">
-            <Skeleton
-              className="aspect-square h-6 w-6 text-2xl"
-              circle={true}
-            />
-            <Skeleton className="text-base font-semibold" width={"12rem"} />
-          </div>
-        </div>
-        <Skeleton className="text-2xl font-bold" width={"18rem"} />
-        <Skeleton className="w-full text-xl font-bold" height={"10rem"} />
-        <div className="flex items-center gap-2 text-xs font-semibold text-subtle dark:text-default">
-          <Skeleton
-            className="px-3 py-2"
-            width={"16rem"}
-            borderRadius={"1.5rem"}
-          />
-          <Skeleton
-            className="px-3 py-2"
-            width={"3rem"}
-            borderRadius={"1.5rem"}
-          />
-        </div>
-      </div>
-    </SkeletonTheme>
   );
 };
 

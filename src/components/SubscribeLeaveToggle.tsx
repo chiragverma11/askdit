@@ -5,15 +5,16 @@ import { cn } from "@/lib/utils";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import React, { FC, useState, useTransition } from "react";
+import { toast } from "sonner";
 import AuthLink from "./AuthLink";
 import { Button, buttonVariants } from "./ui/Button";
-import { useToast } from "@/hooks/use-toast";
 
-interface SubscribeLeaveToggleProps extends React.HTMLAttributes<HTMLElement> {
+interface SubscribeLeaveToggleProps
+  extends React.ComponentPropsWithoutRef<typeof Button> {
   isSubscribed: boolean;
   subredditId: string;
   subredditName: string;
-  session: Session | null;
+  isAuthenticated: boolean;
   disableRefresh?: boolean;
   disabled?: boolean;
 }
@@ -22,7 +23,7 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
   isSubscribed,
   subredditId,
   subredditName,
-  session,
+  isAuthenticated,
   className,
   disableRefresh,
   disabled = false,
@@ -30,13 +31,12 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
 }) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const { toast, dismiss } = useToast();
   const [isSub, setIsSub] = useState<boolean>(isSubscribed);
 
   const { mutate: subscribe, isLoading: isSubLoading } =
     trpc.community.subscribe.useMutation({
       onSuccess: () => {
-        toast({ description: `Successfully joined r/${subredditName}` });
+        toast.success(`Successfully joined r/${subredditName}`);
         !disableRefresh &&
           startTransition(() => {
             router.refresh();
@@ -50,7 +50,7 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
   const { mutate: unsubscribe, isLoading: isUnsubLoading } =
     trpc.community.unsubscribe.useMutation({
       onSuccess: () => {
-        toast({ description: `Successfully left r/${subredditName}` });
+        toast.success(`Successfully left r/${subredditName}`);
         !disableRefresh &&
           startTransition(() => {
             router.refresh();
@@ -77,7 +77,7 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
       disabled={disabled}
       {...props}
     />
-  ) : session ? (
+  ) : isAuthenticated ? (
     <Button
       size={"xs"}
       className={cn("rounded-lg px-3", className)}

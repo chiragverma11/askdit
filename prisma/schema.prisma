@@ -1,11 +1,16 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
+}
+
+enum StorageUnitType {
+  BYTES
 }
 
 enum VoteType {
@@ -15,7 +20,7 @@ enum VoteType {
 
 enum PostType {
   POST
-  IMAGES
+  MEDIA
   LINK
 }
 
@@ -25,12 +30,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -66,6 +71,10 @@ model User {
   createdSubreddits Subreddit[]    @relation("CreatedBy")
   subscriptions     Subscription[]
   votes             Vote[]
+  bookmarks         Bookmark[]
+
+  storageUsed Int             @default(0)
+  storageUnit StorageUnitType @default(BYTES)
 }
 
 model VerificationToken {
@@ -79,7 +88,7 @@ model VerificationToken {
 model Subreddit {
   id          String   @id @default(cuid())
   name        String   @unique
-  description String?  @db.VarChar(500)
+  description String?
   image       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -105,18 +114,22 @@ model Subscription {
 }
 
 model Post {
-  id          String    @id @default(cuid())
-  title       String    @db.VarChar(300)
+  id          String     @id @default(cuid())
+  title       String
   type        PostType
   content     Json?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  author      User      @relation(fields: [authorId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  author      User       @relation(fields: [authorId], references: [id])
   authorId    String
-  subreddit   Subreddit @relation(fields: [subredditId], references: [id])
+  subreddit   Subreddit  @relation(fields: [subredditId], references: [id])
   subredditId String
   comments    Comment[]
   votes       Vote[]
+  bookmarks   Bookmark[]
+
+  storageUsed Int             @default(0)
+  storageUnit StorageUnitType @default(BYTES)
 
   @@index([subredditId])
   @@index([authorId])
@@ -124,7 +137,7 @@ model Post {
 
 model Comment {
   id        String   @id @default(cuid())
-  text      String   @db.VarChar(10000)
+  text      String
   createdAt DateTime @default(now())
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String
@@ -132,12 +145,14 @@ model Comment {
   postId    String
 
   replyToId String?
-  replyTo   Comment?  @relation("ReplyTo", fields: [replyToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replyTo   Comment?  @relation("ReplyTo", fields: [replyToId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   replies   Comment[] @relation("ReplyTo")
 
   votes     CommentVote[]
   commentId String?
   deleted   Boolean       @default(false)
+
+  bookmarks Bookmark[]
 
   @@index([postId])
   @@index([replyToId])
@@ -166,4 +181,23 @@ model CommentVote {
   @@id([userId, commentId])
   @@index([commentId])
   @@index([userId])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String?
+  commentId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([postId])
+  @@index([commentId])
+  @@index([postId, userId])
+  @@index([commentId, userId])
 }

@@ -7,11 +7,11 @@ import {
   AddCommentValidator,
 } from "@/lib/validators/comment";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
 import { FC } from "react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import AuthLink from "./AuthLink";
+import { Icons } from "./Icons";
 import { Button, buttonVariants } from "./ui/Button";
 
 interface AddCommentProps {
@@ -81,7 +81,7 @@ const AddComment: FC<AddCommentProps> = ({ postId, refetchComments, user }) => {
             "flex w-fit items-center rounded-3xl border border-default/60 font-semibold hover:border-default hover:bg-transparent",
           )}
         >
-          <Plus className="mr-1 h-4 w-4" /> Add a Comment
+          <Icons.plus className="mr-1 h-4 w-4" /> Add a Comment
         </AuthLink>
       )}
     </>

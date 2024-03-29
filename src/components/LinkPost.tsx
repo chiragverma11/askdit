@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FC } from "react";
 import { z } from "zod";
+import { Icons } from "./Icons";
 import { Button } from "./ui/Button";
 
 export type LinkContent = Pick<z.infer<typeof PostLinkValidator>, "content">;
@@ -19,6 +20,7 @@ const LinkPost: FC<LinkPostProps> = ({ content, title }) => {
         href={content.url}
         target="_blank"
         className="no-underline hover:no-underline active:no-underline"
+        prefetch={false}
       >
         {content.ogImage ? (
           <div className="relative h-full w-full overflow-hidden bg-background/50">
@@ -64,6 +66,37 @@ const LinkPost: FC<LinkPostProps> = ({ content, title }) => {
         </div>
       </Link>
     </div>
+  );
+};
+
+export const LinkPostCompactPreview: FC<Pick<LinkPostProps, "content">> = ({
+  content,
+}) => {
+  return (
+    <Link
+      href={content.url}
+      target="_blank"
+      className="relative h-full w-full no-underline hover:no-underline active:no-underline"
+      prefetch={false}
+    >
+      {content.ogImage ? (
+        <div className=" relative h-full w-full overflow-hidden bg-background/50">
+          <Image
+            src={content.ogImage}
+            alt=""
+            className="h-full w-full object-cover"
+            sizes="(max-width: 768px) 80vw, (max-width: 1280px) 50vw, 33vw"
+            fill
+            unoptimized
+          />
+        </div>
+      ) : (
+        <Icons.link className="h-5 w-5" />
+      )}
+      <span className="absolute bottom-0 right-0 rounded-tl-md bg-zinc-300 p-1 text-zinc-700">
+        <Icons.externalLink className="h-3.5 w-3.5" strokeWidth={2.25} />
+      </span>
+    </Link>
   );
 };
 

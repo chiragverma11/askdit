@@ -23,13 +23,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
-import { trpc } from "@/lib/trpc";
-import { Info } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useToast } from "../hooks/use-toast";
-import AuthLink from "./AuthLink";
-import { ToastAction } from "./ui/Toast";
 import { COMMUNITY_NAME_REGEX } from "@/lib/config";
+import { trpc } from "@/lib/trpc";
+import { useRouter } from "next/navigation";
+import AuthLink from "./AuthLink";
+import { Icons } from "./Icons";
+import { toast } from "sonner";
 
 const createCommunityFormSchema = z.object({
   communityName: z.string().regex(COMMUNITY_NAME_REGEX, {
@@ -42,7 +41,6 @@ interface CreateCommunityFormProps {}
 
 const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
   const router = useRouter();
-  const { toast, dismiss } = useToast();
 
   const form = useForm<z.infer<typeof createCommunityFormSchema>>({
     resolver: zodResolver(createCommunityFormSchema),
@@ -55,35 +53,26 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
   const { mutate: createCommunity, isLoading } =
     trpc.community.createCommunity.useMutation({
       onSuccess: (data) => {
-        toast({ description: "Community created Successfully" });
+        toast.success("Community created Successfully");
         router.push(`/r/${data}`);
       },
       onError: (error) => {
         if (error.data?.httpStatus === 401) {
-          toast({
-            variant: "destructive",
-            title: "Can't create community.",
+          toast.error("Can't create community", {
             description: "Login to create community.",
-            action: (
-              <ToastAction altText="Try again">
-                <AuthLink href="/sign-in" onClick={() => dismiss()}>
-                  Login
-                </AuthLink>
-              </ToastAction>
-            ),
+            action: {
+              label: <AuthLink href="/sign-in">Login</AuthLink>,
+              onClick: () => toast.dismiss(),
+            },
           });
         } else if (error.data?.httpStatus === 409) {
-          toast({
-            variant: "destructive",
-            title: "Can't create community.",
+          toast.error("Can't create community.", {
             description: `Sorry, community r/${form.getValues(
               "communityName",
             )} already exists.`,
           });
         } else {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
+          toast.error("Uh oh! Something went wrong.", {
             description: "Please try again later.",
           });
         }
@@ -112,7 +101,7 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
                 <TooltipProvider skipDelayDuration={500}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Info className="ml-2 inline h-4 w-4 text-inherit" />
+                      <Icons.info className="ml-2 inline h-4 w-4 text-inherit" />
                     </TooltipTrigger>
                     <TooltipContent
                       side="bottom"

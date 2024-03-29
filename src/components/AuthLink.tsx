@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { FC } from "react";
 
-interface AuthLinkProps extends React.HTMLAttributes<HTMLAnchorElement> {
+interface AuthLinkProps extends React.ComponentPropsWithoutRef<typeof Link> {
   href: "/sign-in" | "/sign-up";
   paramsAsCallback?: boolean;
 }
@@ -12,6 +12,7 @@ interface AuthLinkProps extends React.HTMLAttributes<HTMLAnchorElement> {
 const AuthLink: FC<AuthLinkProps> = ({
   href,
   className,
+  scroll = false,
   children,
   paramsAsCallback,
   ...props
@@ -26,6 +27,7 @@ const AuthLink: FC<AuthLinkProps> = ({
     <Link
       href={{ pathname: href, query: { callbackUrl: callbackUrl } }}
       className={className}
+      scroll={scroll}
       {...props}
     >
       {children}

@@ -1,7 +1,15 @@
-import { INFINITE_SCROLL_PAGINATION_RESULTS } from "./config";
+import { VoteType } from "@prisma/client";
+import {
+  INFINITE_SCROLL_COMMENT_RESULTS,
+  INFINITE_SCROLL_PAGINATION_RESULTS,
+  SEARCH_SUGGESTIONS_LIMIT,
+} from "./config";
 import { db } from "./db";
 
-export const getCommunity = async (communityName: string) => {
+export const getCommunity = async (
+  communityName: string,
+  userId: string | undefined,
+) => {
   const subreddit = await db.subreddit.findFirst({
     where: {
       name: communityName,
@@ -18,6 +26,11 @@ export const getCommunity = async (communityName: string) => {
           votes: true,
           comments: true,
           subreddit: true,
+          bookmarks: {
+            where: {
+              userId: userId,
+            },
+          },
         },
         orderBy: {
           createdAt: "desc",
@@ -50,18 +63,23 @@ export const getGeneralFeedPosts = async () => {
 export const getAuthenticatedFeedPosts = async ({
   userId,
 }: {
-  userId: string;
+  userId: string | undefined;
 }) => {
-  const subscriptions = await db.subscription.findMany({
+  const userSubscriptions = await db.subscription.findMany({
     where: {
       userId: userId,
     },
+    select: {
+      subredditId: true,
+    },
   });
+
+  const communityIds = userSubscriptions.map((sub) => sub.subredditId);
 
   const posts = await db.post.findMany({
     where: {
       subredditId: {
-        in: subscriptions.map((sub) => sub.subredditId),
+        in: communityIds,
       },
     },
     include: {
@@ -69,6 +87,11 @@ export const getAuthenticatedFeedPosts = async ({
       votes: true,
       comments: true,
       subreddit: true,
+      bookmarks: {
+        where: {
+          userId: userId,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -76,7 +99,42 @@ export const getAuthenticatedFeedPosts = async ({
     take: INFINITE_SCROLL_PAGINATION_RESULTS,
   });
 
-  return { posts, subscriptions };
+  return { posts, communityIds };
+};
+
+export const getCommunityPost = async ({
+  postId,
+  userId,
+}: {
+  postId: string;
+  userId: string | undefined;
+}) => {
+  const communityPost = await db.post.findFirst({
+    where: {
+      id: postId,
+    },
+    include: {
+      author: true,
+      votes: true,
+      subreddit: {
+        include: {
+          _count: {
+            select: {
+              subscribers: true,
+            },
+          },
+        },
+      },
+      comments: true,
+      bookmarks: {
+        where: {
+          userId: userId,
+        },
+      },
+    },
+  });
+
+  return communityPost;
 };
 
 export const getSubscription = async ({
@@ -97,3 +155,337 @@ export const getSubscription = async ({
 
   return subscription;
 };
+
+export const getCreator = async ({ creatorId }: { creatorId: string }) => {
+  const creator = await db.user.findFirst({
+    where: {
+      id: creatorId,
+    },
+  });
+
+  return creator;
+};
+
+export const getCommunityInfo = async ({ name }: { name: string }) => {
+  const community = await db.subreddit.findFirst({
+    where: { name },
+  });
+
+  return community;
+};
+
+export const getUserInfo = async ({ username }: { username: string }) => {
+  const userInfo = await db.user.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+      name: true,
+      image: true,
+    },
+  });
+
+  return userInfo;
+};
+
+export const getUserIdByUsername = async ({
+  username,
+}: {
+  username: string;
+}) => {
+  const user = await db.user.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return user?.id;
+};
+
+export const getUserPosts = async ({
+  username,
+  currentUserId,
+}: {
+  username: string;
+  currentUserId: string | undefined;
+}) => {
+  const authorId = await getUserIdByUsername({ username });
+
+  const userPosts = await db.post.findMany({
+    where: {
+      authorId,
+    },
+    include: {
+      author: true,
+      votes: true,
+      comments: true,
+      subreddit: true,
+      bookmarks: {
+        where: {
+          userId: currentUserId,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return { authorId, userPosts };
+};
+
+export const getUserComments = async ({
+  username,
+  currentUserId,
+}: {
+  username: string;
+  currentUserId: string | undefined;
+}) => {
+  const authorId = await getUserIdByUsername({ username });
+
+  const userComments = await db.comment.findMany({
+    where: {
+      authorId,
+      deleted: false,
+    },
+    include: {
+      author: true,
+      votes: true,
+      bookmarks: {
+        where: {
+          userId: currentUserId,
+        },
+      },
+      post: {
+        select: {
+          subreddit: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return { authorId, userComments };
+};
+
+export const getUserVotedPosts = async ({
+  userId,
+  voteType,
+}: {
+  userId: string;
+  voteType: VoteType;
+}) => {
+  const posts = await db.post.findMany({
+    where: {
+      votes: {
+        some: {
+          type: voteType,
+          userId: userId,
+        },
+      },
+    },
+    include: {
+      author: true,
+      votes: true,
+      comments: true,
+      subreddit: true,
+      bookmarks: {
+        where: {
+          userId: userId,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return posts;
+};
+
+export const getUserBookmarks = async ({ userId }: { userId: string }) => {
+  const userBookmarks = await db.bookmark.findMany({
+    where: {
+      userId,
+    },
+    include: {
+      post: {
+        include: {
+          author: true,
+          votes: true,
+          comments: true,
+          subreddit: true,
+        },
+      },
+      comment: {
+        where: {
+          deleted: false,
+        },
+        include: {
+          author: true,
+          votes: true,
+          post: {
+            select: {
+              subreddit: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return userBookmarks;
+};
+
+export const getSearchPosts = async ({ query }: { query: string }) => {
+  const posts = await db.post.findMany({
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+    where: {
+      title: {
+        contains: query,
+        mode: "insensitive",
+      },
+    },
+    include: {
+      author: true,
+      votes: true,
+      comments: true,
+      subreddit: true,
+    },
+  });
+
+  return posts;
+};
+
+export const getSearchCommunities = async ({
+  query,
+  userId,
+}: {
+  query: string;
+  userId: string | undefined;
+}) => {
+  const communties = await db.subreddit.findMany({
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+    where: {
+      name: {
+        contains: query,
+        mode: "insensitive",
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      creatorId: true,
+      _count: {
+        select: {
+          subscribers: true,
+        },
+      },
+      subscribers: {
+        where: {
+          userId,
+        },
+      },
+    },
+  });
+
+  return communties;
+};
+
+
+export const getSearchComments = async ({
+  query,
+  userId,
+}: {
+  query: string;
+  userId: string | undefined;
+}) => {
+  const comments = await db.comment.findMany({
+    take: INFINITE_SCROLL_COMMENT_RESULTS,
+    where: {
+      text: {
+        contains: query,
+        mode: "insensitive",
+      },
+      deleted: false
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      author: true,
+      votes: true,
+      bookmarks: {
+        where: {
+          userId: userId,
+        },
+      },
+      post: {
+        select: {
+          subreddit: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return comments;
+};
+
+
+export const getSearchUsers = async ({
+  query,
+  userId,
+}: {
+  query: string;
+  userId: string | undefined;
+}) => {
+  const users = await db.user.findMany({
+    take: INFINITE_SCROLL_COMMENT_RESULTS,
+    where: {
+      username: {
+        contains: query,
+        mode: "insensitive",
+      },
+      ...(userId && {
+        NOT: {
+          id: userId,
+        },
+      }),
+    },
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      image: true,
+    },
+  });
+
+  return users;
+};
+

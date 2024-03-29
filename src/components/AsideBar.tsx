@@ -9,11 +9,11 @@ import {
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@mantine/hooks";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { Flame, Home, PenSquare } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FC, HTMLAttributes, useState } from "react";
 import { HiOutlineUserGroup } from "react-icons/hi";
+import { Icons } from "./Icons";
 import { buttonVariants } from "./ui/Button";
 
 const navItems = [
@@ -30,7 +30,7 @@ const Items = {
   Communities: "Communities",
 } as const;
 
-interface AsideBarProps extends HTMLAttributes<HTMLElement> {}
+interface AsideBarProps extends HTMLAttributes<HTMLElement> { }
 
 const AsideBar: FC<AsideBarProps> = ({ className }) => {
   const pathname = usePathname() || "/";
@@ -40,7 +40,7 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
   const lg = useMediaQuery("(min-width: 1024px)");
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    const previousValue = scrollY.getPrevious();
+    const previousValue = scrollY.getPrevious() || 0;
     if (latest > previousValue && latest > 150) {
       setLessVisible(true);
     } else {
@@ -65,11 +65,11 @@ const AsideBar: FC<AsideBarProps> = ({ className }) => {
 
             const IconComponent =
               item.name === Items.Home ? (
-                <Home className="h-6 w-6 text-inherit" />
+                <Icons.home className="h-6 w-6 text-inherit" />
               ) : item.name === Items.Popular ? (
-                <Flame className="h-6 w-6 text-inherit" />
+                <Icons.flame className="h-6 w-6 text-inherit" />
               ) : item.name === Items.Answer ? (
-                <PenSquare className="h-6 w-6 text-inherit" />
+                <Icons.penSquare className="h-6 w-6 text-inherit" />
               ) : item.name === Items.Communities ? (
                 <HiOutlineUserGroup className="h-6 w-6 text-inherit" />
               ) : null;

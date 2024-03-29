@@ -51,8 +51,8 @@
     --askdit-brand-emphasis: #101010;
 
     /* Skeleton */
-    --skeleton-base: #d9d9d9;
-    --skeleton-highlight: #cccccc;
+    --skeleton-base: hsl(0, 0%, 85%);
+    --skeleton-highlight: hsl(0, 0%, 80%);
 
     /* 
       Shadcn's Variables 
@@ -88,6 +88,16 @@
     --ring: 240 5% 64.9%;
 
     --radius: 0.5rem;
+
+    --askdit-header-height: 56px;
+
+    --askdit-bottom-bar-height: 56.67px;
+
+    --height-adjusted: calc(100vh - var(--askdit-header-height));
+
+    --mobile-height-adjusted: calc(
+      100vh - var(--askdit-header-height) - var(--askdit-bottom-bar-height)
+    );
   }
 
   .dark {
@@ -138,8 +148,8 @@
     --askdit-brand-emphasis: #101010;
 
     /* Skeleton */
-    --skeleton-base: #3d3d3d;
-    --skeleton-highlight: #444;
+    --skeleton-base: hsl(0, 0%, 24%);
+    --skeleton-highlight: hsl(0, 0%, 29%);
 
     /* Shadcn's Variables */
     --background: 240 10% 3.9%;

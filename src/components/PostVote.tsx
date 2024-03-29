@@ -3,9 +3,9 @@
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { VoteType } from "@prisma/client";
-import { ArrowBigDown, ArrowBigUp } from "lucide-react";
 import { FC, HTMLAttributes, useEffect, useState } from "react";
 import AuthLink from "./AuthLink";
+import { Icons } from "./Icons";
 
 interface PostVoteProps extends HTMLAttributes<HTMLSpanElement> {
   postId: string;
@@ -79,7 +79,7 @@ const PostVote: FC<PostVoteProps> = ({
             vote({ postId: postId, voteType: "UP" });
           }}
         >
-          <ArrowBigUp
+          <Icons.upvote
             className={cn(
               "h-6 w-6",
               currentVoteType === "UP"
@@ -94,7 +94,7 @@ const PostVote: FC<PostVoteProps> = ({
           href="/sign-in"
           className="group/upvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-red-400/10 dark:hover:bg-red-400/5"
         >
-          <ArrowBigUp
+          <Icons.upvote
             className={cn(
               "h-6 w-6",
               currentVoteType === "UP"
@@ -126,7 +126,7 @@ const PostVote: FC<PostVoteProps> = ({
             vote({ postId: postId, voteType: "DOWN" });
           }}
         >
-          <ArrowBigDown
+          <Icons.downvote
             className={cn(
               "h-6 w-6",
               currentVoteType === "DOWN"
@@ -141,7 +141,7 @@ const PostVote: FC<PostVoteProps> = ({
           href="/sign-in"
           className="group/downvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-indigo-400/10 dark:hover:bg-indigo-400/5"
         >
-          <ArrowBigDown
+          <Icons.downvote
             className={cn(
               "h-6 w-6",
               currentVoteType === "DOWN"

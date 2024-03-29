@@ -6,9 +6,9 @@ import {
 } from "@/components/ui/Tooltip";
 import { getAuthSession } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import { Bell, Plus } from "lucide-react";
 import Link from "next/link";
 import AuthLink from "./AuthLink";
+import CreatePostButton from "./CreatePostButton";
 import { Icons } from "./Icons";
 import SearchBar from "./SearchBar";
 import UserProfileNav from "./UserProfileNav";
@@ -31,18 +31,12 @@ const SiteHeader = async () => {
             <Icons.logoWithText className="hidden h-8 w-full lg:h-6 dark:lg:block" />
             <Icons.logoWithDarkText className="hidden h-8 w-full dark:hidden lg:block lg:h-6" />
           </Link>
-          <nav className="flex w-3/4 items-center justify-end lg:justify-around">
-            <SearchBar className="hidden lg:inline-flex" />
+          <nav className="flex w-3/4 items-center justify-end gap-2 lg:justify-around lg:gap-0">
+            <SearchBar />
 
             <Tooltip>
-              <TooltipTrigger asChild className="hidden lg:inline-flex">
-                <Button
-                  className="bg-red-500 px-4 font-semibold text-white hover:bg-red-500/75"
-                  size={"sm"}
-                >
-                  <Plus className="mr-1 h-5 w-5" strokeWidth={2.5} /> Create
-                  Post
-                </Button>
+              <TooltipTrigger asChild>
+                <CreatePostButton className="w-10 lg:w-auto" />
               </TooltipTrigger>
               <TooltipContent
                 side="bottom"
@@ -54,15 +48,12 @@ const SiteHeader = async () => {
             </Tooltip>
 
             <Tooltip>
-              <TooltipTrigger
-                asChild
-                className="hidden bg-emphasis lg:inline-flex"
-              >
+              <TooltipTrigger asChild className="bg-emphasis">
                 <Button
                   className="relative w-12 border border-default/25 bg-emphasis font-semibold text-default transition-none hover:bg-subtle hover:transition-colors"
                   size={"sm"}
                 >
-                  <Bell className="h-6 w-6" strokeWidth={2.25} />
+                  <Icons.notification className="h-6 w-6" strokeWidth={2.25} />
                   <span className="absolute right-[0.90rem] top-2 h-2 w-2 rounded-full bg-brand-default"></span>
                 </Button>
               </TooltipTrigger>

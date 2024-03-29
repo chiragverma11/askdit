@@ -1,16 +1,11 @@
 "use client";
 
-import { toast } from "@/hooks/use-toast";
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
-import {
-  BookmarkMinus,
-  BookmarkPlus,
-  MoreHorizontal,
-  Trash,
-} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FC, useState } from "react";
+import { toast } from "sonner";
+import { Icons } from "./Icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,6 +44,7 @@ const MoreOptions: FC<MoreOptionsProps> = ({
   onCommentDelete,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(bookmark);
 
   const router = useRouter();
 
@@ -56,7 +52,7 @@ const MoreOptions: FC<MoreOptionsProps> = ({
 
   const { mutate: deletePost } = trpc.post.delete.useMutation({
     onSuccess: () => {
-      toast({ description: "Post deleted successfully" });
+      toast.success("Post deleted successfully");
       if (pathName === redirectUrl) {
         return utils.post.infiniteCommunityPosts.invalidate();
       }
@@ -66,12 +62,52 @@ const MoreOptions: FC<MoreOptionsProps> = ({
 
   const { mutate: deleteComment } = trpc.comment.delete.useMutation({
     onSuccess: () => {
-      toast({ description: "Comment deleted successfully" });
+      toast.success("Comment deleted successfully");
       if (onCommentDelete) {
         onCommentDelete();
       }
     },
   });
+
+  const { mutate: bookmarkPost } = trpc.post.bookmark.useMutation({
+    onSuccess: (data, variables, context) => {
+      setIsBookmarked(!isBookmarked);
+    },
+  });
+
+  const { mutate: bookmarkComment } = trpc.comment.bookmark.useMutation({
+    onSuccess: (data, variables, context) => {
+      setIsBookmarked(!isBookmarked);
+    },
+  });
+
+  const handleBookmark = () => {
+    type === "post"
+      ? bookmarkPost(
+          { postId: id, remove: isBookmarked },
+          {
+            onSuccess: () => {
+              toast.success(
+                isBookmarked
+                  ? "Post unsaved successfully"
+                  : "Post saved successfully",
+              );
+            },
+          },
+        )
+      : bookmarkComment(
+          { commentId: id, remove: isBookmarked },
+          {
+            onSuccess: () => {
+              toast.success(
+                isBookmarked
+                  ? "Comment unsaved successfully"
+                  : "Comment saved successfully",
+              );
+            },
+          },
+        );
+  };
 
   const handleDeletion = () => {
     type === "post"
@@ -105,22 +141,23 @@ const MoreOptions: FC<MoreOptionsProps> = ({
             e.preventDefault();
           }}
         >
-          <MoreHorizontal className="h-5 w-5" />
+          <Icons.moreHorizontal className="h-5 w-5" />
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="start"
+        collisionPadding={4}
         onCloseAutoFocus={(e) => e.preventDefault()}
         className="border-default/40 bg-emphasis dark:bg-subtle"
       >
-        <DropdownMenuItem className="cursor-pointer" asChild>
-          <div>
-            {bookmark ? (
-              <BookmarkMinus className="mr-2 h-4 w-4" />
+        <DropdownMenuItem className="flex cursor-pointer items-center" asChild>
+          <div onClick={handleBookmark}>
+            {isBookmarked ? (
+              <Icons.bookmarkMinus className="mr-2 h-4 w-4" />
             ) : (
-              <BookmarkPlus className="mr-2 h-4 w-4" />
+              <Icons.bookmarkPlus className="mr-2 h-4 w-4" />
             )}
-            {bookmark ? "Remove " : null}Bookmark
+            {isBookmarked ? "Unsave" : "Save "}
           </div>
         </DropdownMenuItem>
         {isAuthor ? (
@@ -159,7 +196,7 @@ const ConfirmDeletionDialog: FC<ConfirmDeletionProps> = ({
           }}
         >
           <div className="flex min-w-full items-center">
-            <Trash className="mr-2 h-4 w-4" />
+            <Icons.trash className="mr-2 h-4 w-4" />
             Delete
           </div>
         </DropdownMenuItem>

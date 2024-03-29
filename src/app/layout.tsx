@@ -3,12 +3,12 @@ import "../styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import AsideBar from "@/components/AsideBar";
 import Providers from "@/components/Providers";
 import SiteHeader from "@/components/SiteHeader";
 import BackgroundShade from "@/components/layout/BackgroundShade";
-import { Toaster } from "@/components/ui/Toaster";
+import { Toaster } from "@/components/ui/Sonner";
 import { cn } from "@/lib/utils";
-import AsideBar from "@/components/AsideBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,12 +38,14 @@ export default function RootLayout({
               </div>
             </div>
 
-            <main className="flex grow justify-center">{children}</main>
+            <main className="flex max-w-[100vw] grow justify-center">
+              {children}
+            </main>
           </div>
 
           {authModal}
+          <Toaster richColors />
         </Providers>
-        <Toaster />
         <BackgroundShade className="z-[-10]" />
       </body>
     </html>

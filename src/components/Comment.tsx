@@ -1,20 +1,22 @@
 import { COMMENT_REPLIES_DEPTH, MORE_COMMENT_REPLIES } from "@/lib/config";
-import { trpc } from "@/lib/trpc";
+import { RouterOutputs, trpc } from "@/lib/trpc";
 import { cn, formatTimeToNow, getVotesAmount } from "@/lib/utils";
-import { InfinitePostCommentsOutput, PartialK } from "@/types/utilities";
+import { PartialK } from "@/types/utilities";
 import { VoteType } from "@prisma/client";
-import { Dot, Maximize2, MessageSquare } from "lucide-react";
 import { User } from "next-auth";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { FC, useState } from "react";
 import AddReply from "./AddReply";
 import CommentVote from "./CommentVote";
+import { Icons } from "./Icons";
 import MoreOptions from "./MoreOptions";
 import ShareButton from "./ShareButton";
 import UserAvatar from "./UserAvatar";
 
-interface CommentProps extends React.HTMLAttributes<HTMLDivElement> {
+type InfinitePostCommentsOutput = RouterOutputs["comment"]["infiniteComments"];
+
+interface CommentProps extends React.ComponentPropsWithoutRef<"div"> {
   comment: PartialK<
     Pick<InfinitePostCommentsOutput, "comments">["comments"][number],
     "replies"
@@ -24,6 +26,7 @@ interface CommentProps extends React.HTMLAttributes<HTMLDivElement> {
   user?: User;
   pathName: string;
   level: number;
+  highlightReplyId?: string;
 }
 
 const Comment: FC<CommentProps> = ({
@@ -34,6 +37,7 @@ const Comment: FC<CommentProps> = ({
   pathName,
   className,
   level,
+  highlightReplyId,
 }) => {
   const [isReplying, setIsReplying] = useState(false);
   const [replies, setReplies] = useState(comment.replies ?? []);
@@ -87,7 +91,7 @@ const Comment: FC<CommentProps> = ({
         ) : (
           <div className="flex items-center gap-1.5">
             {!showReplies ? (
-              <Maximize2
+              <Icons.maximize
                 className="h-3.5 w-3.5 rotate-90 cursor-pointer text-blue-500 dark:text-blue-400"
                 onClick={() =>
                   setShowReplies((prevShowReplies) => !prevShowReplies)
@@ -112,7 +116,7 @@ const Comment: FC<CommentProps> = ({
             </span>
           )}
           <div className="flex items-center text-subtle">
-            <Dot className="h-4 w-4" strokeWidth={4} />
+            <Icons.dot className="h-4 w-4" strokeWidth={4} />
             <span>{formatTimeToNow(new Date(comment.createdAt))}</span>
           </div>
         </div>
@@ -149,17 +153,21 @@ const Comment: FC<CommentProps> = ({
                   />
 
                   <ShareButton
+                    type={"comment"}
                     comment={{
                       id: comment.id,
                       subredditName: params.slug as string,
                       postId: comment.postId,
                     }}
+                    level={level}
                   />
                   {isLoggedIn ? (
                     <MoreOptions
                       type="comment"
                       id={comment.id}
-                      bookmark={true}
+                      bookmark={
+                        comment.bookmarks ? comment.bookmarks.length > 0 : false
+                      }
                       redirectUrl={pathName}
                       pathName={pathName}
                       isAuthor={comment.authorId === user?.id}
@@ -186,6 +194,8 @@ const Comment: FC<CommentProps> = ({
             ) : null}
             {level <= COMMENT_REPLIES_DEPTH ? (
               replies?.map((reply) => {
+                if (!reply) return null;
+
                 const votesAmt = getVotesAmount({ votes: reply.votes });
 
                 const currentVote = reply?.votes.find(
@@ -201,6 +211,12 @@ const Comment: FC<CommentProps> = ({
                       user={user}
                       pathName={pathName}
                       level={level + 1}
+                      className={cn(
+                        highlightReplyId
+                          ? highlightReplyId === reply.id && "bg-highlight/60"
+                          : "",
+                      )}
+                      highlightReplyId={highlightReplyId}
                     />
                   </div>
                 );
@@ -221,6 +237,7 @@ const Comment: FC<CommentProps> = ({
                     mutate({
                       limit: MORE_COMMENT_REPLIES,
                       postId: comment.postId,
+                      userId: user?.id,
                       replyToId: comment.id,
                       skip: skip,
                     });
@@ -249,8 +266,8 @@ const ReplyButton: FC<ReplyButtonProps> = ({ onClick }) => {
       className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl px-3 py-2 hover:bg-highlight/40 dark:hover:bg-highlight/60"
       onClick={onClick}
     >
-      <MessageSquare className="h-5 w-5" />
-      <span>Reply</span>
+      <Icons.message className="h-5 w-5" />
+      <span className="hidden lg:inline">Reply</span>
     </span>
   );
 };

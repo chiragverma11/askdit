@@ -1,17 +1,17 @@
 "use client";
 
-import { useToast } from "@/hooks/use-toast";
 import { COMMUNITY_DESCRIPTION_LENGTH } from "@/lib/config";
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { DescriptionValidator } from "@/lib/validators/community";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useClickOutside } from "@mantine/hooks";
-import { Pencil } from "lucide-react";
 import React, { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
+import { toast } from "sonner";
 import { z } from "zod";
+import { Icons } from "./Icons";
 import { Button } from "./ui/Button";
 
 interface CommunityDescriptionProps {
@@ -54,14 +54,14 @@ const CommunityDescription: FC<CommunityDescriptionProps> = ({
           className={cn(
             "inline w-full whitespace-pre-wrap break-words",
             isAuthor &&
-              "cursor-pointer gap-2 rounded-md border transition-[padding] hover:border-default hover:p-1",
+              "cursor-pointer gap-2 rounded-md border border-transparent transition-[padding] hover:border-default hover:p-1",
           )}
           onClick={() => {
             isAuthor && setAddingDescription(true);
           }}
         >
           {description}
-          {isAuthor ? <Pencil className="mx-1 inline h-4 w-4" /> : null}
+          {isAuthor ? <Icons.edit className="mx-1 inline h-4 w-4" /> : null}
         </div>
       ) : isAuthor ? (
         <div
@@ -88,8 +88,6 @@ const AddCommunityDescription = React.forwardRef<
   HTMLDivElement,
   AddDescriptionProps
 >(({ description, communityId, setDescription, close }, ref) => {
-  const { toast } = useToast();
-
   const { handleSubmit, register, watch } = useForm<AddDescriptionRequestType>({
     resolver: zodResolver(DescriptionValidator),
     defaultValues: {
@@ -105,7 +103,7 @@ const AddCommunityDescription = React.forwardRef<
       onSuccess: ({ description }) => {
         setDescription(description);
         close();
-        toast({ description: "Description updated successfully" });
+        toast.success("Description updated successfully");
       },
     });
 
@@ -140,7 +138,7 @@ const AddCommunityDescription = React.forwardRef<
               Cancel
             </Button>
             <Button
-              className="h-auto rounded bg-transparent p-0.5 text-xs font-semibold hover:bg-transparent"
+              className="h-auto rounded bg-transparent p-0.5 text-xs font-semibold text-default hover:bg-transparent"
               form="addDescriptionForm"
               size={"xs"}
               isLoading={isLoading}

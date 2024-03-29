@@ -1,16 +1,17 @@
 "use client";
 
-import { trpc } from "@/lib/trpc";
+import { RouterOutputs, trpc } from "@/lib/trpc";
 import {
   AddReplyRequestType,
   AddReplyValidator,
 } from "@/lib/validators/comment";
-import { InfinitePostCommentsOutput } from "@/types/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FC } from "react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { Button } from "./ui/Button";
+
+type InfinitePostCommentsOutput = RouterOutputs["comment"]["infiniteComments"];
 
 interface AddReplyProps {
   postId: string;

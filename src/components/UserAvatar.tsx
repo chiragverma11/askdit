@@ -1,15 +1,19 @@
 import { Avatar, AvatarFallback } from "@/components/ui/Avatar";
 import { AvatarProps } from "@radix-ui/react-avatar";
-import { User as UserIcon } from "lucide-react";
 import { User } from "next-auth";
 import Image from "next/image";
 import { FC } from "react";
 
 interface UserAvatarProps extends AvatarProps {
   user: Pick<User, "image" | "name">;
+  imageClassName?: string;
 }
 
-const UserAvatar: FC<UserAvatarProps> = ({ user, ...props }) => {
+const UserAvatar: FC<UserAvatarProps> = ({
+  user,
+  imageClassName,
+  ...props
+}) => {
   return (
     <Avatar {...props}>
       {user.image ? (
@@ -17,6 +21,7 @@ const UserAvatar: FC<UserAvatarProps> = ({ user, ...props }) => {
           <Image
             fill
             src={user.image}
+            className={imageClassName}
             alt="Profile Picture"
             referrerPolicy="no-referrer"
             sizes="(max-width: 768px) 10vw, (max-width: 1200px) 8vw, 5vw"
@@ -25,9 +30,8 @@ const UserAvatar: FC<UserAvatarProps> = ({ user, ...props }) => {
           />
         </div>
       ) : (
-        <AvatarFallback>
+        <AvatarFallback className="bg-highlight">
           <span className="sr-only">{user?.name}</span>
-          <UserIcon className="h-4 w-4" />
         </AvatarFallback>
       )}
     </Avatar>

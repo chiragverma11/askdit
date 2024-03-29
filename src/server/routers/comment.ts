@@ -1,8 +1,17 @@
-import { INFINITE_SCROLL_COMMENT_RESULTS } from "@/lib/config";
+import {
+  COMMENT_MAX_REPLIES,
+  INFINITE_SCROLL_COMMENT_RESULTS,
+} from "@/lib/config";
 import { db } from "@/lib/db";
+import {
+  createHierarchicalCommentReplyToSelect,
+  createHierarchicalRepliesInclude,
+  getTopContextParentCommentId,
+} from "@/lib/utils";
 import {
   AddCommentValidator,
   AddReplyValidator,
+  CommentBookmarkValidator,
   CommentDeleteValidator,
   CommentVoteValidator,
 } from "@/lib/validators/comment";
@@ -42,6 +51,7 @@ export const commentRouter = router({
     .input(
       z.object({
         postId: z.string(),
+        userId: z.string().optional(),
         limit: z.number().min(1),
         cursor: z.string().nullish(),
         skip: z.number().optional(),
@@ -50,80 +60,13 @@ export const commentRouter = router({
     .query(async (opts) => {
       const { input } = opts;
       const limit = input.limit ?? INFINITE_SCROLL_COMMENT_RESULTS;
-      const { skip, postId, cursor } = input;
+      const { skip, postId, userId, cursor } = input;
 
-      let hierarchicalReplies = {
-        take: INFINITE_SCROLL_COMMENT_RESULTS - 5,
-        include: {
-          author: true,
-          votes: true,
-          _count: {
-            select: {
-              replies: true,
-            },
-          },
-          replies: {
-            take: INFINITE_SCROLL_COMMENT_RESULTS - 6,
-            include: {
-              author: true,
-              votes: true,
-              _count: {
-                select: {
-                  replies: true,
-                },
-              },
-              replies: {
-                take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                include: {
-                  author: true,
-                  votes: true,
-                  _count: {
-                    select: {
-                      replies: true,
-                    },
-                  },
-                  replies: {
-                    take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                    include: {
-                      author: true,
-                      votes: true,
-                      _count: {
-                        select: {
-                          replies: true,
-                        },
-                      },
-                      replies: {
-                        take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                        include: {
-                          author: true,
-                          votes: true,
-                          _count: {
-                            select: {
-                              replies: true,
-                            },
-                          },
-                          replies: {
-                            take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                            include: {
-                              author: true,
-                              votes: true,
-                              _count: {
-                                select: {
-                                  replies: true,
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      };
+      const hierarchicalReplies = createHierarchicalRepliesInclude({
+        level: 6,
+        userId,
+        take: COMMENT_MAX_REPLIES,
+      });
 
       const comments = await db.comment.findMany({
         take: limit + 1,
@@ -138,6 +81,11 @@ export const commentRouter = router({
           _count: {
             select: {
               replies: true,
+            },
+          },
+          bookmarks: {
+            where: {
+              userId: userId,
             },
           },
           replies: hierarchicalReplies,
@@ -163,6 +111,7 @@ export const commentRouter = router({
     .input(
       z.object({
         postId: z.string(),
+        userId: z.string().optional(),
         replyToId: z.string(),
         limit: z.number().min(1),
         skip: z.number().optional(),
@@ -171,80 +120,13 @@ export const commentRouter = router({
     .mutation(async (opts) => {
       const { input } = opts;
       const limit = input.limit ?? INFINITE_SCROLL_COMMENT_RESULTS;
-      const { skip, postId, replyToId } = input;
+      const { skip, postId, userId, replyToId } = input;
 
-      let hierarchicalReplies = {
-        take: INFINITE_SCROLL_COMMENT_RESULTS - 5,
-        include: {
-          author: true,
-          votes: true,
-          _count: {
-            select: {
-              replies: true,
-            },
-          },
-          replies: {
-            take: INFINITE_SCROLL_COMMENT_RESULTS - 6,
-            include: {
-              author: true,
-              votes: true,
-              _count: {
-                select: {
-                  replies: true,
-                },
-              },
-              replies: {
-                take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                include: {
-                  author: true,
-                  votes: true,
-                  _count: {
-                    select: {
-                      replies: true,
-                    },
-                  },
-                  replies: {
-                    take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                    include: {
-                      author: true,
-                      votes: true,
-                      _count: {
-                        select: {
-                          replies: true,
-                        },
-                      },
-                      replies: {
-                        take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                        include: {
-                          author: true,
-                          votes: true,
-                          _count: {
-                            select: {
-                              replies: true,
-                            },
-                          },
-                          replies: {
-                            take: INFINITE_SCROLL_COMMENT_RESULTS - 7,
-                            include: {
-                              author: true,
-                              votes: true,
-                              _count: {
-                                select: {
-                                  replies: true,
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      };
+      const hierarchicalReplies = createHierarchicalRepliesInclude({
+        level: 6,
+        userId,
+        take: COMMENT_MAX_REPLIES,
+      });
 
       const replies = await db.comment.findMany({
         take: limit,
@@ -255,6 +137,11 @@ export const commentRouter = router({
           _count: {
             select: {
               replies: true,
+            },
+          },
+          bookmarks: {
+            where: {
+              userId: userId,
             },
           },
           replies: hierarchicalReplies,
@@ -357,6 +244,11 @@ export const commentRouter = router({
               replies: true,
             },
           },
+          bookmarks: {
+            where: {
+              userId: user.id,
+            },
+          },
           replies: {
             include: {
               author: true,
@@ -364,6 +256,11 @@ export const commentRouter = router({
               _count: {
                 select: {
                   replies: true,
+                },
+              },
+              bookmarks: {
+                where: {
+                  userId: user.id,
                 },
               },
               replies: {
@@ -374,6 +271,11 @@ export const commentRouter = router({
                   _count: {
                     select: {
                       replies: true,
+                    },
+                  },
+                  bookmarks: {
+                    where: {
+                      userId: user.id,
                     },
                   },
                 },
@@ -467,5 +369,162 @@ export const commentRouter = router({
       }
 
       return new Response("OK");
+    }),
+  bookmark: protectedProcedure
+    .input(CommentBookmarkValidator)
+    .mutation(async (opts) => {
+      const { commentId, remove } = opts.input;
+      const { user } = opts.ctx;
+
+      if (remove) {
+        const bookmark = await db.bookmark.findFirst({
+          where: {
+            commentId,
+            userId: user.id,
+          },
+        });
+
+        if (!bookmark) {
+          return new Response("Bookmark not found", { status: 404 });
+        }
+
+        await db.bookmark.delete({
+          where: { id: bookmark.id },
+        });
+
+        return new Response("Bookmark removed", { status: 200 });
+      }
+
+      const comment = await db.comment.findUnique({
+        where: { id: commentId },
+      });
+
+      if (!comment) {
+        return new Response("Comment not found", { status: 404 });
+      }
+
+      await db.bookmark.create({
+        data: {
+          userId: user.id,
+          commentId,
+        },
+      });
+
+      return new Response("Bookmarked", { status: 200 });
+    }),
+  infiniteUserComments: publicProcedure
+    .input(
+      z.object({
+        authorId: z.string(),
+        currentUserId: z.string().optional(),
+        limit: z.number().min(1),
+        cursor: z.string().nullish(),
+        skip: z.number().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const limit = input.limit ?? INFINITE_SCROLL_COMMENT_RESULTS;
+      const { skip, authorId, currentUserId, cursor } = input;
+
+      const comments = await db.comment.findMany({
+        take: limit + 1,
+        skip: skip,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          author: true,
+          votes: true,
+          bookmarks: {
+            where: {
+              userId: currentUserId,
+            },
+          },
+          post: {
+            select: {
+              subreddit: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        where: {
+          authorId,
+          deleted: false,
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (comments.length > limit) {
+        const nextItem = comments.pop();
+        nextCursor = nextItem?.id;
+      }
+
+      return {
+        comments,
+        nextCursor,
+      };
+    }),
+  getComment: publicProcedure
+    .input(
+      z.object({
+        commentId: z.string(),
+        userId: z.string().optional(),
+        context: z.number().nonnegative().max(7).default(0),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const { userId, commentId, context } = input;
+
+      let topContextParentCommentId: string | undefined = undefined;
+      let repliesContext = context;
+
+      // If context is greator than 0, we need to get the top context parent comment id
+      if (context !== 0) {
+        const contextParents = await db.comment.findUnique({
+          where: {
+            id: commentId,
+          },
+          select: createHierarchicalCommentReplyToSelect({ level: context }),
+        });
+
+        const topContext = getTopContextParentCommentId(contextParents);
+
+        topContextParentCommentId = topContext.parentCommentId;
+        repliesContext = topContext.findOnContext;
+      }
+
+      const hierarchicalReplies = createHierarchicalRepliesInclude({
+        level: repliesContext,
+        userId,
+      });
+
+      const comment = await db.comment.findUnique({
+        include: {
+          author: true,
+          votes: true,
+          bookmarks: {
+            where: {
+              userId: userId,
+            },
+          },
+          _count: {
+            select: {
+              replies: true,
+            },
+          },
+          replies: hierarchicalReplies,
+        },
+        where: {
+          id: topContextParentCommentId || commentId,
+        },
+      });
+
+      return comment;
     }),
 });
