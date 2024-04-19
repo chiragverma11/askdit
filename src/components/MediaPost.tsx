@@ -130,11 +130,11 @@ const ImageMedia: FC<Pick<MediaContent["content"], "images">> = ({
         })}
       </CarouselContent>
       <CarouselPrevious
-        className="hidden bg-black/60 text-default hover:bg-black/60 disabled:opacity-10 lg:inline-flex lg:h-11 lg:w-11"
+        className="hidden bg-black/60 text-white hover:bg-black/60 disabled:opacity-10 lg:inline-flex lg:h-11 lg:w-11"
         variant="secondary"
       />
       <CarouselNext
-        className="hidden bg-black/60 text-default hover:bg-black/60 disabled:hidden lg:inline-flex lg:h-11 lg:w-11"
+        className="hidden bg-black/60 text-white hover:bg-black/60 disabled:hidden lg:inline-flex lg:h-11 lg:w-11"
         variant="secondary"
       />
       <CarouselSlideCounter />
