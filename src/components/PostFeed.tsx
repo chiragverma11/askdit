@@ -130,6 +130,7 @@ const PostFeed: FC<PostFeedProps> = ({
                 isLoggedIn={userId ? true : false}
                 pathName={pathname}
                 isAuthor={post.authorId === userId}
+                inPostPage={false}
               />
             </li>
           );
@@ -145,6 +146,7 @@ const PostFeed: FC<PostFeedProps> = ({
                 isLoggedIn={userId ? true : false}
                 pathName={pathname}
                 isAuthor={post.authorId === userId}
+                inPostPage={false}
               />
             </li>
           );

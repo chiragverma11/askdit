@@ -55,6 +55,7 @@ const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
             isLoggedIn={session?.user ? true : false}
             isAuthor={isAuthor}
             pathName={`/r/${post.subreddit.name}/post/${post.id}`}
+            inPostPage={true}
           />
           <PostComments postId={post.id} user={session?.user} />
         </div>

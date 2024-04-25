@@ -44,6 +44,7 @@ interface PostProps extends React.ComponentPropsWithoutRef<"div"> {
   isLoggedIn: boolean;
   isAuthor: boolean;
   pathName: string;
+  inPostPage: boolean;
 }
 
 const Post = ({ variant = "card", ...props }: PostProps) => {
@@ -69,6 +70,7 @@ interface PostVariantProps extends React.ComponentPropsWithoutRef<"div"> {
   isLoggedIn: boolean;
   isAuthor: boolean;
   pathName: string;
+  inPostPage: boolean;
 }
 
 const CardVariantPost: FC<PostVariantProps> = ({
@@ -81,6 +83,7 @@ const CardVariantPost: FC<PostVariantProps> = ({
   isAuthor,
   className,
   pathName,
+  inPostPage,
   ...props
 }) => {
   const redirectUrl = `/r/${post.subreddit.name}/post/${post.id}`;
@@ -170,7 +173,7 @@ const CardVariantPost: FC<PostVariantProps> = ({
             : "prose-a:text-inherit",
         )}
       >
-        <PostContent post={post} />
+        <PostContent post={post} inPostPage={inPostPage} />
       </div>
       <div className="flex items-center gap-2 text-xs font-semibold text-subtle dark:text-zinc-400">
         <PostVote
@@ -251,6 +254,7 @@ const CompactVariantPost: FC<PostVariantProps> = ({
   isAuthor,
   className,
   pathName,
+  inPostPage,
   ...props
 }) => {
   const [showContent, setShowContent] = useState(false);
@@ -341,7 +345,7 @@ const CompactVariantPost: FC<PostVariantProps> = ({
             : "prose-a:text-inherit",
         )}
       >
-        {showContent && <PostContent post={post} />}
+        {showContent && <PostContent post={post} inPostPage={inPostPage} />}
       </div>
       <div className="flex items-center gap-2 text-xs font-semibold text-subtle dark:text-zinc-400">
         <PostVote
@@ -446,11 +450,12 @@ const CompactVariantShowHideButton: FC<CompactVariantShowHideButtonProps> = ({
 
 interface PostContentProps {
   post: PostProps["post"];
+  inPostPage: boolean;
 }
 
-const PostContent: FC<PostContentProps> = ({ post }) => {
+const PostContent: FC<PostContentProps> = ({ post, inPostPage }) => {
   if (post.type === "POST") {
-    return <EditorOutput content={post.content} />;
+    return <EditorOutput content={post.content} limitHeight={!inPostPage} />;
   }
 
   if (post.type === "LINK") {
