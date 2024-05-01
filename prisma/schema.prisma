@@ -139,6 +139,7 @@ model Comment {
   id        String   @id @default(cuid())
   text      String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
