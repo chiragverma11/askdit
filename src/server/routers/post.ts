@@ -24,7 +24,8 @@ export const postRouter = router({
   createCommunityPost: protectedProcedure
     .input(PostValidator)
     .mutation(async (opts) => {
-      const { communityId, title, content, type, storageUsed } = opts.input;
+      const { communityId, title, content, type, storageUsed, isQuestion } =
+        opts.input;
       const { user } = opts.ctx;
 
       const community = await db.subreddit.findFirst({
@@ -49,6 +50,7 @@ export const postRouter = router({
             type: type,
             authorId: user.id,
             storageUsed: storageUsed,
+            isQuestion: isQuestion,
           },
         });
 

@@ -21,6 +21,7 @@ import SubmitPostTitle from "./SubmitPostTitle";
 
 interface CreateMediaPostProps {
   communityId: string | undefined;
+  isQuestion: boolean;
   className?: string;
 }
 
@@ -30,6 +31,7 @@ type FormDataKeysContentExcluded = Exclude<keyof FormData, "content">;
 
 const CreateMediaPost: FC<CreateMediaPostProps> = ({
   communityId,
+  isQuestion,
   className,
 }) => {
   const [uploading, setUploading] = useState(false);
@@ -48,6 +50,7 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
       content: { type: "IMAGE", images: [{ id: "", url: "" }] },
       communityId,
       type: postType,
+      isQuestion: isQuestion,
     },
   });
 
@@ -234,6 +237,7 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
             titleValidationRef={titleRef}
             useFormRegisterRest={rest}
             disabled={disabled}
+            placeholder={isQuestion ? "Ask here" : "Title"}
           />
           <div className="min-h-[200px] py-3">
             <div className="relative">

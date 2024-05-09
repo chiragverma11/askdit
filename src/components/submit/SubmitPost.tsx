@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { FC, useState } from "react";
 import { Icons } from "../Icons";
 import { Separator } from "../ui/Separator";
+import { Toggle } from "../ui/Toggle";
 import CommunitySelector from "./CommunitySelector";
 import CreateEditorPost from "./CreateEditorPost";
 import CreateLinkPost from "./CreateLinkPost";
@@ -21,13 +22,28 @@ const SubmitPost: FC<SubmitPostProps> = ({ community, searchParams }) => {
     searchParams?.media === "true"
       ? "MEDIA"
       : searchParams?.url || searchParams?.url === ""
-      ? "LINK"
-      : "POST",
+        ? "LINK"
+        : "POST",
+  );
+  const [isQuestion, setIsQuestion] = useState<boolean>(
+    searchParams?.ask === "true",
   );
 
   return (
     <div className="mb-16 mt-4 w-full space-y-2 lg:mb-auto">
-      <CommunitySelector community={community} />
+      <div className="flex gap-2">
+        <CommunitySelector community={community} />
+        <Toggle
+          className={cn(
+            "flex aspect-square items-center border border-default/10 px-8 font-medium transition-none data-[state=off]:bg-emphasis data-[state=on]:bg-emphasis data-[state=off]:bg-opacity-50 data-[state=on]:bg-opacity-100 data-[state=off]:text-subtle data-[state=on]:text-default",
+          )}
+          pressed={isQuestion}
+          onPressedChange={setIsQuestion}
+        >
+          Ask
+          <span className="ml-1 font-bold">?</span>
+        </Toggle>
+      </div>
       <div className="w-full overflow-hidden rounded-xl border border-default/10 bg-emphasis shadow-xl">
         <SubmitPostTypeSelect postType={postType} setPostType={setPostType} />
         <Separator className="bg-highlight/40 dark:bg-highlight/60" />
@@ -42,15 +58,18 @@ const SubmitPost: FC<SubmitPostProps> = ({ community, searchParams }) => {
           <CreateEditorPost
             className={cn(postType === "POST" ? "block" : "hidden")}
             communityId={community?.id}
+            isQuestion={isQuestion}
           />
           <CreateMediaPost
             className={cn(postType === "MEDIA" ? "block" : "hidden")}
             communityId={community?.id}
+            isQuestion={isQuestion}
           />
           <CreateLinkPost
             className={cn(postType === "LINK" ? "block" : "hidden")}
             communityId={community?.id}
             initialUrl={(searchParams?.url as string) || ""}
+            isQuestion={isQuestion}
           />
         </div>
       </div>

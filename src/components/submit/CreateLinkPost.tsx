@@ -16,6 +16,7 @@ import SubmitPostTitle from "./SubmitPostTitle";
 interface CreateLinkPostProps {
   communityId: string | undefined;
   initialUrl?: string;
+  isQuestion: boolean;
   className?: string;
 }
 
@@ -24,6 +25,7 @@ type FormData = z.infer<typeof PostLinkValidator>;
 const CreateLinkPost: FC<CreateLinkPostProps> = ({
   communityId,
   initialUrl,
+  isQuestion,
   className,
 }) => {
   const submitButtonRef = useRef<HTMLButtonElement>(null);
@@ -48,6 +50,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
       content: { url: initialUrl || "" },
       communityId,
       type: postType,
+      isQuestion: isQuestion,
     },
   });
 
@@ -123,6 +126,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
             titleValidationRef={titleValidationRef}
             useFormRegisterRest={rest}
             disabled={disabled}
+            placeholder={isQuestion ? "Ask here" : "Title"}
           />
           <div className="min-h-[100px]">
             <div className="relative">
