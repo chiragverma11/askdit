@@ -28,6 +28,8 @@ interface CommentProps extends React.ComponentPropsWithoutRef<"div"> {
   pathName: string;
   level: number;
   highlightReplyId?: string;
+  isQuestionPost: boolean;
+  isPostAuthor: boolean;
 }
 
 const Comment: FC<CommentProps> = ({
@@ -39,6 +41,8 @@ const Comment: FC<CommentProps> = ({
   className,
   level,
   highlightReplyId,
+  isQuestionPost,
+  isPostAuthor,
 }) => {
   const [isReplying, setIsReplying] = useState(false);
   const [replies, setReplies] = useState(comment.replies ?? []);
@@ -173,6 +177,10 @@ const Comment: FC<CommentProps> = ({
                       pathName={pathName}
                       isAuthor={comment.authorId === user?.id}
                       onCommentDelete={deleteComment}
+                      isQuestionPost={isQuestionPost}
+                      isPostAuthor={isPostAuthor}
+                      acceptedAnswer={comment.acceptedAnswer}
+                      level={level}
                     />
                   ) : null}
                 </div>
@@ -218,6 +226,8 @@ const Comment: FC<CommentProps> = ({
                           : "",
                       )}
                       highlightReplyId={highlightReplyId}
+                      isQuestionPost={isQuestionPost}
+                      isPostAuthor={isPostAuthor}
                     />
                   </div>
                 );

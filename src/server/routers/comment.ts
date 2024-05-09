@@ -3,6 +3,7 @@ import {
   INFINITE_SCROLL_COMMENT_RESULTS,
 } from "@/lib/config";
 import { db } from "@/lib/db";
+import { updatePostIsAnswered } from "@/lib/prismaQueries";
 import {
   createHierarchicalCommentReplyToSelect,
   createHierarchicalRepliesInclude,
@@ -526,5 +527,56 @@ export const commentRouter = router({
       });
 
       return comment;
+    }),
+  markAnswer: protectedProcedure
+    .input(
+      z.object({
+        commentId: z.string(),
+      }),
+    )
+    .mutation(async (opts) => {
+      const { commentId } = opts.input;
+      const { user } = opts.ctx;
+
+      const comment = await db.comment.findUnique({
+        where: { id: commentId },
+        select: {
+          id: true,
+          acceptedAnswer: true,
+          post: {
+            select: {
+              id: true,
+              authorId: true,
+              isQuestion: true,
+            },
+          },
+        },
+      });
+
+      if (!comment) {
+        return new Response("Comment not found", { status: 404 });
+      }
+
+      if (user.id !== comment.post.authorId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not allowed to perform this action",
+        });
+      }
+
+      await db.$transaction(async (tx) => {
+        await updatePostIsAnswered(tx, commentId, comment.post.id);
+
+        await tx.comment.update({
+          where: {
+            id: commentId,
+          },
+          data: {
+            acceptedAnswer: !comment.acceptedAnswer,
+          },
+        });
+      });
+
+      return new Response("Answer Marked", { status: 200 });
     }),
 });

@@ -18,6 +18,9 @@ interface PostCommentsProps {
   commentId?: string;
   context?: number;
   user?: User;
+  isQuestion: boolean;
+  isAnswered: boolean | null;
+  postAuthorId: string;
 }
 
 const PostComments: FC<PostCommentsProps> = ({
@@ -25,6 +28,9 @@ const PostComments: FC<PostCommentsProps> = ({
   commentId,
   context,
   user,
+  isQuestion,
+  isAnswered,
+  postAuthorId,
 }) => {
   const pathname = usePathname();
   const params = useParams();
@@ -135,6 +141,8 @@ const PostComments: FC<PostCommentsProps> = ({
                     : "",
                 )}
                 highlightReplyId={commentId}
+                isQuestionPost={isQuestion}
+                isPostAuthor={postAuthorId === user?.id}
               />
             </li>
           );

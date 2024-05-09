@@ -1,10 +1,11 @@
-import { VoteType } from "@prisma/client";
+import { Prisma, PrismaClient, VoteType } from "@prisma/client";
 import {
   INFINITE_SCROLL_COMMENT_RESULTS,
   INFINITE_SCROLL_PAGINATION_RESULTS,
   SEARCH_SUGGESTIONS_LIMIT,
 } from "./config";
 import { db } from "./db";
+import { DefaultArgs } from "@prisma/client/runtime/library";
 
 export const getCommunity = async (
   communityName: string,
@@ -489,3 +490,43 @@ export const getSearchUsers = async ({
   return users;
 };
 
+export const updatePostIsAnswered = async (
+  tx: Omit<
+    PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+  >,
+  commentId: string,
+  postId: string,
+) => {
+  const acceptedAnswers = await tx.comment.findMany({
+    where: {
+      postId,
+      acceptedAnswer: true,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (acceptedAnswers.length === 0) {
+    await tx.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        isAnswered: true,
+      },
+    });
+  } else if (acceptedAnswers.length === 1) {
+    if (acceptedAnswers.some((answer) => answer.id === commentId)) {
+      await tx.post.update({
+        where: {
+          id: postId,
+        },
+        data: {
+          isAnswered: false,
+        },
+      });
+    }
+  }
+};

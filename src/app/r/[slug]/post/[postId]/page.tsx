@@ -57,7 +57,13 @@ const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
             pathName={`/r/${post.subreddit.name}/post/${post.id}`}
             inPostPage={true}
           />
-          <PostComments postId={post.id} user={session?.user} />
+          <PostComments
+            postId={post.id}
+            isQuestion={post.isQuestion}
+            isAnswered={post.isAnswered}
+            user={session?.user}
+            postAuthorId={post.authorId}
+          />
         </div>
       </FeedWrapper>
       <SideMenuWrapper>

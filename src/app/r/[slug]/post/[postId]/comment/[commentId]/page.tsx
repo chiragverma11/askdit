@@ -68,6 +68,9 @@ const CommunityPostComment: FC<CommunityPostCommentProps> = async ({
             commentId={commentId}
             context={parseInt(context)}
             user={session?.user}
+            isQuestion={post.isQuestion}
+            isAnswered={post.isAnswered}
+            postAuthorId={post.authorId}
           />
         </div>
       </FeedWrapper>
