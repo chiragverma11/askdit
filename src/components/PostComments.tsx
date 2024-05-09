@@ -4,13 +4,12 @@ import { useInfiniteCommentFeed } from "@/hooks/use-infinite-commentfeed";
 import { trpc } from "@/lib/trpc";
 import { cn, getVotesAmount } from "@/lib/utils";
 import { useIntersection } from "@mantine/hooks";
-import { DotWave } from "@uiball/loaders";
 import { User } from "next-auth";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { FC, useEffect, useRef } from "react";
 import AddComment from "./AddComment";
-import Comment from "./Comment";
+import Comment, { CommentSkeleton } from "./Comment";
 import { Icons } from "./Icons";
 import { Separator } from "./ui/Separator";
 
@@ -105,11 +104,13 @@ const PostComments: FC<PostCommentsProps> = ({
       </div>
 
       <ul className="flex w-full flex-col gap-2">
-        {isLoading ? (
-          <div className="flex min-h-[16rem] w-full items-center justify-center">
-            <DotWave size={45} speed={1} color="gray" />
-          </div>
-        ) : null}
+        {isLoading
+          ? Array.from({ length: 3 }).map((_, index) => (
+              <li key={index}>
+                <CommentSkeleton />
+              </li>
+            ))
+          : null}
         {comments?.map((comment, index) => {
           const votesAmt = getVotesAmount({ votes: comment.votes });
 
@@ -140,9 +141,10 @@ const PostComments: FC<PostCommentsProps> = ({
         })}
 
         {isFetchingNextPage && !isLoading ? (
-          <div className="flex w-full items-center justify-center py-1">
-            <DotWave size={45} speed={1} color="gray" />
-          </div>
+          <li>
+            <CommentSkeleton />
+          </li>
+        ) : null}
         ) : null}
         {comments?.length === 0 && !isLoading ? <NoComments /> : null}
       </ul>

@@ -7,6 +7,7 @@ import { User } from "next-auth";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { FC, useState } from "react";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import AddReply from "./AddReply";
 import CommentVote from "./CommentVote";
 import { Icons } from "./Icons";
@@ -269,6 +270,59 @@ const ReplyButton: FC<ReplyButtonProps> = ({ onClick }) => {
       <Icons.message className="h-5 w-5" />
       <span className="hidden lg:inline">Reply</span>
     </span>
+  );
+};
+
+export const CommentSkeleton = ({
+  disableAnimation = false,
+}: {
+  disableAnimation?: boolean;
+}) => {
+  return (
+    <SkeletonTheme
+      baseColor="var(--skeleton-base)"
+      highlightColor="var(--skeleton-highlight)"
+      duration={2}
+      inline={false}
+      enableAnimation={!disableAnimation}
+    >
+      <div className="flex w-full flex-col text-xs md:rounded-lg">
+        <div className="relative p-2 md:rounded-b-lg">
+          <div className="flex items-center gap-1.5">
+            <Skeleton className="aspect-square h-7 w-7" circle={true} />
+            <div className="flex items-center text-xs">
+              <Skeleton className="font-semibold" width={"10rem"} />
+            </div>
+          </div>
+          <div className="pl-3 pt-2">
+            <div className="flex w-full flex-col gap-2 border-l-2 border-default/60 pl-5">
+              <div className="flex flex-col gap-1">
+                <Skeleton className="text-sm" width={"50%"} />
+                <Skeleton className="text-sm" width={"70%"} />
+              </div>
+
+              <div className="-ml-1.5 flex items-center gap-2 text-xs font-semibold text-subtle dark:text-zinc-400">
+                <Skeleton
+                  className="py-1"
+                  width={"4.5rem"}
+                  borderRadius={"0.4rem"}
+                />
+                <Skeleton
+                  className="py-1"
+                  width={"4.5rem"}
+                  borderRadius={"0.4rem"}
+                />
+                <Skeleton
+                  className="py-1"
+                  width={"2.5rem"}
+                  borderRadius={"0.4rem"}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </SkeletonTheme>
   );
 };
 
