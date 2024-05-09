@@ -45,20 +45,19 @@ const ShareButton: FC<PostShareButtonProps | CommentShareButtonProps> = (
     props.type === "post"
       ? props.post?.title
       : mounted
-      ? window.location.host
-      : "";
+        ? window.location.host
+        : "";
 
   const url = mounted
     ? props.type === "post"
       ? new URL(
-          `/r/${props.post?.subreddit.name}/props.post/${props.post?.id}`,
+          `/r/${props.post?.subreddit.name}/post/${props.post?.id}`,
           baseURL,
         )
       : new URL(
-          `/r/${props.comment?.subredditName}/props.post/${props.comment
-            ?.postId}/props.comment/${props.comment?.id}${
-            props.level > 1 && "?context=3"
-          }`,
+          `/r/${props.comment?.subredditName}/post/${
+            props.comment?.postId
+          }/comment/${props.comment?.id}${props.level > 1 ? "?context=3" : ""}`,
           baseURL,
         )
     : "";
