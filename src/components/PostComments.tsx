@@ -11,6 +11,12 @@ import { FC, useEffect, useRef } from "react";
 import AddComment from "./AddComment";
 import Comment, { CommentSkeleton } from "./Comment";
 import { Icons } from "./Icons";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./ui/Accordion";
 import { Separator } from "./ui/Separator";
 
 interface PostCommentsProps {
@@ -53,6 +59,17 @@ const PostComments: FC<PostCommentsProps> = ({
     userId: user?.id,
     disabled: commentId ? true : false,
   });
+
+  const { data: acceptedAnswers, isLoading: isAcceptedAnswersLoading } =
+    trpc.comment.getAcceptedAnswerComments.useQuery(
+      {
+        postId: postId,
+        userId: user?.id,
+      },
+      {
+        enabled: isQuestion && isAnswered ? true : false,
+      },
+    );
 
   const { data: comment, isLoading: isCommentLoading } =
     trpc.comment.getComment.useQuery(
@@ -97,6 +114,7 @@ const PostComments: FC<PostCommentsProps> = ({
           postId={postId}
           refetchComments={refetchComments}
           user={user}
+          isQuestionPost={isQuestion}
         />
         <Separator className="mx-auto h-0.5 w-5/6 rounded-full bg-default" />
         {commentId ? (
@@ -108,6 +126,59 @@ const PostComments: FC<PostCommentsProps> = ({
           </Link>
         ) : null}
       </div>
+
+      {isQuestion && isAnswered && (
+        <>
+          <Accordion
+            type="single"
+            defaultValue={commentId ? undefined : "acceptedAnswers"}
+            collapsible
+          >
+            <AccordionItem value="acceptedAnswers">
+              <AccordionTrigger className="rounded-lg px-2">
+                Accepted Answers
+              </AccordionTrigger>
+              <AccordionContent className="">
+                <ul className="flex w-full flex-col gap-2 rounded-xl border border-green-600/50 bg-green-700/15 dark:bg-green-700/10">
+                  {isAcceptedAnswersLoading ? (
+                    <li>
+                      <CommentSkeleton />
+                    </li>
+                  ) : null}
+                  {acceptedAnswers?.map((answer) => {
+                    const votesAmt = getVotesAmount({ votes: answer.votes });
+
+                    const currentVote = comment?.votes.find(
+                      (vote) => vote.userId === user?.id,
+                    );
+
+                    return (
+                      <li key={answer.id}>
+                        <Comment
+                          comment={answer}
+                          votesAmt={votesAmt}
+                          currentVoteType={currentVote?.type}
+                          user={user}
+                          pathName={pathname}
+                          level={1}
+                          className={cn(
+                            commentId
+                              ? commentId === answer.id && "bg-highlight/60"
+                              : "",
+                          )}
+                          highlightReplyId={commentId}
+                          isQuestionPost={isQuestion}
+                          isPostAuthor={postAuthorId === user?.id}
+                        />
+                      </li>
+                    );
+                  })}
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </>
+      )}
 
       <ul className="flex w-full flex-col gap-2">
         {isLoading
@@ -153,8 +224,11 @@ const PostComments: FC<PostCommentsProps> = ({
             <CommentSkeleton />
           </li>
         ) : null}
+        {comments?.length === 0 && !isLoading && !isQuestion ? (
+          <NoComments />
+        ) : !isAcceptedAnswersLoading && acceptedAnswers?.length === 0 ? (
+          <NoComments />
         ) : null}
-        {comments?.length === 0 && !isLoading ? <NoComments /> : null}
       </ul>
     </div>
   );

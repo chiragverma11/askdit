@@ -18,11 +18,17 @@ interface AddCommentProps {
   postId: string;
   refetchComments: () => void;
   user?: any;
+  isQuestionPost: boolean;
 }
 
 const addCommentFormSchema = AddCommentValidator;
 
-const AddComment: FC<AddCommentProps> = ({ postId, refetchComments, user }) => {
+const AddComment: FC<AddCommentProps> = ({
+  postId,
+  refetchComments,
+  user,
+  isQuestionPost,
+}) => {
   const { handleSubmit, register, reset } = useForm<AddCommentRequestType>({
     resolver: zodResolver(addCommentFormSchema),
     defaultValues: {
@@ -68,7 +74,7 @@ const AddComment: FC<AddCommentProps> = ({ postId, refetchComments, user }) => {
                 className="ml-auto h-7 self-end rounded-lg bg-zinc-700 px-4 text-sm font-semibold text-inverted hover:bg-zinc-600 dark:bg-zinc-300 dark:hover:bg-zinc-400"
                 isLoading={isLoading}
               >
-                Comment
+                {isQuestionPost ? "Answer" : "Comment"}
               </Button>
             </div>
           </form>

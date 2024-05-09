@@ -579,4 +579,49 @@ export const commentRouter = router({
 
       return new Response("Answer Marked", { status: 200 });
     }),
+  getAcceptedAnswerComments: publicProcedure
+    .input(
+      z.object({
+        postId: z.string(),
+        userId: z.string().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const { userId, postId } = input;
+
+      const hierarchicalReplies = createHierarchicalRepliesInclude({
+        level: 6,
+        userId,
+        take: COMMENT_MAX_REPLIES,
+      });
+
+      const comments = await db.comment.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          author: true,
+          votes: true,
+          _count: {
+            select: {
+              replies: true,
+            },
+          },
+          bookmarks: {
+            where: {
+              userId: userId,
+            },
+          },
+          replies: hierarchicalReplies,
+        },
+        where: {
+          postId,
+          replyToId: null,
+          acceptedAnswer: true,
+        },
+      });
+
+      return comments;
+    }),
 });
