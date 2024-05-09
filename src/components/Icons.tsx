@@ -5,6 +5,8 @@ import {
   ArrowBigUp,
   ArrowDownToLine,
   ArrowLeft,
+  BadgeCheck,
+  BadgeMinus,
   Ban,
   Bell,
   BookmarkMinus,
@@ -238,4 +240,6 @@ export const Icons = {
   check: Check,
   alertCircle: AlertCircle,
   galleryHorizontalEnd: GalleryHorizontalEnd,
+  mark: BadgeCheck,
+  unMark: BadgeMinus,
 };
