@@ -93,6 +93,9 @@ const CardVariantPost: FC<PostVariantProps> = ({
       className={cn(
         "relative mx-auto flex w-full flex-col gap-2 border-b border-t border-default/25 bg-emphasis px-4 py-3 text-sm md:rounded-3xl md:border lg:p-4",
         !noRedirect ? "lg:hover:border-default/60" : null,
+        post.isQuestion
+          ? "overflow-hidden after:pointer-events-none after:absolute after:-right-4 after:-top-2 after:text-8xl after:font-semibold after:text-subtle/50 after:blur-[1.5px] after:content-['?']"
+          : null,
         className,
       )}
       {...props}
@@ -155,6 +158,21 @@ const CardVariantPost: FC<PostVariantProps> = ({
           </div>
         )}
       </div>
+      {post.isQuestion && (
+        <span
+          className={cn(
+            "flex w-fit items-center rounded-lg border px-2 py-1 text-xs font-semibold",
+            post.isAnswered
+              ? "border-green-600/50 bg-green-700/20"
+              : "border-red-600/50 bg-red-700/20",
+          )}
+        >
+          {post.isAnswered ? (
+            <Icons.check className="mr-1 h-4 w-4 font-bold text-green-600" />
+          ) : null}
+          {post.isAnswered ? "Answered" : "Unanswered"}
+        </span>
+      )}
       <div>
         <p
           className={cn(
@@ -265,6 +283,9 @@ const CompactVariantPost: FC<PostVariantProps> = ({
     <div
       className={cn(
         "relative mx-auto flex w-full flex-col gap-2 border-b border-t border-default/25 bg-emphasis px-4 py-3 text-sm md:rounded-lg md:border lg:p-3",
+        post.isQuestion
+          ? "overflow-hidden after:pointer-events-none after:absolute after:-right-4 after:-top-2 after:text-8xl after:font-semibold after:text-subtle/50 after:blur-[1.5px] after:content-['?']"
+          : null,
         !noRedirect ? "lg:hover:border-default/60" : null,
         className,
       )}
@@ -337,6 +358,21 @@ const CompactVariantPost: FC<PostVariantProps> = ({
           </div>
         </div>
       </div>
+      {post.isQuestion && (
+        <span
+          className={cn(
+            "flex w-fit items-center rounded-lg border px-2 py-1 text-xs font-semibold",
+            post.isAnswered
+              ? "border-green-600/50 bg-green-700/20"
+              : "border-red-600/50 bg-red-700/20",
+          )}
+        >
+          {post.isAnswered ? (
+            <Icons.check className="mr-1 h-4 w-4 font-bold text-green-600" />
+          ) : null}
+          {post.isAnswered ? "Answered" : "Unanswered"}
+        </span>
+      )}
       <div
         className={cn(
           "prose prose-stone min-w-full text-sm dark:prose-invert prose-a:relative prose-a:z-[1] prose-img:m-auto",
