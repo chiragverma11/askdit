@@ -27,6 +27,20 @@ export const commentRouter = router({
       const { comment, postId } = opts.input;
       const { user } = opts.ctx;
 
+      const post = await db.post.findUnique({
+        where: {
+          id: postId,
+        },
+        select: {
+          id: true,
+          isQuestion: true,
+        },
+      });
+
+      if (!post) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
+      }
+
       const newComment = await db.comment.create({
         data: {
           text: comment,
