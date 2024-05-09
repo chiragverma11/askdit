@@ -128,6 +128,9 @@ model Post {
   votes       Vote[]
   bookmarks   Bookmark[]
 
+  isQuestion Boolean  @default(false)
+  isAnswered Boolean? @default(false)
+
   storageUsed Int             @default(0)
   storageUnit StorageUnitType @default(BYTES)
 
@@ -155,9 +158,12 @@ model Comment {
 
   bookmarks Bookmark[]
 
+  acceptedAnswer Boolean @default(false)
+
   @@index([postId])
   @@index([replyToId])
   @@index([authorId])
+  @@index([acceptedAnswer])
 }
 
 model Vote {
