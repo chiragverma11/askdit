@@ -108,6 +108,7 @@ export const commentRouter = router({
         where: {
           postId,
           replyToId: null,
+          acceptedAnswer: false,
         },
       });
 
