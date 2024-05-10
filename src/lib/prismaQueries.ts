@@ -432,7 +432,7 @@ export const getSearchComments = async ({
         contains: query,
         mode: "insensitive",
       },
-      deleted: false
+      deleted: false,
     },
     orderBy: {
       createdAt: "desc",
