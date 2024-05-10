@@ -2,7 +2,6 @@ import { Prisma, PrismaClient, VoteType } from "@prisma/client";
 import {
   INFINITE_SCROLL_COMMENT_RESULTS,
   INFINITE_SCROLL_PAGINATION_RESULTS,
-  SEARCH_SUGGESTIONS_LIMIT,
 } from "./config";
 import { db } from "./db";
 import { DefaultArgs } from "@prisma/client/runtime/library";
@@ -56,6 +55,9 @@ export const getGeneralFeedPosts = async () => {
       createdAt: "desc",
     },
     take: INFINITE_SCROLL_PAGINATION_RESULTS,
+    where: {
+      isQuestion: false,
+    },
   });
 
   return posts;
@@ -82,6 +84,7 @@ export const getAuthenticatedFeedPosts = async ({
       subredditId: {
         in: communityIds,
       },
+      isQuestion: false,
     },
     include: {
       author: true,
@@ -415,7 +418,6 @@ export const getSearchCommunities = async ({
   return communties;
 };
 
-
 export const getSearchComments = async ({
   query,
   userId,
@@ -457,7 +459,6 @@ export const getSearchComments = async ({
 
   return comments;
 };
-
 
 export const getSearchUsers = async ({
   query,
@@ -529,4 +530,91 @@ export const updatePostIsAnswered = async (
       });
     }
   }
+};
+
+export const getPopularPosts = async ({
+  currentUserId,
+}: {
+  currentUserId: string | undefined;
+}) => {
+  const popularPosts = await db.post.findMany({
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+    orderBy: [
+      { votes: { _count: "desc" } },
+      { comments: { _count: "desc" } },
+      { createdAt: "desc" },
+    ],
+    include: {
+      author: true,
+      votes: true,
+      comments: true,
+      subreddit: true,
+      bookmarks: {
+        where: {
+          userId: currentUserId,
+        },
+      },
+    },
+    where: {
+      votes: { some: { type: "UP" } },
+    },
+  });
+
+  return popularPosts;
+};
+
+export const getPostTitle = async ({ postId }: { postId: string }) => {
+  const post = await db.post.findUnique({
+    where: {
+      id: postId,
+    },
+    select: {
+      title: true,
+    },
+  });
+
+  return post?.title;
+};
+
+export const getQuestions = async ({
+  currentUserId,
+}: {
+  currentUserId: string | undefined;
+}) => {
+  const userSubscriptions = await db.subscription.findMany({
+    where: {
+      userId: currentUserId,
+    },
+    select: {
+      subredditId: true,
+    },
+  });
+
+  const communityIds = userSubscriptions.map((sub) => sub.subredditId);
+
+  const posts = await db.post.findMany({
+    where: {
+      subredditId: {
+        in: communityIds,
+      },
+      isQuestion: true,
+    },
+    include: {
+      author: true,
+      votes: true,
+      comments: true,
+      subreddit: true,
+      bookmarks: {
+        where: {
+          userId: currentUserId,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return { posts, communityIds };
 };
