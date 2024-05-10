@@ -382,6 +382,10 @@ export const commentRouter = router({
             },
           });
         }
+      } else {
+        if (comment.acceptedAnswer) {
+          await updatePostIsAnswered(db, commentId, comment.postId);
+        }
       }
 
       return new Response("OK");
