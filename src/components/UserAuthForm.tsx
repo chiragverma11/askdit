@@ -22,7 +22,7 @@ const UserAuthForm: FC<UserAuthFormProps> = ({ authType }) => {
     try {
       await signIn("google", { callbackUrl: callbackUrl });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

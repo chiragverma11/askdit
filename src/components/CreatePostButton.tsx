@@ -27,7 +27,6 @@ const CreatePostButton = forwardRef<
       )}
       size={"sm"}
       onClick={(e) => {
-        console.log("post");
         router.push(communityName ? `/r/${communityName}/submit` : "/submit");
         if (onClick) {
           onClick(e);

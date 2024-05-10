@@ -35,22 +35,15 @@ const PostVote: FC<PostVoteProps> = ({
       if (currentVoteType === voteType) {
         setCurrentVoteType(undefined);
         if (voteType === "UP") {
-          console.log("first");
           setVotesAmt((prev) => prev - 1);
         } else if (voteType === "DOWN") {
-          console.log("second");
-
           setVotesAmt((prev) => prev + 1);
         }
       } else {
         setCurrentVoteType(voteType);
         if (voteType === "UP") {
-          console.log("third");
-
           setVotesAmt((prev) => prev + (currentVoteType ? 2 : 1));
         } else if (voteType === "DOWN") {
-          console.log("fourth");
-
           setVotesAmt((prev) => prev - (currentVoteType ? 2 : 1));
         }
       }
@@ -112,8 +105,8 @@ const PostVote: FC<PostVoteProps> = ({
             currentVoteType === "UP"
               ? "text-red-500"
               : currentVoteType === "DOWN"
-              ? "text-indigo-500"
-              : "text-inherit",
+                ? "text-indigo-500"
+                : "text-inherit",
           )}
         >
           {votesAmt}
