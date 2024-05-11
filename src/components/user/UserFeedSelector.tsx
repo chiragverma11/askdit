@@ -9,6 +9,7 @@ const userProfileMenus = [
   "Posts",
   "Comments",
   "Saved",
+  "Questions",
   "Upvoted",
   "Downvoted",
 ] as const;

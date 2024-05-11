@@ -1,10 +1,10 @@
 import { Prisma, PrismaClient, VoteType } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
 import {
   INFINITE_SCROLL_COMMENT_RESULTS,
   INFINITE_SCROLL_PAGINATION_RESULTS,
 } from "./config";
 import { db } from "./db";
-import { DefaultArgs } from "@prisma/client/runtime/library";
 
 export const getCommunity = async (
   communityName: string,
@@ -222,6 +222,7 @@ export const getUserPosts = async ({
   const userPosts = await db.post.findMany({
     where: {
       authorId,
+      isQuestion: false,
     },
     include: {
       author: true,
@@ -617,4 +618,38 @@ export const getQuestions = async ({
   });
 
   return { posts, communityIds };
+};
+
+export const getUserQuestions = async ({
+  username,
+  currentUserId,
+}: {
+  username: string;
+  currentUserId: string | undefined;
+}) => {
+  const authorId = await getUserIdByUsername({ username });
+
+  const userQuestions = await db.post.findMany({
+    where: {
+      authorId,
+      isQuestion: true,
+    },
+    include: {
+      author: true,
+      votes: true,
+      comments: true,
+      subreddit: true,
+      bookmarks: {
+        where: {
+          userId: currentUserId,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return { authorId, userQuestions };
 };

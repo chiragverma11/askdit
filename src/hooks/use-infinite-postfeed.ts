@@ -26,6 +26,11 @@ interface InfiniteUserPostsProps extends CommonInfinitePostsProps {
   authorId: string;
 }
 
+interface InfiniteUserQuestionsProps extends CommonInfinitePostsProps {
+  type: "userQuestion";
+  authorId: string;
+}
+
 interface InfinteVotedPostsProps extends CommonInfinitePostsProps {
   type: "votedPost";
   authorId: string;
@@ -51,6 +56,7 @@ type Options =
   | InfiniteAuthenticatedPostsProps
   | InfiniteGeneralPostsProps
   | InfiniteUserPostsProps
+  | InfiniteUserQuestionsProps
   | InfinteVotedPostsProps
   | InfiniteSearchPostsProps
   | InfinitePopularPostsProps
@@ -64,13 +70,15 @@ type DataReturnType<T extends Options> = T extends InfiniteCommunityPostsProps
       ? InfiniteData<RouterOutputs["post"]["infiniteGeneralPosts"]>
       : T extends InfiniteUserPostsProps
         ? InfiniteData<RouterOutputs["post"]["infiniteUserPosts"]>
-        : T extends InfinteVotedPostsProps
-          ? InfiniteData<RouterOutputs["post"]["infiniteVotedPosts"]>
-          : T extends InfiniteSearchPostsProps
-            ? InfiniteData<RouterOutputs["search"]["infiniteSearchPosts"]>
-            : T extends InfinitePopularPostsProps
-              ? InfiniteData<RouterOutputs["post"]["infinitePopularPosts"]>
-              : InfiniteData<RouterOutputs["post"]["infiniteAnswerPosts"]>;
+        : T extends InfiniteUserQuestionsProps
+          ? InfiniteData<RouterOutputs["post"]["infiniteUserQuestions"]>
+          : T extends InfinteVotedPostsProps
+            ? InfiniteData<RouterOutputs["post"]["infiniteVotedPosts"]>
+            : T extends InfiniteSearchPostsProps
+              ? InfiniteData<RouterOutputs["search"]["infiniteSearchPosts"]>
+              : T extends InfinitePopularPostsProps
+                ? InfiniteData<RouterOutputs["post"]["infinitePopularPosts"]>
+                : InfiniteData<RouterOutputs["post"]["infiniteAnswerPosts"]>;
 
 export function useInfinitePostFeed<T extends Options>(options: T) {
   const trpcInfiniteQueryRequest =
@@ -114,41 +122,50 @@ export function useInfinitePostFeed<T extends Options>(options: T) {
                 },
                 { getNextPageParam: (lastPage) => lastPage?.nextCursor },
               )
-            : options.type === "votedPost"
-              ? trpc.post.infiniteVotedPosts.useInfiniteQuery(
+            : options.type === "userQuestion"
+              ? trpc.post.infiniteUserQuestions.useInfiniteQuery(
                   {
                     limit: INFINITE_SCROLL_PAGINATION_RESULTS,
                     authorId: options.authorId,
-                    voteType: options.voteType,
                     currentUserId: options.userId,
                   },
                   { getNextPageParam: (lastPage) => lastPage?.nextCursor },
                 )
-              : options.type === "searchPost"
-                ? trpc.search.infiniteSearchPosts.useInfiniteQuery({
-                    limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-                    query: options.query,
-                  })
-                : options.type === "popularPost"
-                  ? trpc.post.infinitePopularPosts.useInfiniteQuery(
-                      {
-                        limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-                        currentUserId: options.userId,
-                      },
-                      {
-                        getNextPageParam: (lastPage) => lastPage?.nextCursor,
-                      },
-                    )
-                  : trpc.post.infiniteAnswerPosts.useInfiniteQuery(
-                      {
-                        limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-                        userId: options.userId,
-                        communityIds: options.communityIds,
-                      },
-                      {
-                        getNextPageParam: (lastPage) => lastPage?.nextCursor,
-                      },
-                    );
+              : options.type === "votedPost"
+                ? trpc.post.infiniteVotedPosts.useInfiniteQuery(
+                    {
+                      limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+                      authorId: options.authorId,
+                      voteType: options.voteType,
+                      currentUserId: options.userId,
+                    },
+                    { getNextPageParam: (lastPage) => lastPage?.nextCursor },
+                  )
+                : options.type === "searchPost"
+                  ? trpc.search.infiniteSearchPosts.useInfiniteQuery({
+                      limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+                      query: options.query,
+                    })
+                  : options.type === "popularPost"
+                    ? trpc.post.infinitePopularPosts.useInfiniteQuery(
+                        {
+                          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+                          currentUserId: options.userId,
+                        },
+                        {
+                          getNextPageParam: (lastPage) => lastPage?.nextCursor,
+                        },
+                      )
+                    : trpc.post.infiniteAnswerPosts.useInfiniteQuery(
+                        {
+                          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+                          userId: options.userId,
+                          communityIds: options.communityIds,
+                        },
+                        {
+                          getNextPageParam: (lastPage) => lastPage?.nextCursor,
+                        },
+                      );
 
   const {
     data: rawData,

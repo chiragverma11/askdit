@@ -68,6 +68,12 @@ interface UserPostsProps extends CommonPostProps {
   initialPosts: InitialPostWithBookmark;
 }
 
+interface UserQuestionsProps extends CommonPostProps {
+  type: "userQuestion";
+  authorId: string;
+  initialPosts: InitialPostWithBookmark;
+}
+
 interface VotedPostsProps extends CommonPostProps {
   type: "votedPost";
   authorId: string;
@@ -97,6 +103,7 @@ type PostFeedProps =
   | AuthenticatedPostsProps
   | GeneralPostsProps
   | UserPostsProps
+  | UserQuestionsProps
   | VotedPostsProps
   | SearchPostsProps
   | PopularPostsProps
