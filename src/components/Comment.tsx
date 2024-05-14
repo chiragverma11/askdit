@@ -193,10 +193,7 @@ const Comment: FC<CommentProps> = ({
                     <TooltipProvider delayDuration={200}>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <>
-                            <Icons.acceptedAnswer className="ml-1 h-4 w-4 font-bold text-green-600" />
-                            <span className="sr-only">Accepted Answer</span>
-                          </>
+                          <Icons.acceptedAnswer className="ml-1 h-4 w-4 font-bold text-green-600" />
                         </TooltipTrigger>
                         <TooltipContent
                           side="bottom"
