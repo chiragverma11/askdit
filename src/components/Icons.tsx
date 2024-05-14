@@ -13,6 +13,7 @@ import {
   BookmarkPlus,
   Check,
   ChevronDown,
+  CircleCheckBig,
   Dot,
   ExternalLink,
   Flame,
@@ -242,4 +243,5 @@ export const Icons = {
   galleryHorizontalEnd: GalleryHorizontalEnd,
   mark: BadgeCheck,
   unMark: BadgeMinus,
+  acceptedAnswer: CircleCheckBig,
 };
