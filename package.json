@@ -82,6 +82,7 @@
     "sharp": "^0.33.2",
     "sonner": "^1.4.0",
     "superjson": "^2.2.1",
+    "tailwind-gradient-mask-image": "^1.2.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "url-metadata": "^3.5.6",

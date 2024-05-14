@@ -13,6 +13,8 @@ import {
   BookmarkPlus,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   CircleCheckBig,
   Dot,
   ExternalLink,
@@ -244,4 +246,6 @@ export const Icons = {
   mark: BadgeCheck,
   unMark: BadgeMinus,
   acceptedAnswer: CircleCheckBig,
+  chevronLeft: ChevronLeft,
+  chevronRight: ChevronRight,
 };
