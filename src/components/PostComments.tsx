@@ -127,13 +127,9 @@ const PostComments: FC<PostCommentsProps> = ({
         ) : null}
       </div>
 
-      {isQuestion && isAnswered && (
+      {!commentId && isQuestion && isAnswered && (
         <>
-          <Accordion
-            type="single"
-            defaultValue={commentId ? undefined : "acceptedAnswers"}
-            collapsible
-          >
+          <Accordion type="single" defaultValue={"acceptedAnswers"} collapsible>
             <AccordionItem value="acceptedAnswers">
               <AccordionTrigger className="rounded-lg px-2">
                 Accepted Answers
