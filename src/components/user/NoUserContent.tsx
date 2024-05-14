@@ -10,6 +10,7 @@ const userProfileMenus = [
   "comments",
   "saved",
   "questions",
+  "answers",
   "upvoted",
   "downvoted",
 ] as const;
@@ -19,6 +20,7 @@ const menuBasedMessage = {
   comments: "commented on",
   saved: "saved",
   questions: "asked",
+  answers: "answered",
   upvoted: "upvoted",
   downvoted: "downvoted",
 };

@@ -15,6 +15,7 @@ const userProfileMenus = [
   "Comments",
   "Saved",
   "Questions",
+  "Answers",
   "Upvoted",
   "Downvoted",
 ] as const;

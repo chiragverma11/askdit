@@ -257,6 +257,7 @@ export const getUserComments = async ({
     where: {
       authorId,
       deleted: false,
+      acceptedAnswer: false,
     },
     include: {
       author: true,
@@ -652,4 +653,49 @@ export const getUserQuestions = async ({
   });
 
   return { authorId, userQuestions };
+};
+
+export const getUserAnswers = async ({
+  username,
+  currentUserId,
+}: {
+  username: string;
+  currentUserId: string | undefined;
+}) => {
+  const authorId = await getUserIdByUsername({ username });
+
+  const userAnswers = await db.comment.findMany({
+    where: {
+      authorId,
+      deleted: false,
+      post: {
+        isQuestion: true,
+      },
+      replyToId: null,
+    },
+    include: {
+      author: true,
+      votes: true,
+      bookmarks: {
+        where: {
+          userId: currentUserId,
+        },
+      },
+      post: {
+        select: {
+          subreddit: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return { authorId, userAnswers };
 };
