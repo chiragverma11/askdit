@@ -1,3 +1,4 @@
+import FeedFilterOptions from "@/components/FeedFilterOptions";
 import AnswerFeed from "@/components/answer/AnswerFeed";
 import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
@@ -12,6 +13,7 @@ const AnswerPage: FC<AnswerPageProps> = async ({}) => {
   return (
     <MainContentWrapper>
       <FeedWrapper>
+        <FeedFilterOptions />
         <AnswerFeed currentUserId={session?.user.id} />
       </FeedWrapper>
     </MainContentWrapper>

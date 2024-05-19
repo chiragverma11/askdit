@@ -1,3 +1,4 @@
+import FeedFilterOptions from "@/components/FeedFilterOptions";
 import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import PopularFeed from "@/components/popular/PopularFeed";
@@ -12,6 +13,7 @@ const PopularPage: FC<PopularPageProps> = async ({}) => {
   return (
     <MainContentWrapper>
       <FeedWrapper>
+        <FeedFilterOptions />
         <PopularFeed currentUserId={session?.user.id} />
       </FeedWrapper>
     </MainContentWrapper>
