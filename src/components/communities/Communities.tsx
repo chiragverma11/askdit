@@ -29,7 +29,7 @@ const Communities: FC<CommunitiesProps> = ({ session, explore }) => {
           const menu = menuName as typeof activeMenu;
 
           return (
-            <h1
+            <button
               className="relative cursor-pointer text-xl font-semibold text-default lg:text-2xl"
               key={menuName}
               onClick={() => {
@@ -51,7 +51,7 @@ const Communities: FC<CommunitiesProps> = ({ session, explore }) => {
                   }}
                 />
               ) : null}
-            </h1>
+            </button>
           );
         })}
       </div>
