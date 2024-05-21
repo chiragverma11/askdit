@@ -18,7 +18,7 @@ const SearchTypeSelector: FC<SearchTypeSelectorProps> = ({ query, type }) => {
 
   const checkIsActive = useCallback(
     (item: (typeof menuItems)[number]) => {
-      const itemType = item.href.split("&type=")[1];
+      const itemType = item.href.toString().split("&type=")[1];
 
       if (!itemType) return false;
 
@@ -27,7 +27,14 @@ const SearchTypeSelector: FC<SearchTypeSelectorProps> = ({ query, type }) => {
     [type],
   );
 
-  return <HorizontalMenu items={menuItems} isActive={checkIsActive} />;
+  return (
+    <HorizontalMenu
+      menuId="searchTypeSelector"
+      items={menuItems}
+      isActive={checkIsActive}
+      className="mb-4"
+    />
+  );
 };
 
 export default SearchTypeSelector;
