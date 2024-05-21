@@ -99,7 +99,7 @@ const HorizontalMenu: FC<HorizontalMenuProps> = ({
       <ul
         ref={menuListRef}
         className={cn(
-          "no-scrollbar flex h-fit shrink items-center gap-4 px-4 pb-1 lg:gap-8",
+          "no-scrollbar flex h-fit shrink items-center gap-4 overflow-x-scroll px-4 pb-1 sm:overflow-x-scroll lg:gap-8",
           listContainerClassName,
           canScrollPrev && canScrollNext
             ? "gradient-mask-r-[transparent,transparent_5%,rgba(0,0,0,1.0)_64px,rgba(0,0,0,1.0)_90%,transparent]"
@@ -114,7 +114,6 @@ const HorizontalMenu: FC<HorizontalMenuProps> = ({
         {items.map((item, index) => {
           const isItemActive = isActive(item);
           const { name, href, className, ...props } = item;
-          console.log(isItemActive);
 
           return (
             <li
