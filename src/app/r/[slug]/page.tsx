@@ -1,6 +1,12 @@
 import CommunityInfoCard from "@/components/CommunityInfoCard";
 import CommunityModeratorsCard from "@/components/CommunityModeratorsCard";
 import FeedFilterOptions from "@/components/FeedFilterOptions";
+import {
+  NoContent,
+  NoContentAction,
+  NoContentDescription,
+  NoContentTitle,
+} from "@/components/NoContent";
 import PostFeed from "@/components/PostFeed";
 import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
 import CommunityImage from "@/components/community/CommunityImage";
@@ -63,12 +69,26 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
           community={community}
         />
         <FeedFilterOptions />
-        <PostFeed
-          type="communityPost"
-          initialPosts={initialPosts}
-          communityName={slug}
-          userId={session?.user.id}
-        />
+        {initialPosts.length === 0 ? (
+          <NoContent>
+            <NoContentTitle>
+              This community doesn&apos;t have any posts yet
+            </NoContentTitle>
+            <NoContentDescription>
+              Make a post to get this feed started
+            </NoContentDescription>
+            <NoContentAction href={`/r/${community.name}/submit`}>
+              Create Post
+            </NoContentAction>
+          </NoContent>
+        ) : (
+          <PostFeed
+            type="communityPost"
+            initialPosts={initialPosts}
+            communityName={slug}
+            userId={session?.user.id}
+          />
+        )}
       </FeedWrapper>
       <SideMenuWrapper className="sticky top-[72px] h-fit justify-start">
         <CommunityInfoCard
