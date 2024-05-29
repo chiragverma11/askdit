@@ -1,5 +1,11 @@
 export const COMMUNITY_NAME_REGEX = /^[a-zA-Z0-9_]{3,21}$/;
 
+export const USERNAME_NAME_REGEX = /^[a-zA-Z0-9_.]*$/;
+
+export const USERNAME_MAX_LENGTH = 20;
+
+export const DISPLAY_NAME_MAX_LENGTH = 30;
+
 export const POST_TITLE_LENGTH = 300;
 
 export const INFINITE_SCROLL_PAGINATION_RESULTS = 6;

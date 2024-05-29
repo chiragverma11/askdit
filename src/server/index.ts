@@ -3,6 +3,7 @@ import { commentRouter } from "./routers/comment";
 import { communityRouter } from "./routers/community";
 import { postRouter } from "./routers/post";
 import { searchRouter } from "./routers/search";
+import { settingsRouter } from "./routers/settings";
 import { router } from "./trpc";
 
 export const appRouter = router({
@@ -11,6 +12,7 @@ export const appRouter = router({
   comment: commentRouter,
   bookmark: bookmarkRouter,
   search: searchRouter,
+  settings: settingsRouter,
 });
 
 export type AppRouter = typeof appRouter;
