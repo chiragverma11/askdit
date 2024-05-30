@@ -8,7 +8,7 @@ import { Button } from "./ui/Button";
 
 interface BackButtonProps extends React.ComponentProps<typeof Button> {}
 
-const BackButton: FC<BackButtonProps> = ({ className, ...props }) => {
+const BackButton: FC<BackButtonProps> = ({ className, children, ...props }) => {
   const router = useRouter();
   return (
     <Button
@@ -24,6 +24,7 @@ const BackButton: FC<BackButtonProps> = ({ className, ...props }) => {
       {...props}
     >
       <Icons.backArrow className="h-5 w-5" />
+      {children}
     </Button>
   );
 };
