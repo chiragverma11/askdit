@@ -47,17 +47,6 @@ export const MAX_PROFILE_IMAGE_SIZE_IN_BYTES = 524288;
 export const IMAGEKIT_COMMUNITY_PROFILE_UPLOAD_FOLDER =
   "/askdit/community/profile/images";
 
-export const APP_INFO: {
-  author: { name: string; github: string };
-  github: string;
-} = {
-  author: {
-    name: "Chirag Verma",
-    github: "https://github.com/chiragverma11",
-  },
-  github: "https://github.com/chiragverma11/askdit",
-};
-
 export const REDIS_CACHE_EXPIRATION_SECONDS = 60 * 15;
 
 /**
