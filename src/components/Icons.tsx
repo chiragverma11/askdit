@@ -254,5 +254,4 @@ export const Icons = {
   system: Monitor,
   light: Sun,
   dark: MoonStar,
-  check: Check,
 };
