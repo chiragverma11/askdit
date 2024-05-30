@@ -60,10 +60,11 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
         if (error.data?.httpStatus === 401) {
           toast.error("Can't create community", {
             description: "Login to create community.",
-            action: {
-              label: <AuthLink href="/sign-in">Login</AuthLink>,
-              onClick: () => toast.dismiss(),
-            },
+            action: (
+              <AuthLink href="/sign-in" onClick={() => toast.dismiss()}>
+                Login
+              </AuthLink>
+            ),
           });
         } else if (error.data?.httpStatus === 409) {
           toast.error("Can't create community.", {
