@@ -34,6 +34,7 @@ const UserProfileCommentsPage: FC<UserProfileCommentsPageProps> = async ({
 
   return (
     <UserCommentFeed
+      type="userComment"
       initialComments={userComments}
       session={session}
       authorId={authorId!}

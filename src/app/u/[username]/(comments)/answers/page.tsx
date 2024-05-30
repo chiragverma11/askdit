@@ -34,6 +34,7 @@ const UserProfileAnswersPage: FC<UserProfileAnswersPageProps> = async ({
 
   return (
     <UserCommentFeed
+      type="userAnswer"
       initialComments={userAnswers}
       session={session}
       authorId={authorId!}
