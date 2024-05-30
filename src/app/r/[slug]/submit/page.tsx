@@ -1,9 +1,9 @@
 import BackButton from "@/components/BackButton";
-import SubmitPost from "@/components/submit/SubmitPost";
 import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
-import { getCommunityInfo } from "@/lib/prismaQueries";
-import { Metadata, ResolvingMetadata } from "next";
+import SubmitPost from "@/components/submit/SubmitPost";
+import { getCommunityInfo, getCommunityMetadata } from "@/lib/prismaQueries";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FC } from "react";
 
@@ -14,13 +14,12 @@ interface CreatePostSubredditProps {
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export async function generateMetadata(
-  { params }: CreatePostSubredditProps,
-  parent: ResolvingMetadata,
-): Promise<Metadata> {
-  const slug = params.slug;
+export async function generateMetadata({
+  params,
+}: CreatePostSubredditProps): Promise<Metadata> {
+  const communityName = params.slug;
 
-  const community = await getCommunityInfo({ name: slug });
+  const community = await getCommunityMetadata({ name: communityName });
 
   if (!community) {
     return {
@@ -29,7 +28,7 @@ export async function generateMetadata(
   }
 
   return {
-    title: `Submit to ${slug}`,
+    title: `Submit to ${community.name}`,
   };
 }
 
