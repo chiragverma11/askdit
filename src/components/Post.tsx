@@ -44,10 +44,15 @@ interface PostProps extends React.ComponentPropsWithoutRef<"div"> {
   isLoggedIn: boolean;
   isAuthor: boolean;
   pathName: string;
-  inPostPage: boolean;
+  inPostPage?: boolean;
 }
 
-const Post = ({ variant = "card", ...props }: PostProps) => {
+const Post = ({
+  variant = "card",
+  inPostPage = false,
+  ...restProps
+}: PostProps) => {
+  const props = { ...restProps, inPostPage };
   if (variant === "card") {
     return <CardVariantPost {...props} />;
   } else if (variant === "compact") {
