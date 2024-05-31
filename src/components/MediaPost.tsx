@@ -120,7 +120,9 @@ const ImageMedia: FC<Pick<MediaContent["content"], "images">> = ({
               {hasCaption ? (
                 <div
                   className="flex w-full grow items-center bg-subtle px-3 py-2"
-                  ref={(element) => (captionRef.current[index] = element)}
+                  ref={(element) => {
+                    captionRef.current[index] = element;
+                  }}
                 >
                   <p className="not-prose text-sm">{image.caption}</p>
                 </div>
