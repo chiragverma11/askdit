@@ -122,9 +122,9 @@ const CardVariantPost: FC<PostVariantProps> = ({
                 className="aspect-square h-6 w-6"
               />
             </Link>
-            <div className="flex items-center">
+            <div className="flex items-center text-xs">
               <Link href={`/u/${post.author.username}`} prefetch={false}>
-                <span className="text-sm font-semibold text-default/90 hover:underline dark:hover:text-red-100">{`u/${post.author.username}`}</span>
+                <span className="font-semibold text-default/90 hover:underline dark:hover:text-red-100">{`u/${post.author.username}`}</span>
               </Link>
               <div className="flex items-center text-subtle">
                 <Icons.dot className="h-4 w-4" strokeWidth={4} />
