@@ -17,7 +17,7 @@ import { getAuthSession } from "@/lib/auth";
 import { getCommunity, getCreator, getSubscription } from "@/lib/prismaQueries";
 import { Metadata } from "next";
 import { Session } from "next-auth";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { FC } from "react";
 
 interface SubredditPageProps {
@@ -57,6 +57,11 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
     : null;
 
   if (!community) return notFound();
+
+  // Redirect if communityName's case in params is not same as in db
+  if (slug !== community.name) {
+    redirect(`/r/${community.name}`);
+  }
 
   const initialPosts = community.posts;
 

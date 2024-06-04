@@ -12,7 +12,10 @@ export const getCommunity = async (
 ) => {
   const subreddit = await db.subreddit.findFirst({
     where: {
-      name: communityName,
+      name: {
+        equals: communityName,
+        mode: "insensitive",
+      },
     },
     include: {
       _count: {

@@ -7,7 +7,7 @@ import SideMenuWrapper from "@/components/layout/SideMenuWrapper";
 import { getAuthSession } from "@/lib/auth";
 import { getCommunityPost, getSubscription } from "@/lib/prismaQueries";
 import { getVotesAmount } from "@/lib/utils";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { FC } from "react";
 
 interface CommunityPostProps {
@@ -33,6 +33,11 @@ const CommunityPost: FC<CommunityPostProps> = async ({ params }) => {
   const post = await getCommunityPost({ postId, userId: session?.user.id });
 
   if (!post) return notFound();
+
+  // Redirect if communityName's case in params is not same as in db
+  if (slug !== post.subreddit.name) {
+    redirect(`/r/${post.subreddit.name}/post/${post.id}`);
+  }
 
   const votesAmt = getVotesAmount({ votes: post.votes });
 
