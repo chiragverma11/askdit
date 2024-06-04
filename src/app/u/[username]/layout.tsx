@@ -8,13 +8,13 @@ import UserInfoMobile from "@/components/user/UserInfoMobile";
 import UserModeratorsCard, {
   UserModeratorCardSkeleton,
 } from "@/components/user/UserModeratorCard";
-import UserNotFound from "@/components/user/UserNotFound";
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getUserInfo } from "@/lib/prismaQueries";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import NotFound from "./not-found";
 
 interface UserLayoutProps {
   children: React.ReactNode;
@@ -59,7 +59,7 @@ export default async function UserLayout({
   const userInfo = await getUserInfo({ username });
 
   if (!userInfo) {
-    return <UserNotFound />;
+    return NotFound();
   }
 
   // Redirect if username's case in params is not same as in db

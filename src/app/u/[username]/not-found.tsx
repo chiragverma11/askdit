@@ -15,13 +15,13 @@ export default function NotFound() {
           <div className="flex flex-col items-center justify-center gap-4 text-center">
             <h1 className="text-7xl font-semibold sm:text-8xl">404</h1>
             <NoContentTitle className="leading-tight tracking-normal sm:text-xl">
-              Sorry, there&apos;s nothing here.
+              Sorry, nobody on Askdit goes by that username.
             </NoContentTitle>
             <NoContentDescription>
-              This post might have been removed.
+              The person may have been banned or the username is incorrect.
             </NoContentDescription>
-            <NoContentAction href="/">Take me home</NoContentAction>
           </div>
+          <NoContentAction href="/">Take me home</NoContentAction>
         </NoContent>
       </FeedWrapper>
     </MainContentWrapper>

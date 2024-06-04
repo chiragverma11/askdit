@@ -1,26 +1,29 @@
+import {
+  NoContent,
+  NoContentAction,
+  NoContentDescription,
+  NoContentTitle,
+} from "@/components/NoContent";
+import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
-import { buttonVariants } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 export default function NotFound() {
   return (
     <MainContentWrapper>
-      <div className="fixed inset-0 flex max-h-[700px] w-full flex-col items-center justify-center gap-6">
-        <div className="flex flex-col items-center gap-4">
-          <h1 className="text-7xl font-bold sm:text-8xl">404</h1>
-          <p className="text-lg font-medium sm:text-xl">Page not found</p>
-          <p className="text-subtle sm:text-lg">
-            We can&apos;t find the page you&apos;re looking for
-          </p>
-        </div>
-        <Link
-          href="/"
-          className={cn(buttonVariants({ variant: "outline" }), "w-fit")}
-        >
-          Take me home
-        </Link>
-      </div>
+      <FeedWrapper>
+        <NoContent className="h-[75vh]">
+          <div className="flex flex-col items-center justify-center gap-4 text-center">
+            <h1 className="text-7xl font-semibold sm:text-8xl">404</h1>
+            <NoContentTitle className="leading-tight tracking-normal sm:text-xl">
+              Page not found
+            </NoContentTitle>
+            <NoContentDescription>
+              We can&apos;t find the page you&apos;re looking for
+            </NoContentDescription>
+          </div>
+          <NoContentAction href="/">Take me home</NoContentAction>
+        </NoContent>
+      </FeedWrapper>
     </MainContentWrapper>
   );
 }
