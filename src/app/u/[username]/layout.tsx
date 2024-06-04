@@ -13,6 +13,7 @@ import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getUserInfo } from "@/lib/prismaQueries";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 interface UserLayoutProps {
@@ -29,7 +30,10 @@ export async function generateMetadata({
 
   const user = await db.user.findFirst({
     where: {
-      username,
+      username: {
+        equals: username,
+        mode: "insensitive",
+      },
     },
     select: {
       name: true,
@@ -58,15 +62,17 @@ export default async function UserLayout({
     return <UserNotFound />;
   }
 
+  // Redirect if username's case in params is not same as in db
+  if (username !== userInfo.username) {
+    redirect(`/u/${userInfo.username}`);
+  }
+
   const session = await getAuthSession();
 
   return (
     <MainContentWrapper>
       <FeedWrapper>
-        <UserInfoMobile
-          session={session}
-          userInfo={{ username, ...userInfo }}
-        />
+        <UserInfoMobile session={session} userInfo={{ ...userInfo }} />
         <UserFeedSelector
           isUserSelf={session?.user.id === userInfo?.id}
           username={username}
@@ -75,7 +81,7 @@ export default async function UserLayout({
         {children}
       </FeedWrapper>
       <SideMenuWrapper className="sticky top-[72px] h-fit justify-start">
-        <UserInfoCard session={session} userInfo={{ username, ...userInfo }} />
+        <UserInfoCard session={session} userInfo={{ ...userInfo }} />
         <Suspense
           fallback={
             <UserModeratorCardSkeleton

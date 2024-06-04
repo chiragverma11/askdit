@@ -200,12 +200,16 @@ export const getCommunityInfo = async ({ name }: { name: string }) => {
 };
 
 export const getUserInfo = async ({ username }: { username: string }) => {
-  const userInfo = await db.user.findUnique({
+  const userInfo = await db.user.findFirst({
     where: {
-      username,
+      username: {
+        equals: username,
+        mode: "insensitive",
+      },
     },
     select: {
       id: true,
+      username: true,
       name: true,
       image: true,
     },
