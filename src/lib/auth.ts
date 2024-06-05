@@ -1,6 +1,7 @@
 import { env } from "@/env.mjs";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
+import { lowercase } from "nanoid-dictionary";
 import { NextAuthOptions, getServerSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import {
@@ -77,9 +78,10 @@ export const authOptions: NextAuthOptions = {
               id: dbUser.id,
             },
             data: {
-              username: `${dbUser.name?.split(" ")[0].toLowerCase()}_${nanoid(
+              username: `${dbUser.name?.split(" ")[0].toLowerCase()}_${customAlphabet(
+                lowercase,
                 5,
-              )}`,
+              )()}`,
             },
             select: {
               id: true,
