@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { VariantProps } from "class-variance-authority";
 import Link from "next/link";
 import * as React from "react";
 import { FC } from "react";
@@ -48,34 +49,47 @@ NoContentDescription.displayName = "NoContentDescription";
 
 const NoContentAction = React.forwardRef<
   React.ElementRef<typeof Link>,
-  React.ComponentPropsWithoutRef<typeof Link> & { asChild?: boolean }
->(({ asChild, className, children, ...props }, ref) => {
-  if (
-    asChild &&
-    React.isValidElement(children) &&
-    React.Children.count(children) === 1
-  ) {
-    return React.cloneElement(children as React.ReactElement, {
-      ref,
-      className: cn(className, children.props.className),
-      ...props,
-    });
-  }
+  React.ComponentPropsWithoutRef<typeof Link> & {
+    asChild?: boolean;
+  } & VariantProps<typeof buttonVariants>
+>(
+  (
+    {
+      asChild,
+      className,
+      children,
+      variant = "outline",
+      size = "sm",
+      ...props
+    },
+    ref,
+  ) => {
+    if (
+      asChild &&
+      React.isValidElement(children) &&
+      React.Children.count(children) === 1
+    ) {
+      return React.cloneElement(children as React.ReactElement, {
+        ref,
+        className: cn(
+          buttonVariants({ variant, size, className }),
+          children.props.className,
+        ),
+        ...props,
+      });
+    }
 
-  return (
-    <Link
-      className={cn(
-        "w-fit",
-        buttonVariants({ variant: "outline", size: "sm" }),
-        className,
-      )}
-      ref={ref}
-      {...props}
-    >
-      {children}
-    </Link>
-  );
-});
+    return (
+      <Link
+        className={cn("w-fit", buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      >
+        {children}
+      </Link>
+    );
+  },
+);
 
 NoContentAction.displayName = "NoContentAction";
 
