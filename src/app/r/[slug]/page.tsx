@@ -14,7 +14,13 @@ import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import SideMenuWrapper from "@/components/layout/SideMenuWrapper";
 import { getAuthSession } from "@/lib/auth";
-import { getCommunity, getCreator, getSubscription } from "@/lib/prismaQueries";
+import {
+  getCommunity,
+  getCommunityMetadata,
+  getCreator,
+  getSubscription,
+} from "@/lib/prismaQueries";
+import { absoluteUrl } from "@/lib/utils";
 import { Metadata } from "next";
 import { Session } from "next-auth";
 import { notFound, redirect } from "next/navigation";
@@ -32,8 +38,29 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const communityName = params.slug;
+  const community = await getCommunityMetadata({ name: communityName });
 
-  return { title: communityName };
+  if (!community) {
+    return {
+      title: "Community not found",
+    };
+  }
+
+  return {
+    title: { absolute: community.name },
+    description: community.description,
+    openGraph: {
+      title: { absolute: community.name },
+      description: community.description || undefined,
+      url: absoluteUrl(`/r/${community.name}`),
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: { absolute: community.name },
+      description: community.description || undefined,
+    },
+  };
 }
 
 const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
@@ -56,7 +83,9 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
     ? await getCreator({ creatorId: community.creatorId })
     : null;
 
-  if (!community) return notFound();
+  if (!community) {
+    return notFound();
+  }
 
   // Redirect if communityName's case in params is not same as in db
   if (slug !== community.name) {

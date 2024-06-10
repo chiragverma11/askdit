@@ -3,6 +3,7 @@ import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import SubmitPost from "@/components/submit/SubmitPost";
 import { getCommunityInfo, getCommunityMetadata } from "@/lib/prismaQueries";
+import { absoluteUrl } from "@/lib/utils";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FC } from "react";
@@ -28,7 +29,19 @@ export async function generateMetadata({
   }
 
   return {
-    title: `Submit to ${community.name}`,
+    title: { absolute: `Submit to r/${community.name}` },
+    description: `Create a post in r/${community.name} on Askdit.`,
+    openGraph: {
+      title: { absolute: `Submit to r/${community.name}` },
+      description: `Create a post in r/${community.name} on Askdit.`,
+      url: absoluteUrl(`/r/${community.name}/submit`),
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: { absolute: `Submit to r/${community.name}` },
+      description: `Create a post in r/${community.name} on Askdit.`,
+    },
   };
 }
 

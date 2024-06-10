@@ -1,6 +1,21 @@
 import CloseButton from "@/components/CloseButton";
-import { Modal, ModalContent } from "@/components/ui/Modal";
 import SignIn from "@/components/SignIn";
+import { Modal, ModalContent } from "@/components/ui/Modal";
+import { absoluteUrl } from "@/lib/utils";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Sign in",
+  openGraph: {
+    title: "Sign in",
+    url: absoluteUrl("/sign-in"),
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sign in",
+  },
+};
 
 const SignInModal = () => {
   return (

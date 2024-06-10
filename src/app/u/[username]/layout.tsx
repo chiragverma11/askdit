@@ -11,6 +11,7 @@ import UserModeratorsCard, {
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getUserInfo } from "@/lib/prismaQueries";
+import { absoluteUrl } from "@/lib/utils";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -46,8 +47,18 @@ export async function generateMetadata({
     };
   }
 
+  const title = `${user.name} (u/${username})`;
   return {
-    title: `${user.name} (u/${username})`,
+    title,
+    openGraph: {
+      title,
+      url: absoluteUrl(`/u/${username}`),
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+    },
   };
 }
 

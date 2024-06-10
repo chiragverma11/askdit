@@ -1,7 +1,22 @@
 import BackButton from "@/components/BackButton";
 import SignIn from "@/components/SignIn";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
+import { absoluteUrl } from "@/lib/utils";
+import { Metadata } from "next";
 import { FC } from "react";
+
+export const metadata: Metadata = {
+  title: "Sign in",
+  openGraph: {
+    title: "Sign in",
+    url: absoluteUrl("/sign-in"),
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sign in",
+  },
+};
 
 interface SignInPageProps {}
 

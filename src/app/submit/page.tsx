@@ -2,12 +2,25 @@ import { Metadata } from "next";
 import { FC } from "react";
 
 import BackButton from "@/components/BackButton";
-import SubmitPost from "@/components/submit/SubmitPost";
 import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
+import SubmitPost from "@/components/submit/SubmitPost";
+import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Submit to Askdit",
+  title: { absolute: "Submit to Askdit" },
+  description: "Create a post on Askdit.",
+  openGraph: {
+    title: { absolute: "Submit to Askdit" },
+    description: "Create a post on Askdit.",
+    url: absoluteUrl("/submit"),
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: { absolute: "Submit to Askdit" },
+    description: "Create a post on Askdit.",
+  },
 };
 
 interface CreatePostPageProps {
