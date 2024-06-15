@@ -5,7 +5,13 @@ import {
   STORAGE_LIMIT_PER_USER,
 } from "@/lib/config";
 import { db } from "@/lib/db";
+import { redis } from "@/lib/redis";
+import {
+  RateLimitError,
+  rateLimitMiddleware,
+} from "@/server/middleware/rate-limit";
 import ImageKit from "imagekit";
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -14,10 +20,22 @@ export async function GET() {
     const session = await getAuthSession();
 
     if (!session?.user) {
-      return new Response(JSON.stringify({ message: "Unauthorized" }), {
-        status: 401,
-      });
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        {
+          status: 401,
+        },
+      );
     }
+
+    await rateLimitMiddleware({
+      fingerprint: `imagekit:${session.user.id}`,
+      maxRequests: 40,
+      windowMs: 20 * 1000,
+      redisClient: redis,
+      message: (hits) =>
+        `Too many requests, please try again later. ${hits} hits`,
+    });
 
     const userWithStorageUsed = await db.user.findUnique({
       where: {
@@ -33,10 +51,10 @@ export async function GET() {
       userWithStorageUsed.storageUsed + DROPZONE_MAX_FILE_SIZE_IN_BYTES >=
         STORAGE_LIMIT_PER_USER
     ) {
-      return new Response(
-        JSON.stringify({
+      return NextResponse.json(
+        {
           message: "Storage limit reached, can't upload more media",
-        }),
+        },
         { status: 403 },
       );
     }
@@ -50,12 +68,29 @@ export async function GET() {
     // fetching authparameters like signature, token & expire time
     const authentcationParameters = imagekit.getAuthenticationParameters();
 
-    return new Response(JSON.stringify(authentcationParameters));
+    return NextResponse.json(authentcationParameters);
   } catch (error) {
-    return new Response(
-      JSON.stringify({
-        success: 0,
-      }),
+    if (error instanceof RateLimitError) {
+      return NextResponse.json(
+        {
+          error: {
+            code: "TOO_MANY_REQUESTS",
+            message: error.message,
+            retryAfter: error.retryAfter,
+          },
+        },
+        { status: 429 },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        error: {
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong",
+        },
+      },
+      { status: 500 },
     );
   }
 }
