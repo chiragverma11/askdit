@@ -80,13 +80,13 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
 
   const isSubscribed = !!subscription;
 
-  const creator = community?.creatorId
-    ? await getCreator({ creatorId: community.creatorId })
-    : null;
-
   if (!community) {
     return notFound();
   }
+
+  const creator = community.creatorId
+    ? await getCreator({ creatorId: community.creatorId })
+    : null;
 
   // Redirect if communityName's case in params is not same as in db
   if (slug !== community.name) {
@@ -140,7 +140,19 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
           }}
           parent="community"
         />
-        <CommunityModeratorsCard moderator={creator?.username || null} />
+        <CommunityModeratorsCard
+          moderators={
+            creator?.username
+              ? [
+                  {
+                    name: creator.name,
+                    username: creator.username,
+                    image: creator.image,
+                  },
+                ]
+              : []
+          }
+        />
       </SideMenuWrapper>
     </MainContentWrapper>
   );

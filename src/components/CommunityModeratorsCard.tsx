@@ -1,26 +1,37 @@
+import { User } from "@prisma/client";
 import Link from "next/link";
-import { FC, Suspense } from "react";
+import { FC } from "react";
+import UserAvatar from "./UserAvatar";
 
 interface CommunityModeratorsCardProps {
-  moderator: string | null;
+  moderators: Pick<User, "name" | "username" | "image">[];
 }
 
 const CommunityModeratorsCard: FC<CommunityModeratorsCardProps> = ({
-  moderator,
+  moderators,
 }) => {
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-default/40 bg-emphasis px-4 py-4">
       <div className="flex flex-col gap-4">
         <p className="font-bold text-subtle">Moderators</p>
         <div className="flex h-auto w-full flex-col gap-2 text-sm">
-          <Suspense
-            fallback={<div className="w-full bg-highlight text-sm"></div>}
-          >
+          {moderators.map((moderator) => (
             <Link
-              href={`/u/${moderator}`}
-              className="text-sky-600"
-            >{`/u/${moderator}`}</Link>
-          </Suspense>
+              href={`/u/${moderator.username}`}
+              className="flex items-center gap-2"
+              key={moderator.username}
+            >
+              <UserAvatar
+                className="h-6 w-6"
+                user={{ name: moderator.name, image: moderator.image }}
+              />
+              <div className="flex flex-col">
+                <span className="text-sm hover:underline">
+                  u/{moderator.username}
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>
