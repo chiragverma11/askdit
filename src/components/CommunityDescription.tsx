@@ -52,7 +52,7 @@ const CommunityDescription: FC<CommunityDescriptionProps> = ({
       {description !== null ? (
         <div
           className={cn(
-            "inline w-full whitespace-pre-wrap break-words",
+            "inline w-full break-words",
             isAuthor &&
               "cursor-pointer gap-2 rounded-md border border-transparent transition-[padding] hover:border-default hover:p-1",
           )}
@@ -61,7 +61,9 @@ const CommunityDescription: FC<CommunityDescriptionProps> = ({
           }}
         >
           {description}
-          {isAuthor ? <Icons.edit className="mx-1 inline h-4 w-4" /> : null}
+          {isAuthor ? (
+            <Icons.edit className="mx-1 inline h-4 w-4 text-default/80" />
+          ) : null}
         </div>
       ) : isAuthor ? (
         <div
@@ -113,7 +115,7 @@ const AddCommunityDescription = React.forwardRef<
 
   return (
     <div
-      className="w-full break-all rounded-md border border-default bg-subtle p-2 text-sm"
+      className="w-full break-all rounded-xl border border-default bg-subtle p-2 text-sm lg:rounded-lg"
       ref={ref}
     >
       <form id="addDescriptionForm" onSubmit={handleSubmit(onSubmit)}>
