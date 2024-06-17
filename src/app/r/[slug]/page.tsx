@@ -11,6 +11,7 @@ import {
 import PostFeed from "@/components/PostFeed";
 import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
 import CommunityImage from "@/components/community/CommunityImage";
+import CommunityInfoMobile from "@/components/community/CommunityInfoMobile";
 import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import SideMenuWrapper from "@/components/layout/SideMenuWrapper";
@@ -102,6 +103,25 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
           isSubscribed={isSubscribed}
           session={session}
           community={community}
+        />
+        <CommunityInfoMobile
+          communityInfo={{
+            id: community.id,
+            name: community.name,
+            image: community.image,
+            description: community.description,
+            creatorId: community.creatorId,
+            createdAt: community.createdAt,
+            moderators: creator?.username
+              ? [
+                  {
+                    name: creator.name,
+                    username: creator.username,
+                    image: creator.image,
+                  },
+                ]
+              : [],
+          }}
         />
         <FeedFilterOptions />
         {initialPosts.length === 0 ? (
