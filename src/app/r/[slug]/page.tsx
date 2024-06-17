@@ -1,3 +1,4 @@
+import CommunityDescription from "@/components/CommunityDescription";
 import CommunityInfoCard from "@/components/CommunityInfoCard";
 import CommunityModeratorsCard from "@/components/CommunityModeratorsCard";
 import FeedFilterOptions from "@/components/FeedFilterOptions";
@@ -184,7 +185,13 @@ const CommunityHeader = ({
         </div>
       </div>
       {community.description ? (
-        <div className="texts text-sm lg:hidden">{community.description}</div>
+        <div className="text-sm lg:hidden">
+          <CommunityDescription
+            initialDescription={community.description}
+            communityId={community.id}
+            isAuthor={session?.user.id === community.creatorId}
+          />
+        </div>
       ) : null}
     </div>
   );
