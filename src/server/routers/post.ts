@@ -90,7 +90,10 @@ export const postRouter = router({
       });
 
       if (!post) {
-        return new Response("Post not found", { status: 404 });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post not found",
+        });
       }
 
       if (existingVote) {
@@ -105,7 +108,10 @@ export const postRouter = router({
           //   return acc;
           // }, 0);
 
-          return new Response("OK");
+          return {
+            success: true,
+            message: `Post ${voteType === "UP" ? "upvoted" : "downvoted"} successfully`,
+          };
         }
 
         await db.vote.update({
@@ -120,7 +126,10 @@ export const postRouter = router({
           },
         });
 
-        return new Response("OK");
+        return {
+          success: true,
+          message: `Post ${voteType === "UP" ? "upvoted" : "downvoted"} successfully`,
+        };
       }
 
       await db.vote.create({
@@ -131,7 +140,10 @@ export const postRouter = router({
         },
       });
 
-      return new Response("OK");
+      return {
+        success: true,
+        message: `Post ${voteType === "UP" ? "upvoted" : "downvoted"} successfully`,
+      };
     }),
   infiniteCommunityPosts: publicProcedure
     .input(
@@ -390,12 +402,16 @@ export const postRouter = router({
       });
 
       if (!post) {
-        return new Response("Post not found", { status: 404 });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post not found",
+        });
       }
 
       if (user.id !== post.authorId) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
+          message: "You are not authorized to delete this post",
         });
       }
 
@@ -440,7 +456,10 @@ export const postRouter = router({
         }
       });
 
-      return new Response("OK");
+      return {
+        success: true,
+        message: "Post deleted successfully",
+      };
     }),
   bookmark: protectedProcedure
     .input(PostBookmarkValidator)
@@ -457,14 +476,20 @@ export const postRouter = router({
         });
 
         if (!bookmark) {
-          return new Response("Bookmark not found", { status: 404 });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "You have not bookmarked this post",
+          });
         }
 
         await db.bookmark.delete({
           where: { id: bookmark.id },
         });
 
-        return new Response("Bookmark removed", { status: 200 });
+        return {
+          success: true,
+          message: "Post unsaved",
+        };
       }
 
       const post = await db.post.findUnique({
@@ -472,7 +497,10 @@ export const postRouter = router({
       });
 
       if (!post) {
-        return new Response("Post not found", { status: 404 });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post not found",
+        });
       }
 
       await db.bookmark.create({
@@ -482,7 +510,10 @@ export const postRouter = router({
         },
       });
 
-      return new Response("Bookmarked", { status: 200 });
+      return {
+        success: true,
+        message: "Post saved",
+      };
     }),
   getUrlMetadata: protectedProcedure
     .input(z.object({ url: z.string() }))
@@ -567,7 +598,10 @@ export const postRouter = router({
     });
 
     if (!userWithStorageUsed) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "You are not authorized to access this resource",
+      });
     }
 
     return {

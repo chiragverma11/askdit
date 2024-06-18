@@ -191,7 +191,10 @@ export const commentRouter = router({
       });
 
       if (!comment) {
-        return new Response("Comment not found", { status: 404 });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Comment not found",
+        });
       }
 
       if (existingVote) {
@@ -200,7 +203,10 @@ export const commentRouter = router({
             where: { userId_commentId: { commentId, userId: user.id } },
           });
 
-          return new Response("OK");
+          return {
+            success: true,
+            message: `Comment ${voteType === "UP" ? "upvoted" : "downvoted"} successfully`,
+          };
         }
 
         await db.commentVote.update({
@@ -215,7 +221,10 @@ export const commentRouter = router({
           },
         });
 
-        return new Response("OK");
+        return {
+          success: true,
+          message: `Comment ${voteType === "UP" ? "upvoted" : "downvoted"} successfully`,
+        };
       }
 
       await db.commentVote.create({
@@ -226,7 +235,10 @@ export const commentRouter = router({
         },
       });
 
-      return new Response("OK");
+      return {
+        success: true,
+        message: `Comment ${voteType === "UP" ? "upvoted" : "downvoted"} successfully`,
+      };
     }),
   addReply: protectedProcedure
     .input(AddReplyValidator)
@@ -333,12 +345,16 @@ export const commentRouter = router({
       });
 
       if (!comment) {
-        return new Response("Comment not found", { status: 404 });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Comment not found",
+        });
       }
 
       if (user.id !== comment.authorId) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
+          message: "You are not authorized to delete this comment",
         });
       }
 
@@ -388,7 +404,10 @@ export const commentRouter = router({
         }
       }
 
-      return new Response("OK");
+      return {
+        success: true,
+        message: "Comment deleted successfully",
+      };
     }),
   bookmark: protectedProcedure
     .input(CommentBookmarkValidator)
@@ -405,14 +424,20 @@ export const commentRouter = router({
         });
 
         if (!bookmark) {
-          return new Response("Bookmark not found", { status: 404 });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "You have not bookmarked this comment",
+          });
         }
 
         await db.bookmark.delete({
           where: { id: bookmark.id },
         });
 
-        return new Response("Bookmark removed", { status: 200 });
+        return {
+          success: true,
+          message: "Comment unsaved",
+        };
       }
 
       const comment = await db.comment.findUnique({
@@ -420,7 +445,10 @@ export const commentRouter = router({
       });
 
       if (!comment) {
-        return new Response("Comment not found", { status: 404 });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Comment not found",
+        });
       }
 
       await db.bookmark.create({
@@ -430,7 +458,10 @@ export const commentRouter = router({
         },
       });
 
-      return new Response("Bookmarked", { status: 200 });
+      return {
+        success: true,
+        message: "Comment saved",
+      };
     }),
   infiniteUserComments: publicProcedure
     .input(
@@ -574,7 +605,10 @@ export const commentRouter = router({
       });
 
       if (!comment) {
-        return new Response("Comment not found", { status: 404 });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Comment not found",
+        });
       }
 
       if (user.id !== comment.post.authorId) {
@@ -597,7 +631,10 @@ export const commentRouter = router({
         });
       });
 
-      return new Response("Answer Marked", { status: 200 });
+      return {
+        success: true,
+        message: "Answer marked successfully",
+      };
     }),
   getAcceptedAnswerComments: publicProcedure
     .input(

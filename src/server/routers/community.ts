@@ -188,6 +188,7 @@ export const communityRouter = router({
       if (community.creatorId !== user.id) {
         throw new TRPCError({
           code: "FORBIDDEN",
+          message: "You are not the creator of this community.",
         });
       }
 
@@ -203,7 +204,9 @@ export const communityRouter = router({
       return { message: "Description added", description: newDescription };
     }),
   searchCommunities: publicProcedure
-    .input(z.object({ query: z.string().min(1), userId: z.string().optional() }))
+    .input(
+      z.object({ query: z.string().min(1), userId: z.string().optional() }),
+    )
     .query(async (opts) => {
       const { query, userId } = opts.input;
 
