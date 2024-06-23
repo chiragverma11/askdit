@@ -79,6 +79,11 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
         toast.success("Your post has been created successfully.");
         router.push(newPathname);
       },
+      onError(error) {
+        toast.error("Failed to create post", {
+          description: error.message,
+        });
+      },
     });
 
   const onSubmit = async (data: FormData) => {

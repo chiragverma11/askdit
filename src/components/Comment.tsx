@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { FC, useState } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import { toast } from "sonner";
 import AddReply from "./AddReply";
 import CommentVote from "./CommentVote";
 import { Icons } from "./Icons";
@@ -67,6 +68,11 @@ const Comment: FC<CommentProps> = ({
     onSuccess: (data) => {
       setSkip((prevSkip) => prevSkip + data.comments.length);
       setReplies((prevReplies) => [...prevReplies, ...data.comments]);
+    },
+    onError: (error) => {
+      toast.error("Failed to get more replies", {
+        description: error.message,
+      });
     },
   });
 

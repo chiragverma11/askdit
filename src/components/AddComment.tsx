@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FC } from "react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
+import { toast } from "sonner";
 import AuthLink from "./AuthLink";
 import { Icons } from "./Icons";
 import { Button, buttonVariants } from "./ui/Button";
@@ -47,6 +48,11 @@ const AddComment: FC<AddCommentProps> = ({
           postId,
         });
         refetchComments();
+      },
+      onError(error) {
+        toast.error("Failed to add comment", {
+          description: error.message,
+        });
       },
     });
 

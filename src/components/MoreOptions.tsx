@@ -68,6 +68,11 @@ const MoreOptions: FC<MoreOptionsProps> = ({ ...props }) => {
       }
       router.push(redirectUrl);
     },
+    onError: (error) => {
+      toast.error("Failed to delete post", {
+        description: error.message,
+      });
+    },
   });
 
   const { mutate: deleteComment } = trpc.comment.delete.useMutation({
@@ -77,17 +82,32 @@ const MoreOptions: FC<MoreOptionsProps> = ({ ...props }) => {
         props.onCommentDelete();
       }
     },
+    onError: (error) => {
+      toast.error("Failed to delete comment", {
+        description: error.message,
+      });
+    },
   });
 
   const { mutate: bookmarkPost } = trpc.post.bookmark.useMutation({
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       setIsBookmarked(!isBookmarked);
+    },
+    onError: (error, variables) => {
+      toast.error(`Failed to ${variables.remove ? "unsave" : "save"} post`, {
+        description: error.message,
+      });
     },
   });
 
   const { mutate: bookmarkComment } = trpc.comment.bookmark.useMutation({
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       setIsBookmarked(!isBookmarked);
+    },
+    onError: (error, variables) => {
+      toast.error(`Failed to ${variables.remove ? "unsave" : "save"} comment`, {
+        description: error.message,
+      });
     },
   });
 
@@ -95,6 +115,14 @@ const MoreOptions: FC<MoreOptionsProps> = ({ ...props }) => {
     trpc.comment.markAnswer.useMutation({
       onSuccess: () => {
         setIsMarkedAsAnswer((prev) => !prev);
+      },
+      onError: (error) => {
+        toast.error(
+          `Failed to ${isMarkedAsAnswer ? "unmark" : "mark"} answer`,
+          {
+            description: error.message,
+          },
+        );
       },
     });
 

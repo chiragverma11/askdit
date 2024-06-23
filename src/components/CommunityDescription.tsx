@@ -107,6 +107,11 @@ const AddCommunityDescription = React.forwardRef<
         close();
         toast.success("Description updated successfully");
       },
+      onError: (error) => {
+        toast.error("Failed to update description", {
+          description: error.message,
+        });
+      },
     });
 
   const onSubmit = (data: AddDescriptionRequestType) => {

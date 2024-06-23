@@ -64,6 +64,11 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
         toast.success("Your post has been created successfully.");
         router.push(newPathname);
       },
+      onError(error) {
+        toast.error("Failed to create post", {
+          description: error.message,
+        });
+      },
     });
 
   const { api, Editor, editorContainerRef, isEditorLoading, storageUsed } =

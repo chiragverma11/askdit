@@ -66,9 +66,9 @@ const ImageUpdater: FC<ImageUpdaterProps> = ({
         toast.success("Image updated");
         onUpdate(data.image);
       },
-      onError: () => {
+      onError: (error) => {
         toast.error("Error updating image", {
-          description: "Please try again later",
+          description: error.message,
         });
       },
       onSettled: () => {
@@ -116,9 +116,8 @@ const ImageUpdater: FC<ImageUpdaterProps> = ({
   const onDropRejected = useCallback((fileRejections: FileRejection[]) => {
     // Handle file too large rejections toast
     if (
-      fileRejections.some(
-        (rejection) =>
-          rejection.errors?.some((error) => error.code === "file-too-large"),
+      fileRejections.some((rejection) =>
+        rejection.errors?.some((error) => error.code === "file-too-large"),
       )
     ) {
       toast.error("File too large!", {
@@ -128,9 +127,8 @@ const ImageUpdater: FC<ImageUpdaterProps> = ({
 
     // Handle too many files rejections toast
     if (
-      fileRejections.some(
-        (rejection) =>
-          rejection.errors?.some((error) => error.code === "too-many-files"),
+      fileRejections.some((rejection) =>
+        rejection.errors?.some((error) => error.code === "too-many-files"),
       )
     ) {
       toast.error("Too many files!", {

@@ -77,6 +77,11 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
         toast.success("Your post has been created successfully.");
         router.push(newPathname);
       },
+      onError(error) {
+        toast.error("Failed to create post", {
+          description: error.message,
+        });
+      },
     });
 
   const uploadFiles = async () => {

@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { VoteType } from "@prisma/client";
 import { FC, HTMLAttributes, useEffect, useState } from "react";
+import { toast } from "sonner";
 import AuthLink from "./AuthLink";
 import { Icons } from "./Icons";
 
@@ -48,9 +49,13 @@ const PostVote: FC<PostVoteProps> = ({
         }
       }
     },
-    onError: () => {
+    onError: (error) => {
       setVotesAmt(initialVotesAmt);
       setCurrentVoteType(initialVoteType);
+      toast.error("Failed to vote post", {
+        description:
+          error.message || "Something went wrong. Please try again later.",
+      });
     },
   });
 

@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FC } from "react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
+import { toast } from "sonner";
 import { Button } from "./ui/Button";
 
 type InfinitePostCommentsOutput = RouterOutputs["comment"]["infiniteComments"];
@@ -52,6 +53,11 @@ const AddReply: FC<AddReplyProps> = ({
       });
 
       addNewReply(data?.comment);
+    },
+    onError(error) {
+      toast.error("Failed to add reply", {
+        description: error.message || "Something went wrong. Please try again.",
+      });
     },
   });
 
