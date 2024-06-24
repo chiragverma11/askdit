@@ -3,9 +3,9 @@ import { Subreddit } from "@prisma/client";
 import { Session } from "next-auth";
 import Link from "next/link";
 import { FC } from "react";
+import CommunityAvatar from "./CommunityAvatar";
 import CommunityDescription from "./CommunityDescription";
 import SubscribeLeaveToggle from "./SubscribeLeaveToggle";
-import UserAvatar from "./UserAvatar";
 import { buttonVariants } from "./ui/Button";
 import { Separator } from "./ui/Separator";
 
@@ -95,7 +95,11 @@ const CommunityTitle: FC<CommunityTitleProps> = ({ name, image }) => {
       prefetch={false}
     >
       {image ? (
-        <UserAvatar className="h-12 w-12" user={{ name: name, image: image }} />
+        <CommunityAvatar
+          communityName={name}
+          image={image}
+          className="h-12 w-12"
+        />
       ) : (
         <span
           className={cn(
