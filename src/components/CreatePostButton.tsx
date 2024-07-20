@@ -22,7 +22,7 @@ const CreatePostButton = forwardRef<
     <Link
       className={cn(
         buttonVariants({ size: "sm" }),
-        "flex items-center gap-1 px-1 font-semibold text-white lg:px-4",
+        "flex h-10 items-center gap-1 px-1 font-semibold text-white lg:px-4",
         className,
       )}
       href={communityName ? `/r/${communityName}/submit` : "/submit"}
