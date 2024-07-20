@@ -30,6 +30,7 @@ import {
   LucideProps,
   Maximize2,
   MessageSquare,
+  MessageSquareText,
   MessagesSquare,
   Minimize2,
   Monitor,
@@ -38,6 +39,7 @@ import {
   PenSquare,
   Pencil,
   QrCode,
+  Reply,
   Rows2,
   Rows3,
   Search,
@@ -49,7 +51,7 @@ import {
   X,
   XCircle,
 } from "lucide-react";
-import { FaPlus } from "react-icons/fa6";
+import { FaBellSlash, FaPlus } from "react-icons/fa6";
 import { RxGithubLogo } from "react-icons/rx";
 import { TbShare3 } from "react-icons/tb";
 
@@ -254,4 +256,7 @@ export const Icons = {
   system: Monitor,
   light: Sun,
   dark: MoonStar,
+  noNotifications: FaBellSlash,
+  comment: MessageSquareText,
+  reply: Reply,
 };
