@@ -33,6 +33,7 @@ export const commentRouter = router({
         },
         select: {
           id: true,
+          authorId: true,
           isQuestion: true,
         },
       });
@@ -56,6 +57,20 @@ export const commentRouter = router({
           userId: user.id,
         },
       });
+
+      if (post.authorId !== newComment.authorId) {
+        if (newComment.id) {
+          await db.notification.create({
+            data: {
+              type: "COMMENT",
+              userId: post.authorId,
+              triggeredById: newComment.authorId,
+              postId: post.id,
+              commentId: newComment.id,
+            },
+          });
+        }
+      }
 
       return {
         commentId: newComment.id,
@@ -320,6 +335,23 @@ export const commentRouter = router({
         throw new TRPCError({
           code: "NOT_FOUND",
         });
+      }
+
+      const replyTo = await db.comment.findUnique({ where: { id: replyToId } });
+
+      if (replyTo?.authorId !== newReply.authorId) {
+        if (replyTo?.authorId) {
+          // for reliability this should be done by another service using a message broker
+          await db.notification.create({
+            data: {
+              userId: replyTo?.authorId,
+              type: "REPLY",
+              triggeredById: newReply.authorId,
+              postId: newReply.postId,
+              commentId: newReply.id,
+            },
+          });
+        }
       }
 
       return {
