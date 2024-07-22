@@ -178,8 +178,8 @@ const PostComments: FC<PostCommentsProps> = ({
 
       <ul className="flex w-full flex-col gap-2">
         {isLoading
-          ? Array.from({ length: 3 }).map((_, index) => (
-              <li key={index}>
+          ? Array.from({ length: commentId ? 1 : 3 }).map((_, index) => (
+              <li key={`comment-skeleton-${index}`}>
                 <CommentSkeleton />
               </li>
             ))
