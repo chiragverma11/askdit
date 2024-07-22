@@ -251,7 +251,7 @@ export const createHierarchicalCommentReplyToSelect = ({
 
   // Recursive case: create the replyTo object for the current level
   const select: Prisma.CommentSelect = {
-    id: level === 0 ? true : false,
+    id: true,
     replyTo:
       level !== 0
         ? {

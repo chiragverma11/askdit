@@ -568,8 +568,8 @@ export const commentRouter = router({
       let topContextParentCommentId: string | undefined = undefined;
       let repliesContext = context;
 
-      // If context is greator than 0, we need to get the top context parent comment id
-      if (context !== 0) {
+      // If context is greator than 0, we need to get the top available context parent comment id
+      if (context > 0) {
         const contextParents = await db.comment.findUnique({
           where: {
             id: commentId,
