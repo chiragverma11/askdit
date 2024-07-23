@@ -36,7 +36,7 @@ const SocialIcon = ({ name, data, onClick }: IconProps) => {
     <button
       onClick={handleClick}
       aria-label={name}
-      className="flex aspect-square h-12 w-12 items-center justify-center rounded-xl p-1 text-white"
+      className="flex aspect-square h-12 w-12 min-w-fit items-center justify-center rounded-xl p-1 text-white"
       style={{ background: bgColor }}
     >
       {icon}
