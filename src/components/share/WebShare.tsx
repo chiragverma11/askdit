@@ -3,6 +3,7 @@ import React, {
   cloneElement,
   memo,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -327,14 +328,12 @@ const WebShareDialog: FC<WebShareDrawerProps> = ({
             </DialogItem>
           </div>
           {showQr && (
-            <>
-              <QRCode
-                url={`https://chart.googleapis.com/chart?cht=qr&chl=${data.url}&chs=540x540`}
-                grow="horizontal"
-                className=""
-                imageClassName="rounded-xl w-48 px-5"
-              />
-            </>
+            <QRCode
+              url={data.url}
+              grow="horizontal"
+              className=""
+              imageClassName="rounded-xl w-48 px-5"
+            />
           )}
         </div>
       </DialogContent>
@@ -353,6 +352,9 @@ const QRCode = ({
   className?: string;
   imageClassName?: string;
 }) => {
+  const [imageSrc, setImageSrc] = useState("");
+  const [loading, setLoading] = useState(true);
+
   const variants = {
     hidden:
       grow === "vertical"
@@ -363,6 +365,36 @@ const QRCode = ({
         ? { height: "auto", opacity: 1 }
         : { width: "auto", opacity: 1 },
   };
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const response = await fetch(`https://qrcode.show/${url}`, {
+          method: "GET",
+          headers: {
+            accept: "image/png",
+          },
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch image");
+        }
+        const blob = await response.blob();
+        const imageObjectURL = URL.createObjectURL(blob);
+        setImageSrc(imageObjectURL);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    };
+
+    fetchImage();
+
+    return () => {
+      if (imageSrc) {
+        URL.revokeObjectURL(imageSrc);
+      }
+    };
+  }, [url, imageSrc]);
 
   return (
     <motion.div
@@ -376,16 +408,19 @@ const QRCode = ({
       <div
         className={cn(
           "relative mx-auto aspect-square w-full max-w-72 overflow-hidden rounded-3xl border border-default/75",
+          loading && "animate-pulse bg-emphasis/60",
           imageClassName,
         )}
       >
-        <Image
-          src={url}
-          className="object-fill"
-          alt="QR"
-          fill={true}
-          unoptimized
-        />
+        {imageSrc ? (
+          <Image
+            src={imageSrc}
+            className="object-fill"
+            alt="QR"
+            fill={true}
+            unoptimized
+          />
+        ) : null}
       </div>
     </motion.div>
   );
