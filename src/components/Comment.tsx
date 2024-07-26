@@ -262,7 +262,7 @@ const Comment: FC<CommentProps> = ({
               })
             ) : (
               <Link
-                href={`${pathName}/comment/${comment.id}`}
+                href={`${pathName.split("/").slice(0, 5).join("/")}/comment/${comment.id}`}
                 className="-ml-1 w-full cursor-pointer text-xs font-semibold text-blue-500 hover:underline dark:text-blue-400"
               >
                 Continue this thread...
