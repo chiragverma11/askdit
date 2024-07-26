@@ -1,34 +1,75 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<a href="https://askdit.chiragverma.dev">
+    <h1 align="center">Askdit</h1>
+</a>
 
-## Getting Started
+<p align="center">
+    A social platform built with Next.js 14 for community interaction, content sharing, and engaging discussions, with integrated Q&amp;A features.
+</p>
 
-First, run the development server:
+## Introduction
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+Askdit is an open-source social platform for community interaction, content sharing, and engaging discussions, with integrated Q&A features. Built with Next.js 14, it offers:
+
+- Community Creation and Interaction: Users can create, join, and engage in diverse communities.
+- Multi-format Content Sharing: Support for regular posts, media uploads, and link sharing.
+- Integrated Q&A System: Ask questions, provide answers, and mark resolved issues.
+- User Engagement: Follow communities, upvote content, and participate in discussions.
+- Responsive Design: Seamless experience across devices with a modern, intuitive interface.
+
+## Run Locally
+
+Clone the repository
+
+```
+git clone https://github.com/chiragverma11/askdit
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Go to the project directory
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+cd askdit
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Install dependencies
 
-## Learn More
+```
+pnpm install
+```
 
-To learn more about Next.js, take a look at the following resources:
+Copy the `.env.example` to `.env` and update the variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+cp .env.example .env
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Push the database schema
 
-## Deploy on Vercel
+```
+pnpm run db:push
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Start the development server
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```
+pnpm run dev
+```
+
+## Tech Stack
+
+- [Next.js](https://nextjs.org/) - Framework
+- [TailwindCSS](https://tailwindcss.com/) - Styling
+- [Neon](https://neon.tech/) - Database
+- [Prisma](https://prisma.io/) - ORM
+- [NextAuth](https://next-auth.js.org/) - Auth
+- [ImageKit](https://imagekit.io/) - Images & Media
+- [shadcn/ui](https://ui.shadcn.com/) - UI Components
+- [Aiven](https://aiven.io/) - Caching
+- [Vercel](https://vercel.com/) - Hosting
+
+## Contributing
+
+We welcome your contributions to Askdit. Here's how you can get involved:
+
+- Found a bug? [Open an issue](https://github.com/chiragverma11/askdit/issues/new) to report it.
+- Have an idea? Share it with us through an issue!
+- Ready to code? We welcome [pull requests](https://github.com/chiragverma11/askdit/pulls) for new features, improvements, or bug fixes.
