@@ -3,7 +3,7 @@ import { SiteConfig } from "@/types";
 export const siteConfig: SiteConfig = {
   name: "Askdit",
   description:
-    "Engage in meaningful discussions, share your knowledge, and connect with like-minded people on Askdit. The powerful Reddit alternative built with Next.js.",
+    "A Next.js-powered social platform for community engagement. Share ideas, ask questions, and connect with like-minded people through interactive discussions and content sharing.",
   url: "https://askdit.chiragverma.dev",
   author: {
     name: "Chirag Verma",
