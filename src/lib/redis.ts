@@ -2,7 +2,7 @@ import { env } from "@/env.mjs";
 import Redis from "ioredis";
 
 const redisClientSingleton = () => {
-  return new Redis(env.REDIS_URL, { enableOfflineQueue: false });
+  return new Redis(env.REDIS_URL);
 };
 
 declare const globalThis: {
