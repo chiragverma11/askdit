@@ -402,6 +402,7 @@ export const commentRouter = router({
             id: commentId,
           },
           data: {
+            text: "",
             deleted: true,
           },
         });
