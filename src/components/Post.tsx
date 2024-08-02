@@ -212,7 +212,14 @@ const CardVariantPost: FC<PostVariantProps> = ({
           noRedirect={noRedirect}
           redirectUrl={redirectUrl}
         />
-        <ShareButton type={"post"} post={post} />
+        <ShareButton
+          type={"post"}
+          post={{
+            id: post.id,
+            title: post.title,
+            subredditName: post.subreddit.name,
+          }}
+        />
         {isLoggedIn ? (
           <MoreOptions
             type="post"
@@ -402,7 +409,14 @@ const CompactVariantPost: FC<PostVariantProps> = ({
           noRedirect={noRedirect}
           redirectUrl={redirectUrl}
         />
-        <ShareButton type={"post"} post={post} />
+        <ShareButton
+          type={"post"}
+          post={{
+            id: post.id,
+            title: post.title,
+            subredditName: post.subreddit.name,
+          }}
+        />
         {isLoggedIn ? (
           <MoreOptions
             type="post"
