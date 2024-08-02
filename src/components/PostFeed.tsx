@@ -29,15 +29,19 @@ type InitialPostWithBookmark = (PrismaPost & {
   author: User;
   votes: Vote[];
   subreddit: Subreddit;
-  comments: Comment[];
   bookmarks: Bookmark[];
+  _count: {
+    comments: number;
+  };
 })[];
 
 type InitialPostWithoutBookmark = (PrismaPost & {
   author: User;
   votes: Vote[];
   subreddit: Subreddit;
-  comments: Comment[];
+  _count: {
+    comments: number;
+  };
 })[];
 
 interface CommonPostProps {

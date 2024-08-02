@@ -6,7 +6,6 @@ import { cn, formatTimeToNow } from "@/lib/utils";
 import { FeedViewType } from "@/types/utilities";
 import {
   Bookmark,
-  Comment,
   Post as PrismaPost,
   Subreddit,
   User,
@@ -33,8 +32,10 @@ interface PostProps extends React.ComponentPropsWithoutRef<"div"> {
     author: User;
     votes: Vote[];
     subreddit: Subreddit;
-    comments: Comment[];
     bookmarks?: Bookmark[];
+    _count: {
+      comments: number;
+    };
   };
   variant?: FeedViewType;
   isCommunity?: boolean;
@@ -61,13 +62,7 @@ const Post = ({
 };
 
 interface PostVariantProps extends React.ComponentPropsWithoutRef<"div"> {
-  post: PrismaPost & {
-    author: User;
-    votes: Vote[];
-    subreddit: Subreddit;
-    comments: Comment[];
-    bookmarks?: Bookmark[];
-  };
+  post: PostProps["post"];
   isCommunity?: boolean;
   votesAmt: number;
   currentVoteType?: VoteType;
@@ -140,7 +135,7 @@ const CardVariantPost: FC<PostVariantProps> = ({
                 image={post.subreddit.image}
               />
             </Link>
-            <div className="flex flex-col text-xs ">
+            <div className="flex flex-col text-xs">
               <div className="flex items-center">
                 <Link href={`/r/${post.subreddit.name}`} prefetch={false}>
                   <span className="font-bold text-default/90 hover:underline dark:hover:text-red-100">{`r/${post.subreddit.name}`}</span>
@@ -208,7 +203,7 @@ const CardVariantPost: FC<PostVariantProps> = ({
         />
         <CommentButton
           className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 hover:bg-highlight/40 dark:hover:bg-highlight/60"
-          commentsLength={post.comments.length}
+          commentsLength={post._count.comments}
           noRedirect={noRedirect}
           redirectUrl={redirectUrl}
         />
@@ -344,7 +339,7 @@ const CompactVariantPost: FC<PostVariantProps> = ({
               </div>
             ) : (
               <div className="z-[1] inline-flex items-center gap-2 rounded-lg">
-                <div className="flex flex-col text-xs ">
+                <div className="flex flex-col text-xs">
                   <div className="flex items-center">
                     <Link href={`/r/${post.subreddit.name}`} prefetch={false}>
                       <span className="font-bold text-default/90 hover:underline dark:hover:text-red-100">{`r/${post.subreddit.name}`}</span>
@@ -405,7 +400,7 @@ const CompactVariantPost: FC<PostVariantProps> = ({
         />
         <CommentButton
           className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 hover:bg-highlight/40 dark:hover:bg-highlight/60"
-          commentsLength={post.comments.length}
+          commentsLength={post._count.comments}
           noRedirect={noRedirect}
           redirectUrl={redirectUrl}
         />

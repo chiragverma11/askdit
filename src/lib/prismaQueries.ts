@@ -27,7 +27,11 @@ export const getCommunity = async (
         include: {
           author: true,
           votes: true,
-          comments: true,
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
           subreddit: true,
           bookmarks: {
             where: {
@@ -51,8 +55,12 @@ export const getGeneralFeedPosts = async () => {
     include: {
       author: true,
       votes: true,
-      comments: true,
       subreddit: true,
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -92,11 +100,15 @@ export const getAuthenticatedFeedPosts = async ({
     include: {
       author: true,
       votes: true,
-      comments: true,
       subreddit: true,
       bookmarks: {
         where: {
           userId: userId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
         },
       },
     },
@@ -132,10 +144,14 @@ export const getCommunityPost = async ({
           },
         },
       },
-      comments: true,
       bookmarks: {
         where: {
           userId: userId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
         },
       },
     },
@@ -252,11 +268,15 @@ export const getUserPosts = async ({
     include: {
       author: true,
       votes: true,
-      comments: true,
       subreddit: true,
       bookmarks: {
         where: {
           userId: currentUserId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
         },
       },
     },
@@ -330,11 +350,15 @@ export const getUserVotedPosts = async ({
     include: {
       author: true,
       votes: true,
-      comments: true,
       subreddit: true,
       bookmarks: {
         where: {
           userId: userId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
         },
       },
     },
@@ -357,7 +381,11 @@ export const getUserBookmarks = async ({ userId }: { userId: string }) => {
         include: {
           author: true,
           votes: true,
-          comments: true,
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
           subreddit: true,
         },
       },
@@ -401,8 +429,12 @@ export const getSearchPosts = async ({ query }: { query: string }) => {
     include: {
       author: true,
       votes: true,
-      comments: true,
       subreddit: true,
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
     },
   });
 
@@ -574,11 +606,15 @@ export const getPopularPosts = async ({
     include: {
       author: true,
       votes: true,
-      comments: true,
       subreddit: true,
       bookmarks: {
         where: {
           userId: currentUserId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
         },
       },
     },
@@ -629,11 +665,15 @@ export const getQuestions = async ({
     include: {
       author: true,
       votes: true,
-      comments: true,
       subreddit: true,
       bookmarks: {
         where: {
           userId: currentUserId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
         },
       },
     },
@@ -663,11 +703,15 @@ export const getUserQuestions = async ({
     include: {
       author: true,
       votes: true,
-      comments: true,
       subreddit: true,
       bookmarks: {
         where: {
           userId: currentUserId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
         },
       },
     },

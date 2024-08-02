@@ -39,7 +39,11 @@ export const bookmarkRouter = router({
             include: {
               author: true,
               votes: true,
-              comments: true,
+              _count: {
+                select: {
+                  comments: true,
+                },
+              },
               subreddit: true,
             },
           },

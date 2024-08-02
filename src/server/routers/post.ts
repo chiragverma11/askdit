@@ -170,11 +170,15 @@ export const postRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
           bookmarks: {
             where: {
               userId: userId,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
             },
           },
         },
@@ -220,11 +224,15 @@ export const postRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
           bookmarks: {
             where: {
               userId: userId,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
             },
           },
         },
@@ -269,8 +277,12 @@ export const postRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
         },
         where: {
           isQuestion: false,
@@ -312,11 +324,15 @@ export const postRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
           bookmarks: {
             where: {
               userId: currentUserId,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
             },
           },
         },
@@ -362,11 +378,15 @@ export const postRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
           bookmarks: {
             where: {
               userId: currentUserId,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
             },
           },
         },
@@ -635,11 +655,15 @@ export const postRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
           bookmarks: {
             where: {
               userId: currentUserId,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
             },
           },
         },
@@ -683,11 +707,15 @@ export const postRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
           bookmarks: {
             where: {
               userId: userId,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
             },
           },
         },
@@ -734,11 +762,15 @@ export const postRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
           bookmarks: {
             where: {
               userId: currentUserId,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
             },
           },
         },
