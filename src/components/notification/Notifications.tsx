@@ -1,8 +1,13 @@
 "use client";
 
-import { useMediaQuery } from "@mantine/hooks";
+import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
+import { RouterOutputs, trpc } from "@/lib/trpc";
+import { cn } from "@/lib/utils";
+import { useIntersection, useMediaQuery } from "@mantine/hooks";
 import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
-import { FC, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
+import { Icons } from "../Icons";
+import { Button } from "../ui/Button";
 import {
   Drawer,
   DrawerContent,
@@ -15,15 +20,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/DropdownMenu";
-import React from "react";
-import { cn } from "@/lib/utils";
-import { RouterOutputs, trpc } from "@/lib/trpc";
-import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
-import { Separator } from "../ui/Separator";
 import { ScrollArea } from "../ui/Scroll-Area";
+import { Separator } from "../ui/Separator";
 import NotificationCard, { NotificationCardSkeleton } from "./NotificationCard";
-import { Button } from "../ui/Button";
-import { Icons } from "../Icons";
 
 export type Notification =
   RouterOutputs["notification"]["getUnreadNotifications"]["notifications"][0];
@@ -45,23 +44,11 @@ const NotificationsDropdown: FC<NotificationsProps> = () => {
 
   const { data: unreadCount } = trpc.notification.getUnreadCount.useQuery();
 
-  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    trpc.notification.getUnreadNotifications.useInfiniteQuery(
-      {
-        limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-      },
-      {
-        enabled: open,
-      },
-    );
-
   const { mutate: markAllAsRead, isLoading: isMarkingAllAsRead } =
     trpc.notification.markAllAsRead.useMutation();
 
-  const notifications = data?.pages.flatMap((page) => page.notifications) || [];
-
   return (
-    <DropdownMenu modal={false} onOpenChange={setOpen}>
+    <DropdownMenu modal={false} open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <NotificationTrigger unreadCount={unreadCount} />
       </DropdownMenuTrigger>
@@ -73,29 +60,16 @@ const NotificationsDropdown: FC<NotificationsProps> = () => {
       >
         <DropdownMenuLabel className="flex items-center justify-between px-4 py-2 text-base font-semibold text-default/80">
           Notifications
-          {!isLoading && unreadCount
-            ? unreadCount > 0 && (
-                <button
-                  className="text-xs text-subtle underline-offset-2 transition hover:underline disabled:opacity-50"
-                  onClick={() => markAllAsRead()}
-                  disabled={isMarkingAllAsRead}
-                >
-                  Mark all as read
-                </button>
-              )
-            : null}
+          <button
+            className="text-xs text-subtle underline-offset-2 transition hover:underline disabled:opacity-50"
+            onClick={() => markAllAsRead()}
+            disabled={isMarkingAllAsRead}
+          >
+            Mark all as read
+          </button>
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="my-0" />
-        <NotificationsContainer
-          isLoading={isLoading}
-          notifications={notifications}
-        />
-        {hasNextPage && (
-          <button onClick={() => hasNextPage && fetchNextPage()}>
-            Load More
-          </button>
-        )}
-        {isFetchingNextPage && <p>Loading...</p>}
+        <NotificationsContainer open={open} onClose={() => setOpen(false)} />
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -106,20 +80,8 @@ const NotificationsDrawer: FC<NotificationsProps> = () => {
 
   const { data: unreadCount } = trpc.notification.getUnreadCount.useQuery();
 
-  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    trpc.notification.getUnreadNotifications.useInfiniteQuery(
-      {
-        limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-      },
-      {
-        enabled: open,
-      },
-    );
-
   const { mutate: markAllAsRead, isLoading: isMarkingAllAsRead } =
     trpc.notification.markAllAsRead.useMutation();
-
-  const notifications = data?.pages.flatMap((page) => page.notifications) || [];
 
   return (
     <Drawer
@@ -140,29 +102,16 @@ const NotificationsDrawer: FC<NotificationsProps> = () => {
       <DrawerContent className="h-[65vh] text-sm">
         <DrawerHeader className="flex items-center justify-between px-4 py-2 text-base font-semibold text-default/80">
           Notifications
-          {!isLoading && unreadCount
-            ? unreadCount > 0 && (
-                <button
-                  className="text-xs text-subtle underline-offset-2 transition hover:underline disabled:opacity-50"
-                  onClick={() => markAllAsRead()}
-                  disabled={isMarkingAllAsRead}
-                >
-                  Mark all as read
-                </button>
-              )
-            : null}
+          <button
+            className="text-xs text-subtle underline-offset-2 transition hover:underline disabled:opacity-50"
+            onClick={() => markAllAsRead()}
+            disabled={isMarkingAllAsRead}
+          >
+            Mark all as read
+          </button>
         </DrawerHeader>
         <Separator className="my-0" />
-        <NotificationsContainer
-          isLoading={isLoading}
-          notifications={notifications}
-        />
-        {hasNextPage && (
-          <button onClick={() => hasNextPage && fetchNextPage()}>
-            Load More
-          </button>
-        )}
-        {isFetchingNextPage && <p>Loading...</p>}
+        <NotificationsContainer open={open} onClose={() => setOpen(false)} />
       </DrawerContent>
     </Drawer>
   );
@@ -197,41 +146,92 @@ const NotificationTrigger = React.forwardRef<
 NotificationTrigger.displayName = "NotificationTrigger";
 
 interface NotificationsContainerProps {
-  notifications: Notification[];
-  isLoading: boolean;
+  open: boolean;
+  onClose: () => void;
 }
 
 const NotificationsContainer: FC<NotificationsContainerProps> = ({
-  notifications,
-  isLoading,
+  open,
+  onClose,
 }) => {
+  const lastNotificationRef = useRef<HTMLElement>(null);
+  const { ref, entry } = useIntersection({
+    root: lastNotificationRef.current,
+    threshold: 0.1,
+  });
+
+  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
+    trpc.notification.getUnreadNotifications.useInfiniteQuery(
+      {
+        limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+      },
+      {
+        enabled: open,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+      },
+    );
+
   const { mutate: markAsRead, isLoading: isMarkingAsRead } =
     trpc.notification.markAsRead.useMutation();
 
+  useEffect(() => {
+    if (hasNextPage && entry?.isIntersecting) {
+      fetchNextPage();
+    }
+  }, [entry, fetchNextPage, isLoading, hasNextPage]);
+
+  const notifications = data?.pages.flatMap((page) => page.notifications) || [];
+
   return (
-    <ScrollArea className="relative flex h-full min-h-40 w-full flex-col gap-2 lg:h-80">
-      {isLoading ? (
-        Array.from({ length: 4 }, () => "").map((_, index) => (
-          <div key={index}>
-            <NotificationCardSkeleton key={index} />
-            <Separator className="my-0" />
-          </div>
-        ))
-      ) : notifications.length === 0 ? (
-        <NoNotifications />
-      ) : (
-        notifications.map((notification) => (
-          <div
-            key={notification.id}
-            onClick={() =>
-              !isMarkingAsRead && markAsRead({ id: notification.id })
+    <ScrollArea className="relative h-full min-h-40 w-full lg:h-80">
+      <ul>
+        {isLoading ? (
+          Array.from({ length: 4 }, () => "").map((_, index) => (
+            <li key={`notification-card-skeleton-${index}`}>
+              <NotificationCardSkeleton key={index} />
+              <Separator className="my-0" />
+            </li>
+          ))
+        ) : notifications.length === 0 ? (
+          <NoNotifications />
+        ) : (
+          notifications.map((notification, index) => {
+            if (index === notifications.length - 1) {
+              return (
+                <li
+                  key={notification.id}
+                  onClick={() => {
+                    !isMarkingAsRead && markAsRead({ id: notification.id });
+                    onClose();
+                  }}
+                  ref={ref}
+                >
+                  <NotificationCard notification={notification} />
+                  <Separator className="my-0" />
+                </li>
+              );
             }
-          >
-            <NotificationCard notification={notification} />
-            <Separator className="my-0" />
-          </div>
-        ))
-      )}
+
+            return (
+              <li
+                key={notification.id}
+                onClick={() => {
+                  !isMarkingAsRead && markAsRead({ id: notification.id });
+                  onClose();
+                }}
+              >
+                <NotificationCard notification={notification} />
+                <Separator className="my-0" />
+              </li>
+            );
+          })
+        )}
+        {isFetchingNextPage && (
+          <li>
+            <NotificationCardSkeleton />
+          </li>
+        )}
+      </ul>
     </ScrollArea>
   );
 };
