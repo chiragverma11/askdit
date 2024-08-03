@@ -135,7 +135,7 @@ const NotificationTrigger = React.forwardRef<
     >
       <Icons.notification className="h-5 w-5" strokeWidth={2.25} />
       {unreadCount ? (
-        <span className="absolute right-1 top-1 flex h-[0.9rem] w-[0.9rem] items-center justify-center rounded-full bg-brand-default text-xxs animate-in zoom-in">
+        <span className="absolute right-1 top-1 flex h-[0.9rem] w-[0.9rem] items-center justify-center rounded-full bg-brand-default text-xxs text-white animate-in zoom-in">
           {unreadCount > 99 ? "99+" : unreadCount}
         </span>
       ) : null}
