@@ -27,6 +27,7 @@ const Communities: FC<CommunitiesProps> = ({ session, explore }) => {
   return (
     <div className="flex flex-col gap-5">
       <HorizontalMenu
+        className="h-8 lg:overflow-x-visible"
         menuId="_communitiesMenu"
         items={communitiesMenus.map((menuName) => ({
           name: menuName,
