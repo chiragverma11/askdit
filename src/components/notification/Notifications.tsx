@@ -161,7 +161,7 @@ const NotificationsContainer: FC<NotificationsContainerProps> = ({
   });
 
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    trpc.notification.getUnreadNotifications.useInfiniteQuery(
+    trpc.notification.getNotifications.useInfiniteQuery(
       {
         limit: INFINITE_SCROLL_PAGINATION_RESULTS,
       },

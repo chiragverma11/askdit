@@ -15,7 +15,7 @@ export const notificationRouter = router({
 
     return count;
   }),
-  getUnreadNotifications: protectedProcedure
+  getNotifications: protectedProcedure
     .input(
       z.object({
         limit: z.number().min(1),
@@ -35,7 +35,6 @@ export const notificationRouter = router({
         cursor: cursor ? { id: cursor } : undefined,
         where: {
           userId: user.id,
-          // read: false,
         },
         orderBy: {
           createdAt: "desc",
