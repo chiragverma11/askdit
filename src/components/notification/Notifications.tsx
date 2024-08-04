@@ -25,7 +25,7 @@ import { Separator } from "../ui/Separator";
 import NotificationCard, { NotificationCardSkeleton } from "./NotificationCard";
 
 export type Notification =
-  RouterOutputs["notification"]["getUnreadNotifications"]["notifications"][0];
+  RouterOutputs["notification"]["getNotifications"]["notifications"][0];
 
 interface NotificationsProps {}
 
