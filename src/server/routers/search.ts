@@ -135,8 +135,12 @@ export const searchRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
         },
       });
 
@@ -227,7 +231,7 @@ export const searchRouter = router({
             contains: query,
             mode: "insensitive",
           },
-          deleted: false
+          deleted: false,
         },
         orderBy: {
           createdAt: "desc",

@@ -6,7 +6,6 @@ import { cn, formatTimeToNow } from "@/lib/utils";
 import { FeedViewType } from "@/types/utilities";
 import {
   Bookmark,
-  Comment,
   Post as PrismaPost,
   Subreddit,
   User,
@@ -33,8 +32,10 @@ interface PostProps extends React.ComponentPropsWithoutRef<"div"> {
     author: User;
     votes: Vote[];
     subreddit: Subreddit;
-    comments: Comment[];
     bookmarks?: Bookmark[];
+    _count: {
+      comments: number;
+    };
   };
   variant?: FeedViewType;
   isCommunity?: boolean;
@@ -44,9 +45,15 @@ interface PostProps extends React.ComponentPropsWithoutRef<"div"> {
   isLoggedIn: boolean;
   isAuthor: boolean;
   pathName: string;
+  inPostPage?: boolean;
 }
 
-const Post = ({ variant = "card", ...props }: PostProps) => {
+const Post = ({
+  variant = "card",
+  inPostPage = false,
+  ...restProps
+}: PostProps) => {
+  const props = { ...restProps, inPostPage };
   if (variant === "card") {
     return <CardVariantPost {...props} />;
   } else if (variant === "compact") {
@@ -55,13 +62,7 @@ const Post = ({ variant = "card", ...props }: PostProps) => {
 };
 
 interface PostVariantProps extends React.ComponentPropsWithoutRef<"div"> {
-  post: PrismaPost & {
-    author: User;
-    votes: Vote[];
-    subreddit: Subreddit;
-    comments: Comment[];
-    bookmarks?: Bookmark[];
-  };
+  post: PostProps["post"];
   isCommunity?: boolean;
   votesAmt: number;
   currentVoteType?: VoteType;
@@ -69,6 +70,7 @@ interface PostVariantProps extends React.ComponentPropsWithoutRef<"div"> {
   isLoggedIn: boolean;
   isAuthor: boolean;
   pathName: string;
+  inPostPage: boolean;
 }
 
 const CardVariantPost: FC<PostVariantProps> = ({
@@ -81,6 +83,7 @@ const CardVariantPost: FC<PostVariantProps> = ({
   isAuthor,
   className,
   pathName,
+  inPostPage,
   ...props
 }) => {
   const redirectUrl = `/r/${post.subreddit.name}/post/${post.id}`;
@@ -90,6 +93,9 @@ const CardVariantPost: FC<PostVariantProps> = ({
       className={cn(
         "relative mx-auto flex w-full flex-col gap-2 border-b border-t border-default/25 bg-emphasis px-4 py-3 text-sm md:rounded-3xl md:border lg:p-4",
         !noRedirect ? "lg:hover:border-default/60" : null,
+        post.isQuestion
+          ? "overflow-hidden after:pointer-events-none after:absolute after:-right-4 after:-top-2 after:text-8xl after:font-semibold after:text-subtle/50 after:blur-[1.5px] after:content-['?']"
+          : null,
         className,
       )}
       {...props}
@@ -111,9 +117,9 @@ const CardVariantPost: FC<PostVariantProps> = ({
                 className="aspect-square h-6 w-6"
               />
             </Link>
-            <div className="flex items-center">
+            <div className="flex items-center text-xs">
               <Link href={`/u/${post.author.username}`} prefetch={false}>
-                <span className="text-sm font-semibold text-default/90 hover:underline dark:hover:text-red-100">{`u/${post.author.username}`}</span>
+                <span className="font-semibold text-default/90 hover:underline dark:hover:text-red-100">{`u/${post.author.username}`}</span>
               </Link>
               <div className="flex items-center text-subtle">
                 <Icons.dot className="h-4 w-4" strokeWidth={4} />
@@ -129,7 +135,7 @@ const CardVariantPost: FC<PostVariantProps> = ({
                 image={post.subreddit.image}
               />
             </Link>
-            <div className="flex flex-col text-xs ">
+            <div className="flex flex-col text-xs">
               <div className="flex items-center">
                 <Link href={`/r/${post.subreddit.name}`} prefetch={false}>
                   <span className="font-bold text-default/90 hover:underline dark:hover:text-red-100">{`r/${post.subreddit.name}`}</span>
@@ -152,6 +158,21 @@ const CardVariantPost: FC<PostVariantProps> = ({
           </div>
         )}
       </div>
+      {post.isQuestion && (
+        <span
+          className={cn(
+            "flex w-fit items-center rounded-lg border px-2 py-1 text-xs font-semibold",
+            post.isAnswered
+              ? "border-green-600/50 bg-green-700/20"
+              : "border-red-600/50 bg-red-700/20",
+          )}
+        >
+          {post.isAnswered ? (
+            <Icons.check className="mr-1 h-4 w-4 font-bold text-green-600" />
+          ) : null}
+          {post.isAnswered ? "Answered" : "Unanswered"}
+        </span>
+      )}
       <div>
         <p
           className={cn(
@@ -170,7 +191,7 @@ const CardVariantPost: FC<PostVariantProps> = ({
             : "prose-a:text-inherit",
         )}
       >
-        <PostContent post={post} />
+        <PostContent post={post} inPostPage={inPostPage} />
       </div>
       <div className="flex items-center gap-2 text-xs font-semibold text-subtle dark:text-zinc-400">
         <PostVote
@@ -182,11 +203,18 @@ const CardVariantPost: FC<PostVariantProps> = ({
         />
         <CommentButton
           className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 hover:bg-highlight/40 dark:hover:bg-highlight/60"
-          commentsLength={post.comments.length}
+          commentsLength={post._count.comments}
           noRedirect={noRedirect}
           redirectUrl={redirectUrl}
         />
-        <ShareButton type={"post"} post={post} />
+        <ShareButton
+          type={"post"}
+          post={{
+            id: post.id,
+            title: post.title,
+            subredditName: post.subreddit.name,
+          }}
+        />
         {isLoggedIn ? (
           <MoreOptions
             type="post"
@@ -251,6 +279,7 @@ const CompactVariantPost: FC<PostVariantProps> = ({
   isAuthor,
   className,
   pathName,
+  inPostPage,
   ...props
 }) => {
   const [showContent, setShowContent] = useState(false);
@@ -261,6 +290,9 @@ const CompactVariantPost: FC<PostVariantProps> = ({
     <div
       className={cn(
         "relative mx-auto flex w-full flex-col gap-2 border-b border-t border-default/25 bg-emphasis px-4 py-3 text-sm md:rounded-lg md:border lg:p-3",
+        post.isQuestion
+          ? "overflow-hidden after:pointer-events-none after:absolute after:-right-4 after:-top-2 after:text-8xl after:font-semibold after:text-subtle/50 after:blur-[1.5px] after:content-['?']"
+          : null,
         !noRedirect ? "lg:hover:border-default/60" : null,
         className,
       )}
@@ -307,7 +339,7 @@ const CompactVariantPost: FC<PostVariantProps> = ({
               </div>
             ) : (
               <div className="z-[1] inline-flex items-center gap-2 rounded-lg">
-                <div className="flex flex-col text-xs ">
+                <div className="flex flex-col text-xs">
                   <div className="flex items-center">
                     <Link href={`/r/${post.subreddit.name}`} prefetch={false}>
                       <span className="font-bold text-default/90 hover:underline dark:hover:text-red-100">{`r/${post.subreddit.name}`}</span>
@@ -333,6 +365,21 @@ const CompactVariantPost: FC<PostVariantProps> = ({
           </div>
         </div>
       </div>
+      {post.isQuestion && (
+        <span
+          className={cn(
+            "flex w-fit items-center rounded-lg border px-2 py-1 text-xs font-semibold",
+            post.isAnswered
+              ? "border-green-600/50 bg-green-700/20"
+              : "border-red-600/50 bg-red-700/20",
+          )}
+        >
+          {post.isAnswered ? (
+            <Icons.check className="mr-1 h-4 w-4 font-bold text-green-600" />
+          ) : null}
+          {post.isAnswered ? "Answered" : "Unanswered"}
+        </span>
+      )}
       <div
         className={cn(
           "prose prose-stone min-w-full text-sm dark:prose-invert prose-a:relative prose-a:z-[1] prose-img:m-auto",
@@ -341,7 +388,7 @@ const CompactVariantPost: FC<PostVariantProps> = ({
             : "prose-a:text-inherit",
         )}
       >
-        {showContent && <PostContent post={post} />}
+        {showContent && <PostContent post={post} inPostPage={inPostPage} />}
       </div>
       <div className="flex items-center gap-2 text-xs font-semibold text-subtle dark:text-zinc-400">
         <PostVote
@@ -353,11 +400,18 @@ const CompactVariantPost: FC<PostVariantProps> = ({
         />
         <CommentButton
           className="z-[1] inline-flex cursor-pointer items-center gap-1 rounded-3xl bg-subtle px-3 py-2 hover:bg-highlight/40 dark:hover:bg-highlight/60"
-          commentsLength={post.comments.length}
+          commentsLength={post._count.comments}
           noRedirect={noRedirect}
           redirectUrl={redirectUrl}
         />
-        <ShareButton type={"post"} post={post} />
+        <ShareButton
+          type={"post"}
+          post={{
+            id: post.id,
+            title: post.title,
+            subredditName: post.subreddit.name,
+          }}
+        />
         {isLoggedIn ? (
           <MoreOptions
             type="post"
@@ -446,11 +500,12 @@ const CompactVariantShowHideButton: FC<CompactVariantShowHideButtonProps> = ({
 
 interface PostContentProps {
   post: PostProps["post"];
+  inPostPage: boolean;
 }
 
-const PostContent: FC<PostContentProps> = ({ post }) => {
+const PostContent: FC<PostContentProps> = ({ post, inPostPage }) => {
   if (post.type === "POST") {
-    return <EditorOutput content={post.content} />;
+    return <EditorOutput content={post.content} limitHeight={!inPostPage} />;
   }
 
   if (post.type === "LINK") {

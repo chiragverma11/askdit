@@ -23,7 +23,7 @@ export const bookmarkRouter = router({
       if (user?.id !== userId) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "You can only view your own bookmarks",
+          message: "You are not allowed to access this resource",
         });
       }
 
@@ -39,7 +39,11 @@ export const bookmarkRouter = router({
             include: {
               author: true,
               votes: true,
-              comments: true,
+              _count: {
+                select: {
+                  comments: true,
+                },
+              },
               subreddit: true,
             },
           },

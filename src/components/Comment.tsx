@@ -7,12 +7,20 @@ import { User } from "next-auth";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { FC, useState } from "react";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import { toast } from "sonner";
 import AddReply from "./AddReply";
 import CommentVote from "./CommentVote";
 import { Icons } from "./Icons";
 import MoreOptions from "./MoreOptions";
 import ShareButton from "./ShareButton";
 import UserAvatar from "./UserAvatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/Tooltip";
 
 type InfinitePostCommentsOutput = RouterOutputs["comment"]["infiniteComments"];
 
@@ -27,6 +35,8 @@ interface CommentProps extends React.ComponentPropsWithoutRef<"div"> {
   pathName: string;
   level: number;
   highlightReplyId?: string;
+  isQuestionPost: boolean;
+  isPostAuthor: boolean;
 }
 
 const Comment: FC<CommentProps> = ({
@@ -38,6 +48,8 @@ const Comment: FC<CommentProps> = ({
   className,
   level,
   highlightReplyId,
+  isQuestionPost,
+  isPostAuthor,
 }) => {
   const [isReplying, setIsReplying] = useState(false);
   const [replies, setReplies] = useState(comment.replies ?? []);
@@ -56,6 +68,11 @@ const Comment: FC<CommentProps> = ({
     onSuccess: (data) => {
       setSkip((prevSkip) => prevSkip + data.comments.length);
       setReplies((prevReplies) => [...prevReplies, ...data.comments]);
+    },
+    onError: (error) => {
+      toast.error("Failed to get more replies", {
+        description: error.message,
+      });
     },
   });
 
@@ -172,8 +189,28 @@ const Comment: FC<CommentProps> = ({
                       pathName={pathName}
                       isAuthor={comment.authorId === user?.id}
                       onCommentDelete={deleteComment}
+                      isQuestionPost={isQuestionPost}
+                      isPostAuthor={isPostAuthor}
+                      acceptedAnswer={comment.acceptedAnswer}
+                      level={level}
                     />
                   ) : null}
+                  {comment.acceptedAnswer && (
+                    <TooltipProvider delayDuration={200}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Icons.acceptedAnswer className="ml-1 h-4 w-4 font-bold text-green-600" />
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side="bottom"
+                          className="px-2 py-1 text-xs"
+                          sideOffset={7}
+                        >
+                          <p>Accepted Answer</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
                 </div>
               </>
             ) : null}
@@ -217,13 +254,15 @@ const Comment: FC<CommentProps> = ({
                           : "",
                       )}
                       highlightReplyId={highlightReplyId}
+                      isQuestionPost={isQuestionPost}
+                      isPostAuthor={isPostAuthor}
                     />
                   </div>
                 );
               })
             ) : (
               <Link
-                href={`${pathName}/comment/${comment.id}`}
+                href={`${pathName.split("/").slice(0, 5).join("/")}/comment/${comment.id}`}
                 className="-ml-1 w-full cursor-pointer text-xs font-semibold text-blue-500 hover:underline dark:text-blue-400"
               >
                 Continue this thread...
@@ -269,6 +308,59 @@ const ReplyButton: FC<ReplyButtonProps> = ({ onClick }) => {
       <Icons.message className="h-5 w-5" />
       <span className="hidden lg:inline">Reply</span>
     </span>
+  );
+};
+
+export const CommentSkeleton = ({
+  disableAnimation = false,
+}: {
+  disableAnimation?: boolean;
+}) => {
+  return (
+    <SkeletonTheme
+      baseColor="var(--skeleton-base)"
+      highlightColor="var(--skeleton-highlight)"
+      duration={2}
+      inline={false}
+      enableAnimation={!disableAnimation}
+    >
+      <div className="flex w-full flex-col text-xs md:rounded-lg">
+        <div className="relative p-2 md:rounded-b-lg">
+          <div className="flex items-center gap-1.5">
+            <Skeleton className="aspect-square h-7 w-7" circle={true} />
+            <div className="flex items-center text-xs">
+              <Skeleton className="font-semibold" width={"10rem"} />
+            </div>
+          </div>
+          <div className="pl-3 pt-2">
+            <div className="flex w-full flex-col gap-2 border-l-2 border-default/60 pl-5">
+              <div className="flex flex-col gap-1">
+                <Skeleton className="text-sm" width={"50%"} />
+                <Skeleton className="text-sm" width={"70%"} />
+              </div>
+
+              <div className="-ml-1.5 flex items-center gap-2 text-xs font-semibold text-subtle dark:text-zinc-400">
+                <Skeleton
+                  className="py-1"
+                  width={"4.5rem"}
+                  borderRadius={"0.4rem"}
+                />
+                <Skeleton
+                  className="py-1"
+                  width={"4.5rem"}
+                  borderRadius={"0.4rem"}
+                />
+                <Skeleton
+                  className="py-1"
+                  width={"2.5rem"}
+                  borderRadius={"0.4rem"}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </SkeletonTheme>
   );
 };
 

@@ -19,6 +19,7 @@ import SubmitPostTitle from "./SubmitPostTitle";
 
 interface CreateEditorPostProps {
   communityId: string | undefined;
+  isQuestion: boolean;
   className?: string;
 }
 
@@ -26,6 +27,7 @@ type FormData = z.infer<typeof PostValidator>;
 
 const CreateEditorPost: FC<CreateEditorPostProps> = ({
   communityId,
+  isQuestion,
   className,
 }) => {
   const _titleRef = useRef<HTMLTextAreaElement | null>(null);
@@ -45,6 +47,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
       communityId,
       type: postType,
       storageUsed: 0,
+      isQuestion: isQuestion,
     },
   });
 
@@ -60,6 +63,11 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
           .join("/");
         toast.success("Your post has been created successfully.");
         router.push(newPathname);
+      },
+      onError(error) {
+        toast.error("Failed to create post", {
+          description: error.message,
+        });
       },
     });
 
@@ -96,6 +104,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
             _titleRef={_titleRef}
             submitButtonRef={submitButtonRef}
             disabled={disabled}
+            placeholder={isQuestion ? "Ask here" : "Title"}
           />
           <div className="min-h-[215px]">
             <AnimatePresence>

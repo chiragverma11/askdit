@@ -26,9 +26,9 @@ import {
 import { COMMUNITY_NAME_REGEX } from "@/lib/config";
 import { trpc } from "@/lib/trpc";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import AuthLink from "./AuthLink";
 import { Icons } from "./Icons";
-import { toast } from "sonner";
 
 const createCommunityFormSchema = z.object({
   communityName: z.string().regex(COMMUNITY_NAME_REGEX, {
@@ -60,10 +60,11 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
         if (error.data?.httpStatus === 401) {
           toast.error("Can't create community", {
             description: "Login to create community.",
-            action: {
-              label: <AuthLink href="/sign-in">Login</AuthLink>,
-              onClick: () => toast.dismiss(),
-            },
+            action: (
+              <AuthLink href="/sign-in" onClick={() => toast.dismiss()}>
+                Login
+              </AuthLink>
+            ),
           });
         } else if (error.data?.httpStatus === 409) {
           toast.error("Can't create community.", {
@@ -73,7 +74,7 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
           });
         } else {
           toast.error("Uh oh! Something went wrong.", {
-            description: "Please try again later.",
+            description: error.message || "Please try again later.",
           });
         }
       },

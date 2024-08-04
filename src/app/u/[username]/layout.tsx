@@ -8,12 +8,14 @@ import UserInfoMobile from "@/components/user/UserInfoMobile";
 import UserModeratorsCard, {
   UserModeratorCardSkeleton,
 } from "@/components/user/UserModeratorCard";
-import UserNotFound from "@/components/user/UserNotFound";
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getUserInfo } from "@/lib/prismaQueries";
+import { absoluteUrl } from "@/lib/utils";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import NotFound from "./not-found";
 
 interface UserLayoutProps {
   children: React.ReactNode;
@@ -29,7 +31,10 @@ export async function generateMetadata({
 
   const user = await db.user.findFirst({
     where: {
-      username,
+      username: {
+        equals: username,
+        mode: "insensitive",
+      },
     },
     select: {
       name: true,
@@ -42,8 +47,18 @@ export async function generateMetadata({
     };
   }
 
+  const title = `${user.name} (u/${username})`;
   return {
-    title: `${user.name} (u/${username})`,
+    title,
+    openGraph: {
+      title,
+      url: absoluteUrl(`/u/${username}`),
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+    },
   };
 }
 
@@ -55,7 +70,12 @@ export default async function UserLayout({
   const userInfo = await getUserInfo({ username });
 
   if (!userInfo) {
-    return <UserNotFound />;
+    return NotFound();
+  }
+
+  // Redirect if username's case in params is not same as in db
+  if (username !== userInfo.username) {
+    redirect(`/u/${userInfo.username}`);
   }
 
   const session = await getAuthSession();
@@ -63,10 +83,7 @@ export default async function UserLayout({
   return (
     <MainContentWrapper>
       <FeedWrapper>
-        <UserInfoMobile
-          session={session}
-          userInfo={{ username, ...userInfo }}
-        />
+        <UserInfoMobile session={session} userInfo={{ ...userInfo }} />
         <UserFeedSelector
           isUserSelf={session?.user.id === userInfo?.id}
           username={username}
@@ -75,7 +92,7 @@ export default async function UserLayout({
         {children}
       </FeedWrapper>
       <SideMenuWrapper className="sticky top-[72px] h-fit justify-start">
-        <UserInfoCard session={session} userInfo={{ username, ...userInfo }} />
+        <UserInfoCard session={session} userInfo={{ ...userInfo }} />
         <Suspense
           fallback={
             <UserModeratorCardSkeleton

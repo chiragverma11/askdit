@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { VoteType } from "@prisma/client";
 import { FC, HTMLAttributes, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Icons } from "./Icons";
 
 interface CommentVoteProps extends HTMLAttributes<HTMLSpanElement> {
@@ -47,9 +48,13 @@ const CommentVote: FC<CommentVoteProps> = ({
         }
       }
     },
-    onError: () => {
+    onError: (error) => {
       setVotesAmt(initialVotesAmt);
       setCurrentVoteType(initialVoteType);
+      toast.error("Failed to vote comment", {
+        description:
+          error.message || "Something went wrong. Please try again later.",
+      });
     },
   });
 
@@ -91,8 +96,8 @@ const CommentVote: FC<CommentVoteProps> = ({
             currentVoteType === "UP"
               ? "text-red-500"
               : currentVoteType === "DOWN"
-              ? "text-indigo-500"
-              : "text-inherit",
+                ? "text-indigo-500"
+                : "text-inherit",
           )}
         >
           {votesAmt}

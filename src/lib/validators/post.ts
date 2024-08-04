@@ -21,6 +21,7 @@ export const PostValidator = z.object({
   communityId: z.string(),
   type: z.nativeEnum(PostType),
   storageUsed: z.number(),
+  isQuestion: z.boolean(),
 });
 
 export const PostLinkValidator = z.object({
@@ -40,6 +41,7 @@ export const PostLinkValidator = z.object({
   communityId: z.string(),
   type: z.nativeEnum(PostType),
   storageUsed: z.number().default(0),
+  isQuestion: z.boolean(),
 });
 
 export const MediaPostValidator = z.object({
@@ -65,6 +67,7 @@ export const MediaPostValidator = z.object({
   communityId: z.string(),
   type: z.nativeEnum(PostType).default("MEDIA"),
   storageUsed: z.number(),
+  isQuestion: z.boolean(),
 });
 
 export const PostVoteValidator = z.object({

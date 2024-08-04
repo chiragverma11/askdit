@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { VoteType } from "@prisma/client";
 import { FC, HTMLAttributes, useEffect, useState } from "react";
+import { toast } from "sonner";
 import AuthLink from "./AuthLink";
 import { Icons } from "./Icons";
 
@@ -35,29 +36,26 @@ const PostVote: FC<PostVoteProps> = ({
       if (currentVoteType === voteType) {
         setCurrentVoteType(undefined);
         if (voteType === "UP") {
-          console.log("first");
           setVotesAmt((prev) => prev - 1);
         } else if (voteType === "DOWN") {
-          console.log("second");
-
           setVotesAmt((prev) => prev + 1);
         }
       } else {
         setCurrentVoteType(voteType);
         if (voteType === "UP") {
-          console.log("third");
-
           setVotesAmt((prev) => prev + (currentVoteType ? 2 : 1));
         } else if (voteType === "DOWN") {
-          console.log("fourth");
-
           setVotesAmt((prev) => prev - (currentVoteType ? 2 : 1));
         }
       }
     },
-    onError: () => {
+    onError: (error) => {
       setVotesAmt(initialVotesAmt);
       setCurrentVoteType(initialVoteType);
+      toast.error("Failed to vote post", {
+        description:
+          error.message || "Something went wrong. Please try again later.",
+      });
     },
   });
 
@@ -112,8 +110,8 @@ const PostVote: FC<PostVoteProps> = ({
             currentVoteType === "UP"
               ? "text-red-500"
               : currentVoteType === "DOWN"
-              ? "text-indigo-500"
-              : "text-inherit",
+                ? "text-indigo-500"
+                : "text-inherit",
           )}
         >
           {votesAmt}

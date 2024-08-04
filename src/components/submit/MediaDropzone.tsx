@@ -53,15 +53,25 @@ const MediaDropzone: FC<MediaDropzoneProps> = ({ className }) => {
 
   const handleFileRejections = useCallback(
     (fileRejections: FileRejection[]) => {
-      console.log(fileRejections);
+      console.error("fileRejections", fileRejections);
 
       const canAcceptFiles = DROPZONE_MAX_FILES - files.length;
 
+      // Handle invalid file type rejections toast
+      if (
+        fileRejections.some((rejection) =>
+          rejection.errors?.some((error) => error.code === "file-invalid-type"),
+        )
+      ) {
+        toast.error("Invalid file type!", {
+          description: "Only images are allowed",
+        });
+      }
+
       // Handle file too large rejections toast
       if (
-        fileRejections.some(
-          (rejection) =>
-            rejection.errors?.some((error) => error.code === "file-too-large"),
+        fileRejections.some((rejection) =>
+          rejection.errors?.some((error) => error.code === "file-too-large"),
         )
       ) {
         toast.error("File too large!", {
@@ -71,9 +81,8 @@ const MediaDropzone: FC<MediaDropzoneProps> = ({ className }) => {
 
       // Handle too many files rejections toast
       if (
-        fileRejections.some(
-          (rejection) =>
-            rejection.errors?.some((error) => error.code === "too-many-files"),
+        fileRejections.some((rejection) =>
+          rejection.errors?.some((error) => error.code === "too-many-files"),
         )
       ) {
         toast.error("Too many files!", {

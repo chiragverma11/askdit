@@ -11,13 +11,22 @@ import UserComment, {
   UserCommentSkeleton,
 } from "./UserComment";
 
-interface UserCommentFeedProps {
+interface CommonUserCommentFeedProps {
   initialComments: UserComments;
   session: Session | null;
   authorId: string;
 }
 
-const UserCommentFeed: FC<UserCommentFeedProps> = ({
+interface UserCommentFeedProps extends CommonUserCommentFeedProps {
+  type: "userComment";
+}
+
+interface UserAnswerFeedProps extends CommonUserCommentFeedProps {
+  type: "userAnswer";
+}
+
+const UserCommentFeed: FC<UserCommentFeedProps | UserAnswerFeedProps> = ({
+  type,
   initialComments,
   session,
   authorId,
@@ -30,7 +39,7 @@ const UserCommentFeed: FC<UserCommentFeedProps> = ({
 
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteCommentFeed({
-      type: "userComment",
+      type: type,
       authorId,
       userId: session?.user.id,
     });

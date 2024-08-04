@@ -3,6 +3,7 @@ import {
   INFINITE_SCROLL_COMMENT_RESULTS,
 } from "@/lib/config";
 import { db } from "@/lib/db";
+import { updatePostIsAnswered } from "@/lib/prismaQueries";
 import {
   createHierarchicalCommentReplyToSelect,
   createHierarchicalRepliesInclude,
@@ -26,6 +27,21 @@ export const commentRouter = router({
       const { comment, postId } = opts.input;
       const { user } = opts.ctx;
 
+      const post = await db.post.findUnique({
+        where: {
+          id: postId,
+        },
+        select: {
+          id: true,
+          authorId: true,
+          isQuestion: true,
+        },
+      });
+
+      if (!post) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
+      }
+
       const newComment = await db.comment.create({
         data: {
           text: comment,
@@ -41,6 +57,20 @@ export const commentRouter = router({
           userId: user.id,
         },
       });
+
+      if (post.authorId !== newComment.authorId) {
+        if (newComment.id) {
+          await db.notification.create({
+            data: {
+              type: "COMMENT",
+              userId: post.authorId,
+              triggeredById: newComment.authorId,
+              postId: post.id,
+              commentId: newComment.id,
+            },
+          });
+        }
+      }
 
       return {
         commentId: newComment.id,
@@ -93,6 +123,7 @@ export const commentRouter = router({
         where: {
           postId,
           replyToId: null,
+          acceptedAnswer: false,
         },
       });
 
@@ -175,7 +206,10 @@ export const commentRouter = router({
       });
 
       if (!comment) {
-        return new Response("Comment not found", { status: 404 });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Comment not found",
+        });
       }
 
       if (existingVote) {
@@ -184,7 +218,10 @@ export const commentRouter = router({
             where: { userId_commentId: { commentId, userId: user.id } },
           });
 
-          return new Response("OK");
+          return {
+            success: true,
+            message: `Comment ${voteType === "UP" ? "upvoted" : "downvoted"} successfully`,
+          };
         }
 
         await db.commentVote.update({
@@ -199,7 +236,10 @@ export const commentRouter = router({
           },
         });
 
-        return new Response("OK");
+        return {
+          success: true,
+          message: `Comment ${voteType === "UP" ? "upvoted" : "downvoted"} successfully`,
+        };
       }
 
       await db.commentVote.create({
@@ -210,7 +250,10 @@ export const commentRouter = router({
         },
       });
 
-      return new Response("OK");
+      return {
+        success: true,
+        message: `Comment ${voteType === "UP" ? "upvoted" : "downvoted"} successfully`,
+      };
     }),
   addReply: protectedProcedure
     .input(AddReplyValidator)
@@ -294,6 +337,23 @@ export const commentRouter = router({
         });
       }
 
+      const replyTo = await db.comment.findUnique({ where: { id: replyToId } });
+
+      if (replyTo?.authorId !== newReply.authorId) {
+        if (replyTo?.authorId) {
+          // for reliability this should be done by another service using a message broker
+          await db.notification.create({
+            data: {
+              userId: replyTo?.authorId,
+              type: "REPLY",
+              triggeredById: newReply.authorId,
+              postId: newReply.postId,
+              commentId: newReply.id,
+            },
+          });
+        }
+      }
+
       return {
         comment: newReply,
         message: "Reply added successfully",
@@ -317,12 +377,16 @@ export const commentRouter = router({
       });
 
       if (!comment) {
-        return new Response("Comment not found", { status: 404 });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Comment not found",
+        });
       }
 
       if (user.id !== comment.authorId) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
+          message: "You are not authorized to delete this comment",
         });
       }
 
@@ -338,6 +402,7 @@ export const commentRouter = router({
             id: commentId,
           },
           data: {
+            text: "",
             deleted: true,
           },
         });
@@ -366,9 +431,16 @@ export const commentRouter = router({
             },
           });
         }
+      } else {
+        if (comment.acceptedAnswer) {
+          await updatePostIsAnswered(db, commentId, comment.postId);
+        }
       }
 
-      return new Response("OK");
+      return {
+        success: true,
+        message: "Comment deleted successfully",
+      };
     }),
   bookmark: protectedProcedure
     .input(CommentBookmarkValidator)
@@ -385,14 +457,20 @@ export const commentRouter = router({
         });
 
         if (!bookmark) {
-          return new Response("Bookmark not found", { status: 404 });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "You have not bookmarked this comment",
+          });
         }
 
         await db.bookmark.delete({
           where: { id: bookmark.id },
         });
 
-        return new Response("Bookmark removed", { status: 200 });
+        return {
+          success: true,
+          message: "Comment unsaved",
+        };
       }
 
       const comment = await db.comment.findUnique({
@@ -400,7 +478,10 @@ export const commentRouter = router({
       });
 
       if (!comment) {
-        return new Response("Comment not found", { status: 404 });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Comment not found",
+        });
       }
 
       await db.bookmark.create({
@@ -410,7 +491,10 @@ export const commentRouter = router({
         },
       });
 
-      return new Response("Bookmarked", { status: 200 });
+      return {
+        success: true,
+        message: "Comment saved",
+      };
     }),
   infiniteUserComments: publicProcedure
     .input(
@@ -455,6 +539,7 @@ export const commentRouter = router({
         where: {
           authorId,
           deleted: false,
+          acceptedAnswer: false,
         },
       });
 
@@ -484,8 +569,8 @@ export const commentRouter = router({
       let topContextParentCommentId: string | undefined = undefined;
       let repliesContext = context;
 
-      // If context is greator than 0, we need to get the top context parent comment id
-      if (context !== 0) {
+      // If context is greator than 0, we need to get the top available context parent comment id
+      if (context > 0) {
         const contextParents = await db.comment.findUnique({
           where: {
             id: commentId,
@@ -526,5 +611,168 @@ export const commentRouter = router({
       });
 
       return comment;
+    }),
+  markAnswer: protectedProcedure
+    .input(
+      z.object({
+        commentId: z.string(),
+      }),
+    )
+    .mutation(async (opts) => {
+      const { commentId } = opts.input;
+      const { user } = opts.ctx;
+
+      const comment = await db.comment.findUnique({
+        where: { id: commentId },
+        select: {
+          id: true,
+          acceptedAnswer: true,
+          post: {
+            select: {
+              id: true,
+              authorId: true,
+              isQuestion: true,
+            },
+          },
+        },
+      });
+
+      if (!comment) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Comment not found",
+        });
+      }
+
+      if (user.id !== comment.post.authorId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not allowed to perform this action",
+        });
+      }
+
+      await db.$transaction(async (tx) => {
+        await updatePostIsAnswered(tx, commentId, comment.post.id);
+
+        await tx.comment.update({
+          where: {
+            id: commentId,
+          },
+          data: {
+            acceptedAnswer: !comment.acceptedAnswer,
+          },
+        });
+      });
+
+      return {
+        success: true,
+        message: "Answer marked successfully",
+      };
+    }),
+  getAcceptedAnswerComments: publicProcedure
+    .input(
+      z.object({
+        postId: z.string(),
+        userId: z.string().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const { userId, postId } = input;
+
+      const hierarchicalReplies = createHierarchicalRepliesInclude({
+        level: 6,
+        userId,
+        take: COMMENT_MAX_REPLIES,
+      });
+
+      const comments = await db.comment.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          author: true,
+          votes: true,
+          _count: {
+            select: {
+              replies: true,
+            },
+          },
+          bookmarks: {
+            where: {
+              userId: userId,
+            },
+          },
+          replies: hierarchicalReplies,
+        },
+        where: {
+          postId,
+          replyToId: null,
+          acceptedAnswer: true,
+        },
+      });
+
+      return comments;
+    }),
+  infiniteUserAnswers: publicProcedure
+    .input(
+      z.object({
+        authorId: z.string(),
+        currentUserId: z.string().optional(),
+        limit: z.number().min(1),
+        cursor: z.string().nullish(),
+        skip: z.number().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const limit = input.limit ?? INFINITE_SCROLL_COMMENT_RESULTS;
+      const { skip, authorId, currentUserId, cursor } = input;
+
+      const comments = await db.comment.findMany({
+        take: limit + 1,
+        skip: skip,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          author: true,
+          votes: true,
+          bookmarks: {
+            where: {
+              userId: currentUserId,
+            },
+          },
+          post: {
+            select: {
+              subreddit: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        where: {
+          authorId,
+          deleted: false,
+          post: {
+            isQuestion: true,
+          },
+          replyToId: null,
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (comments.length > limit) {
+        const nextItem = comments.pop();
+        nextCursor = nextItem?.id;
+      }
+
+      return {
+        comments,
+        nextCursor,
+      };
     }),
 });

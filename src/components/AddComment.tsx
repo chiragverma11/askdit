@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FC } from "react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
+import { toast } from "sonner";
 import AuthLink from "./AuthLink";
 import { Icons } from "./Icons";
 import { Button, buttonVariants } from "./ui/Button";
@@ -18,11 +19,17 @@ interface AddCommentProps {
   postId: string;
   refetchComments: () => void;
   user?: any;
+  isQuestionPost: boolean;
 }
 
 const addCommentFormSchema = AddCommentValidator;
 
-const AddComment: FC<AddCommentProps> = ({ postId, refetchComments, user }) => {
+const AddComment: FC<AddCommentProps> = ({
+  postId,
+  refetchComments,
+  user,
+  isQuestionPost,
+}) => {
   const { handleSubmit, register, reset } = useForm<AddCommentRequestType>({
     resolver: zodResolver(addCommentFormSchema),
     defaultValues: {
@@ -41,6 +48,11 @@ const AddComment: FC<AddCommentProps> = ({ postId, refetchComments, user }) => {
           postId,
         });
         refetchComments();
+      },
+      onError(error) {
+        toast.error("Failed to add comment", {
+          description: error.message,
+        });
       },
     });
 
@@ -68,7 +80,7 @@ const AddComment: FC<AddCommentProps> = ({ postId, refetchComments, user }) => {
                 className="ml-auto h-7 self-end rounded-lg bg-zinc-700 px-4 text-sm font-semibold text-inverted hover:bg-zinc-600 dark:bg-zinc-300 dark:hover:bg-zinc-400"
                 isLoading={isLoading}
               >
-                Comment
+                {isQuestionPost ? "Answer" : "Comment"}
               </Button>
             </div>
           </form>

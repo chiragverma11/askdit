@@ -1,6 +1,6 @@
 import "../styles/globals.css";
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 
 import AsideBar from "@/components/AsideBar";
@@ -8,14 +8,63 @@ import Providers from "@/components/Providers";
 import SiteHeader from "@/components/SiteHeader";
 import BackgroundShade from "@/components/layout/BackgroundShade";
 import { Toaster } from "@/components/ui/Sonner";
+import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "hsl(0, 8% ,90%)" },
+    { media: "(prefers-color-scheme: dark)", color: "hsl(0, 0% ,10%)" },
+  ],
+  colorScheme: "dark light",
+};
+
 export const metadata: Metadata = {
-  title: { default: "Askdit", template: "%s | Askdit" },
-  description:
-    "Askdit is a network of communities where people can dive into their interests and ask questions. There's a community for whatever you're interested in on Askdit",
+  metadataBase: new URL(siteConfig.url),
+  title: { default: siteConfig.name, template: `%s | ${siteConfig.name}` },
+  description: siteConfig.description,
+  keywords: [
+    siteConfig.name,
+    "Next.js",
+    "React",
+    "TailwindCSS",
+    "Shadcn",
+    siteConfig.author.name,
+    "Reddit alternative",
+    "Ask questions",
+    "Share knowledge",
+  ],
+  authors: [{ name: siteConfig.author.name, url: siteConfig.author.github }],
+  creator: siteConfig.author.name,
+  openGraph: {
+    title: siteConfig.name,
+    description: siteConfig.description,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    locale: "en-US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    creator: siteConfig.author.twitter_username,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({

@@ -7,6 +7,12 @@ import Link from "next/link";
 import { FC } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import {
+  NoContent,
+  NoContentAction,
+  NoContentDescription,
+  NoContentTitle,
+} from "../NoContent";
 
 interface HaveContentProps {
   type: "loading" | "unauthenticated";
@@ -21,7 +27,7 @@ const CommunitiesFallback: FC<HaveContentProps | HaveNoContentProps> = (
   fallback,
 ) => {
   if (fallback.type === "nocontent") {
-    return <NoContent parent={fallback.parent} />;
+    return <NoCommunites parent={fallback.parent} />;
   } else if (fallback.type === "loading") {
     return <CommunitiesSkeleton />;
   } else {
@@ -63,44 +69,47 @@ const CommunitiesSkeleton = () => {
 
 const UnauthenticatedFallback = () => {
   return (
-    <div className="flex flex-col items-center gap-4 p-4">
-      <p className="text-default">Sign In to explore & Join Communities</p>
-      <AuthLink href="/sign-in" className={cn(buttonVariants({ size: "sm" }))}>
-        {" "}
-        Sign In
-      </AuthLink>
-    </div>
+    <NoContent>
+      <NoContentTitle>You are not signed in</NoContentTitle>
+      <NoContentDescription>
+        Sign In to explore & Join Communities
+      </NoContentDescription>
+      <NoContentAction href="/communities/create" asChild>
+        <AuthLink
+          href="/sign-in"
+          className={cn(buttonVariants({ size: "sm" }))}
+        >
+          Sign In
+        </AuthLink>
+      </NoContentAction>
+    </NoContent>
   );
 };
 
-const NoContent = ({
+const NoCommunites = ({
   parent,
 }: {
   parent: "YourCommunities" | "ExploreCommunities";
 }) => {
   if (parent === "YourCommunities") {
     return (
-      <div className="flex flex-col items-center gap-2 p-4">
-        <p className="text-default">
+      <NoContent>
+        <NoContentTitle className="text-base">
           You haven&apos;t joined any community yet
-        </p>
-        <p className="text-default">Click Explore to find communties</p>
-      </div>
+        </NoContentTitle>
+        <NoContentDescription>
+          Click Explore to join a community
+        </NoContentDescription>
+      </NoContent>
     );
   } else if (parent === "ExploreCommunities") {
     return (
-      <div className="flex flex-col items-center gap-4 p-4">
-        <p className="text-default">There are no commmunites to join.</p>
-        <Link
-          href="/communities/create"
-          className={cn(
-            buttonVariants({ size: "sm", variant: "outline" }),
-            "rounded-lg",
-          )}
-        >
-          Create One
-        </Link>
-      </div>
+      <NoContent>
+        <NoContentTitle className="text-base">
+          There are no commmunites to join.
+        </NoContentTitle>
+        <NoContentAction href="/communities/create">Create One</NoContentAction>
+      </NoContent>
     );
   }
 };

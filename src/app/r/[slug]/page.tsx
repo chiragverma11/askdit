@@ -1,17 +1,31 @@
+import CommunityDescription from "@/components/CommunityDescription";
 import CommunityInfoCard from "@/components/CommunityInfoCard";
 import CommunityModeratorsCard from "@/components/CommunityModeratorsCard";
 import FeedFilterOptions from "@/components/FeedFilterOptions";
+import {
+  NoContent,
+  NoContentAction,
+  NoContentDescription,
+  NoContentTitle,
+} from "@/components/NoContent";
 import PostFeed from "@/components/PostFeed";
 import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
 import CommunityImage from "@/components/community/CommunityImage";
+import CommunityInfoMobile from "@/components/community/CommunityInfoMobile";
 import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import SideMenuWrapper from "@/components/layout/SideMenuWrapper";
 import { getAuthSession } from "@/lib/auth";
-import { getCommunity, getCreator, getSubscription } from "@/lib/prismaQueries";
+import {
+  getCommunity,
+  getCommunityMetadata,
+  getCreator,
+  getSubscription,
+} from "@/lib/prismaQueries";
+import { absoluteUrl } from "@/lib/utils";
 import { Metadata } from "next";
 import { Session } from "next-auth";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { FC } from "react";
 
 interface SubredditPageProps {
@@ -26,8 +40,29 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const communityName = params.slug;
+  const community = await getCommunityMetadata({ name: communityName });
 
-  return { title: communityName };
+  if (!community) {
+    return {
+      title: "Community not found",
+    };
+  }
+
+  return {
+    title: { absolute: community.name },
+    description: community.description,
+    openGraph: {
+      title: { absolute: community.name },
+      description: community.description || undefined,
+      url: absoluteUrl(`/r/${community.name}`),
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: { absolute: community.name },
+      description: community.description || undefined,
+    },
+  };
 }
 
 const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
@@ -46,11 +81,18 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
 
   const isSubscribed = !!subscription;
 
-  const creator = community?.creatorId
+  if (!community) {
+    return notFound();
+  }
+
+  const creator = community.creatorId
     ? await getCreator({ creatorId: community.creatorId })
     : null;
 
-  if (!community) return notFound();
+  // Redirect if communityName's case in params is not same as in db
+  if (slug !== community.name) {
+    redirect(`/r/${community.name}`);
+  }
 
   const initialPosts = community.posts;
 
@@ -62,13 +104,46 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
           session={session}
           community={community}
         />
-        <FeedFilterOptions />
-        <PostFeed
-          type="communityPost"
-          initialPosts={initialPosts}
-          communityName={slug}
-          userId={session?.user.id}
+        <CommunityInfoMobile
+          communityInfo={{
+            id: community.id,
+            name: community.name,
+            image: community.image,
+            description: community.description,
+            creatorId: community.creatorId,
+            createdAt: community.createdAt,
+            moderators: creator?.username
+              ? [
+                  {
+                    name: creator.name,
+                    username: creator.username,
+                    image: creator.image,
+                  },
+                ]
+              : [],
+          }}
         />
+        <FeedFilterOptions />
+        {initialPosts.length === 0 ? (
+          <NoContent>
+            <NoContentTitle>
+              This community doesn&apos;t have any posts yet
+            </NoContentTitle>
+            <NoContentDescription>
+              Make a post to get this feed started
+            </NoContentDescription>
+            <NoContentAction href={`/r/${community.name}/submit`}>
+              Create Post
+            </NoContentAction>
+          </NoContent>
+        ) : (
+          <PostFeed
+            type="communityPost"
+            initialPosts={initialPosts}
+            communityName={slug}
+            userId={session?.user.id}
+          />
+        )}
       </FeedWrapper>
       <SideMenuWrapper className="sticky top-[72px] h-fit justify-start">
         <CommunityInfoCard
@@ -85,7 +160,19 @@ const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
           }}
           parent="community"
         />
-        <CommunityModeratorsCard moderator={creator?.username || null} />
+        <CommunityModeratorsCard
+          moderators={
+            creator?.username
+              ? [
+                  {
+                    name: creator.name,
+                    username: creator.username,
+                    image: creator.image,
+                  },
+                ]
+              : []
+          }
+        />
       </SideMenuWrapper>
     </MainContentWrapper>
   );
@@ -130,7 +217,13 @@ const CommunityHeader = ({
         </div>
       </div>
       {community.description ? (
-        <div className="texts text-sm lg:hidden">{community.description}</div>
+        <div className="text-sm lg:hidden">
+          <CommunityDescription
+            initialDescription={community.description}
+            communityId={community.id}
+            isAuthor={session?.user.id === community.creatorId}
+          />
+        </div>
       ) : null}
     </div>
   );

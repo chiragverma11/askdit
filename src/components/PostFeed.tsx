@@ -19,21 +19,29 @@ import {
 import { usePathname } from "next/navigation";
 import Post from "./Post";
 import PostSkeleton from "./PostSkeleton";
-import { getSearchPosts } from "@/lib/prismaQueries";
+import {
+  getPopularPosts,
+  getSearchPosts,
+  getQuestions,
+} from "@/lib/prismaQueries";
 
 type InitialPostWithBookmark = (PrismaPost & {
   author: User;
   votes: Vote[];
   subreddit: Subreddit;
-  comments: Comment[];
   bookmarks: Bookmark[];
+  _count: {
+    comments: number;
+  };
 })[];
 
 type InitialPostWithoutBookmark = (PrismaPost & {
   author: User;
   votes: Vote[];
   subreddit: Subreddit;
-  comments: Comment[];
+  _count: {
+    comments: number;
+  };
 })[];
 
 interface CommonPostProps {
@@ -64,6 +72,12 @@ interface UserPostsProps extends CommonPostProps {
   initialPosts: InitialPostWithBookmark;
 }
 
+interface UserQuestionsProps extends CommonPostProps {
+  type: "userQuestion";
+  authorId: string;
+  initialPosts: InitialPostWithBookmark;
+}
+
 interface VotedPostsProps extends CommonPostProps {
   type: "votedPost";
   authorId: string;
@@ -77,13 +91,27 @@ interface SearchPostsProps extends CommonPostProps {
   initialPosts: Awaited<ReturnType<typeof getSearchPosts>>;
 }
 
+interface PopularPostsProps extends CommonPostProps {
+  type: "popularPost";
+  initialPosts: Awaited<ReturnType<typeof getPopularPosts>>;
+}
+
+interface AnswerPostsProps extends CommonPostProps {
+  type: "answerPost";
+  communityIds: string[];
+  initialPosts: Awaited<ReturnType<typeof getQuestions>>["posts"];
+}
+
 type PostFeedProps =
   | CommunityPostsProps
   | AuthenticatedPostsProps
   | GeneralPostsProps
   | UserPostsProps
+  | UserQuestionsProps
   | VotedPostsProps
-  | SearchPostsProps;
+  | SearchPostsProps
+  | PopularPostsProps
+  | AnswerPostsProps;
 
 const PostFeed: FC<PostFeedProps> = ({
   initialPosts,
@@ -130,6 +158,7 @@ const PostFeed: FC<PostFeedProps> = ({
                 isLoggedIn={userId ? true : false}
                 pathName={pathname}
                 isAuthor={post.authorId === userId}
+                inPostPage={false}
               />
             </li>
           );
@@ -145,6 +174,7 @@ const PostFeed: FC<PostFeedProps> = ({
                 isLoggedIn={userId ? true : false}
                 pathName={pathname}
                 isAuthor={post.authorId === userId}
+                inPostPage={false}
               />
             </li>
           );

@@ -1,4 +1,4 @@
-import { APP_INFO } from "@/lib/config";
+import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import React, { FC } from "react";
@@ -46,16 +46,16 @@ const AskditAuthorContent: FC<Omit<AskditAuthorCardProps, "card">> = ({
       <p className="w-full text-subtle">
         Made with ❤️ by{" "}
         <Link
-          href={APP_INFO.author.github}
+          href={siteConfig.author.github}
           target="_blank"
           referrerPolicy="no-referrer"
           className="font-medium text-default/90 underline underline-offset-2"
         >
-          {APP_INFO.author.name}
+          {siteConfig.author.name}
         </Link>
       </p>
       <Link
-        href={APP_INFO.github}
+        href={siteConfig.links.github}
         target="_blank"
         referrerPolicy="no-referrer"
         className={cn(

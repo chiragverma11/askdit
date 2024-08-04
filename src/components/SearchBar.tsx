@@ -262,7 +262,6 @@ const SearchBarPopover: FC<SearchBarDialogProps> = ({
                 <div
                   aria-hidden={true}
                   role="group-heading"
-                  aria-description="Recent search"
                   className="flex items-center justify-between px-2 py-1.5 text-xs font-medium text-muted-foreground"
                 >
                   <p>Recent</p>
@@ -595,7 +594,6 @@ const SearchBarDialog: FC<SearchBarDialogProps> = ({ className, ...props }) => {
                 <div
                   aria-hidden={true}
                   role="group-heading"
-                  aria-description="Recent search"
                   className="flex items-center justify-between px-2 py-1.5 text-xs font-medium text-muted-foreground"
                 >
                   <p>Recent</p>

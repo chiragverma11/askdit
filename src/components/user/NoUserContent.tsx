@@ -9,6 +9,8 @@ const userProfileMenus = [
   "posts",
   "comments",
   "saved",
+  "questions",
+  "answers",
   "upvoted",
   "downvoted",
 ] as const;
@@ -17,6 +19,8 @@ const menuBasedMessage = {
   posts: "posted",
   comments: "commented on",
   saved: "saved",
+  questions: "asked",
+  answers: "answered",
   upvoted: "upvoted",
   downvoted: "downvoted",
 };

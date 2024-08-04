@@ -17,7 +17,7 @@ const UserAvatar: FC<UserAvatarProps> = ({
   return (
     <Avatar {...props}>
       {user.image ? (
-        <div className="relative aspect-square h-full w-full">
+        <div className="relative aspect-square h-full w-full bg-gradient-to-b from-subtle from-30% to-highlight">
           <Image
             fill
             src={user.image}
@@ -26,7 +26,6 @@ const UserAvatar: FC<UserAvatarProps> = ({
             referrerPolicy="no-referrer"
             sizes="(max-width: 768px) 10vw, (max-width: 1200px) 8vw, 5vw"
             unoptimized
-            priority={true}
           />
         </div>
       ) : (

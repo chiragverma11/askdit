@@ -3,25 +3,17 @@
 import { FC } from "react";
 
 import { useMounted } from "@/hooks/use-mounted";
-import { RouterOutputs } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
-import { Comment, Post, Subreddit, User, Vote } from "@prisma/client";
 import { TbShare3 } from "react-icons/tb";
 import { WebShare } from "./share/WebShare";
 
-type InfiniteCommunityPostsOutput =
-  RouterOutputs["post"]["infiniteCommunityPosts"];
-
 interface PostShareButtonProps extends React.ComponentPropsWithoutRef<"div"> {
   type: "post";
-  post:
-    | Pick<InfiniteCommunityPostsOutput, "posts">["posts"][number]
-    | (Post & {
-        author: User;
-        votes: Vote[];
-        subreddit: Subreddit;
-        comments: Comment[];
-      });
+  post: {
+    id: string;
+    title: string;
+    subredditName: string;
+  };
 }
 
 interface CommentShareButtonProps
@@ -43,22 +35,18 @@ const ShareButton: FC<PostShareButtonProps | CommentShareButtonProps> = (
 
   const title =
     props.type === "post"
-      ? props.post?.title
+      ? props.post.title
       : mounted
-      ? window.location.host
-      : "";
+        ? window.location.host
+        : "";
 
   const url = mounted
     ? props.type === "post"
-      ? new URL(
-          `/r/${props.post?.subreddit.name}/props.post/${props.post?.id}`,
-          baseURL,
-        )
+      ? new URL(`/r/${props.post.subredditName}/post/${props.post.id}`, baseURL)
       : new URL(
-          `/r/${props.comment?.subredditName}/props.post/${props.comment
-            ?.postId}/props.comment/${props.comment?.id}${
-            props.level > 1 && "?context=3"
-          }`,
+          `/r/${props.comment?.subredditName}/post/${
+            props.comment?.postId
+          }/comment/${props.comment?.id}${props.level > 1 ? "?context=3" : ""}`,
           baseURL,
         )
     : "";

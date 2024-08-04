@@ -24,7 +24,8 @@ export const postRouter = router({
   createCommunityPost: protectedProcedure
     .input(PostValidator)
     .mutation(async (opts) => {
-      const { communityId, title, content, type, storageUsed } = opts.input;
+      const { communityId, title, content, type, storageUsed, isQuestion } =
+        opts.input;
       const { user } = opts.ctx;
 
       const community = await db.subreddit.findFirst({
@@ -49,6 +50,7 @@ export const postRouter = router({
             type: type,
             authorId: user.id,
             storageUsed: storageUsed,
+            isQuestion: isQuestion,
           },
         });
 
@@ -88,7 +90,10 @@ export const postRouter = router({
       });
 
       if (!post) {
-        return new Response("Post not found", { status: 404 });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post not found",
+        });
       }
 
       if (existingVote) {
@@ -103,7 +108,10 @@ export const postRouter = router({
           //   return acc;
           // }, 0);
 
-          return new Response("OK");
+          return {
+            success: true,
+            message: `Post ${voteType === "UP" ? "upvoted" : "downvoted"} successfully`,
+          };
         }
 
         await db.vote.update({
@@ -118,7 +126,10 @@ export const postRouter = router({
           },
         });
 
-        return new Response("OK");
+        return {
+          success: true,
+          message: `Post ${voteType === "UP" ? "upvoted" : "downvoted"} successfully`,
+        };
       }
 
       await db.vote.create({
@@ -129,7 +140,10 @@ export const postRouter = router({
         },
       });
 
-      return new Response("OK");
+      return {
+        success: true,
+        message: `Post ${voteType === "UP" ? "upvoted" : "downvoted"} successfully`,
+      };
     }),
   infiniteCommunityPosts: publicProcedure
     .input(
@@ -156,11 +170,15 @@ export const postRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
           bookmarks: {
             where: {
               userId: userId,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
             },
           },
         },
@@ -206,11 +224,15 @@ export const postRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
           bookmarks: {
             where: {
               userId: userId,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
             },
           },
         },
@@ -218,6 +240,7 @@ export const postRouter = router({
           subredditId: {
             in: communityIds,
           },
+          isQuestion: false,
         },
       });
 
@@ -254,8 +277,15 @@ export const postRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
+        },
+        where: {
+          isQuestion: false,
         },
       });
 
@@ -294,16 +324,21 @@ export const postRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
           bookmarks: {
             where: {
               userId: currentUserId,
             },
           },
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
         },
         where: {
           authorId: authorId,
+          isQuestion: false,
         },
       });
 
@@ -343,11 +378,15 @@ export const postRouter = router({
         include: {
           author: true,
           votes: true,
-          comments: true,
           subreddit: true,
           bookmarks: {
             where: {
               userId: currentUserId,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
             },
           },
         },
@@ -383,12 +422,16 @@ export const postRouter = router({
       });
 
       if (!post) {
-        return new Response("Post not found", { status: 404 });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post not found",
+        });
       }
 
       if (user.id !== post.authorId) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
+          message: "You are not authorized to delete this post",
         });
       }
 
@@ -433,7 +476,10 @@ export const postRouter = router({
         }
       });
 
-      return new Response("OK");
+      return {
+        success: true,
+        message: "Post deleted successfully",
+      };
     }),
   bookmark: protectedProcedure
     .input(PostBookmarkValidator)
@@ -450,14 +496,20 @@ export const postRouter = router({
         });
 
         if (!bookmark) {
-          return new Response("Bookmark not found", { status: 404 });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "You have not bookmarked this post",
+          });
         }
 
         await db.bookmark.delete({
           where: { id: bookmark.id },
         });
 
-        return new Response("Bookmark removed", { status: 200 });
+        return {
+          success: true,
+          message: "Post unsaved",
+        };
       }
 
       const post = await db.post.findUnique({
@@ -465,7 +517,10 @@ export const postRouter = router({
       });
 
       if (!post) {
-        return new Response("Post not found", { status: 404 });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post not found",
+        });
       }
 
       await db.bookmark.create({
@@ -475,7 +530,10 @@ export const postRouter = router({
         },
       });
 
-      return new Response("Bookmarked", { status: 200 });
+      return {
+        success: true,
+        message: "Post saved",
+      };
     }),
   getUrlMetadata: protectedProcedure
     .input(z.object({ url: z.string() }))
@@ -560,7 +618,10 @@ export const postRouter = router({
     });
 
     if (!userWithStorageUsed) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "You are not authorized to access this resource",
+      });
     }
 
     return {
@@ -568,4 +629,165 @@ export const postRouter = router({
       StorageUnitType: userWithStorageUsed.storageUnit,
     };
   }),
+  infinitePopularPosts: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1),
+        currentUserId: z.string().optional(),
+        cursor: z.string().nullish(),
+        skip: z.number().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const limit = input.limit ?? INFINITE_SCROLL_PAGINATION_RESULTS;
+      const { skip, currentUserId, cursor } = input;
+
+      const posts = await db.post.findMany({
+        take: limit + 1,
+        skip: skip,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: [
+          { votes: { _count: "desc" } },
+          { comments: { _count: "desc" } },
+          { createdAt: "desc" },
+        ],
+        include: {
+          author: true,
+          votes: true,
+          subreddit: true,
+          bookmarks: {
+            where: {
+              userId: currentUserId,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
+        },
+        where: {
+          votes: { some: { type: "UP" } },
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (posts.length > limit) {
+        const nextItem = posts.pop();
+        nextCursor = nextItem?.id;
+      }
+      return {
+        posts,
+        nextCursor,
+      };
+    }),
+  infiniteAnswerPosts: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1),
+        communityIds: z.string().array(),
+        userId: z.string().optional(),
+        cursor: z.string().nullish(),
+        skip: z.number().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const limit = input.limit ?? INFINITE_SCROLL_PAGINATION_RESULTS;
+      const { skip, communityIds, userId, cursor } = input;
+
+      const posts = await db.post.findMany({
+        take: limit + 1,
+        skip: skip,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          author: true,
+          votes: true,
+          subreddit: true,
+          bookmarks: {
+            where: {
+              userId: userId,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
+        },
+        where: {
+          subredditId: {
+            in: communityIds,
+          },
+          isQuestion: true,
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (posts.length > limit) {
+        const nextItem = posts.pop();
+        nextCursor = nextItem?.id;
+      }
+      return {
+        posts,
+        nextCursor,
+      };
+    }),
+  infiniteUserQuestions: publicProcedure
+    .input(
+      z.object({
+        authorId: z.string(),
+        currentUserId: z.string().optional(),
+        limit: z.number().min(1),
+        cursor: z.string().nullish(),
+        skip: z.number().optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      const limit = input.limit ?? INFINITE_SCROLL_PAGINATION_RESULTS;
+      const { authorId, currentUserId, skip, cursor } = input;
+
+      const posts = await db.post.findMany({
+        take: limit + 1,
+        skip: skip,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          author: true,
+          votes: true,
+          subreddit: true,
+          bookmarks: {
+            where: {
+              userId: currentUserId,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
+        },
+        where: {
+          authorId: authorId,
+          isQuestion: true,
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (posts.length > limit) {
+        const nextItem = posts.pop();
+        nextCursor = nextItem?.id;
+      }
+      return {
+        posts,
+        nextCursor,
+      };
+    }),
 });

@@ -24,6 +24,11 @@ enum PostType {
   LINK
 }
 
+enum NotificationType {
+  COMMENT
+  REPLY
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -72,6 +77,9 @@ model User {
   subscriptions     Subscription[]
   votes             Vote[]
   bookmarks         Bookmark[]
+
+  notifications          Notification[] @relation("UserNotifications")
+  triggeredNotifications Notification[] @relation("TriggeredNotifications")
 
   storageUsed Int             @default(0)
   storageUnit StorageUnitType @default(BYTES)
@@ -128,8 +136,12 @@ model Post {
   votes       Vote[]
   bookmarks   Bookmark[]
 
-  storageUsed Int             @default(0)
-  storageUnit StorageUnitType @default(BYTES)
+  isQuestion Boolean  @default(false)
+  isAnswered Boolean? @default(false)
+
+  storageUsed  Int             @default(0)
+  storageUnit  StorageUnitType @default(BYTES)
+  Notification Notification[]
 
   @@index([subredditId])
   @@index([authorId])
@@ -139,6 +151,7 @@ model Comment {
   id        String   @id @default(cuid())
   text      String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
@@ -154,9 +167,13 @@ model Comment {
 
   bookmarks Bookmark[]
 
+  acceptedAnswer Boolean        @default(false)
+  Notification   Notification[]
+
   @@index([postId])
   @@index([replyToId])
   @@index([authorId])
+  @@index([acceptedAnswer])
 }
 
 model Vote {
@@ -200,4 +217,32 @@ model Bookmark {
   @@index([commentId])
   @@index([postId, userId])
   @@index([commentId, userId])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  createdAt DateTime         @default(now())
+  read      Boolean          @default(false)
+
+  user   User   @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  triggeredBy   User   @relation("TriggeredNotifications", fields: [triggeredById], references: [id], onDelete: Cascade)
+  triggeredById String
+
+  post   Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String?
+
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String?
+
+  referenceId   String?
+  referenceType String?
+
+  @@index([userId])
+  @@index([triggeredById])
+  @@index([postId])
+  @@index([commentId])
+  @@index([referenceId])
 }

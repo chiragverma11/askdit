@@ -42,8 +42,11 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
             router.refresh();
           });
       },
-      onError() {
+      onError(error) {
         setIsSub(false);
+        toast.error(`Failed to join r/${subredditName}`, {
+          description: error.message,
+        });
       },
     });
 
@@ -56,8 +59,11 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
             router.refresh();
           });
       },
-      onError() {
+      onError(error) {
         setIsSub(true);
+        toast.error(`Failed to leave r/${subredditName}`, {
+          description: error.message,
+        });
       },
     });
 

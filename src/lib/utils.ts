@@ -1,3 +1,4 @@
+import { env } from "@/env.mjs";
 import { CommentVote, Prisma, Vote } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { formatDistanceToNowStrict } from "date-fns";
@@ -10,6 +11,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function absoluteUrl(pathname: string) {
+  return new URL(pathname, env.NEXT_PUBLIC_APP_URL);
+}
+
 export function getDefaultCommunityBg({
   communityName,
 }: {
@@ -19,10 +24,10 @@ export function getDefaultCommunityBg({
   return firstChar?.match(/[a-iA-I]/g)
     ? "bg-amber-400"
     : firstChar?.match(/[j-rJ-R]/g)
-    ? "bg-lime-400"
-    : firstChar?.match(/[s-zS-Z]/g)
-    ? "bg-violet-400"
-    : "";
+      ? "bg-lime-400"
+      : firstChar?.match(/[s-zS-Z]/g)
+        ? "bg-violet-400"
+        : "";
 }
 
 export function getVotesAmount({ votes }: { votes: (Vote | CommentVote)[] }) {
@@ -44,8 +49,9 @@ export function getVotes({
 }) {
   const votesAmt = getVotesAmount({ votes });
 
-  const currentVoteType = votes.find((vote) => vote.userId === currentUserId)
-    ?.type;
+  const currentVoteType = votes.find(
+    (vote) => vote.userId === currentUserId,
+  )?.type;
 
   return { votesAmt, currentVoteType };
 }
@@ -245,7 +251,7 @@ export const createHierarchicalCommentReplyToSelect = ({
 
   // Recursive case: create the replyTo object for the current level
   const select: Prisma.CommentSelect = {
-    id: level === 0 ? true : false,
+    id: true,
     replyTo:
       level !== 0
         ? {

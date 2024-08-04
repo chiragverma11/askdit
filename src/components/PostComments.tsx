@@ -4,14 +4,19 @@ import { useInfiniteCommentFeed } from "@/hooks/use-infinite-commentfeed";
 import { trpc } from "@/lib/trpc";
 import { cn, getVotesAmount } from "@/lib/utils";
 import { useIntersection } from "@mantine/hooks";
-import { DotWave } from "@uiball/loaders";
 import { User } from "next-auth";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { FC, useEffect, useRef } from "react";
 import AddComment from "./AddComment";
-import Comment from "./Comment";
+import Comment, { CommentSkeleton } from "./Comment";
 import { Icons } from "./Icons";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./ui/Accordion";
 import { Separator } from "./ui/Separator";
 
 interface PostCommentsProps {
@@ -19,6 +24,9 @@ interface PostCommentsProps {
   commentId?: string;
   context?: number;
   user?: User;
+  isQuestion: boolean;
+  isAnswered: boolean | null;
+  postAuthorId: string;
 }
 
 const PostComments: FC<PostCommentsProps> = ({
@@ -26,6 +34,9 @@ const PostComments: FC<PostCommentsProps> = ({
   commentId,
   context,
   user,
+  isQuestion,
+  isAnswered,
+  postAuthorId,
 }) => {
   const pathname = usePathname();
   const params = useParams();
@@ -48,6 +59,17 @@ const PostComments: FC<PostCommentsProps> = ({
     userId: user?.id,
     disabled: commentId ? true : false,
   });
+
+  const { data: acceptedAnswers, isLoading: isAcceptedAnswersLoading } =
+    trpc.comment.getAcceptedAnswerComments.useQuery(
+      {
+        postId: postId,
+        userId: user?.id,
+      },
+      {
+        enabled: isQuestion && isAnswered ? true : false,
+      },
+    );
 
   const { data: comment, isLoading: isCommentLoading } =
     trpc.comment.getComment.useQuery(
@@ -92,6 +114,7 @@ const PostComments: FC<PostCommentsProps> = ({
           postId={postId}
           refetchComments={refetchComments}
           user={user}
+          isQuestionPost={isQuestion}
         />
         <Separator className="mx-auto h-0.5 w-5/6 rounded-full bg-default" />
         {commentId ? (
@@ -104,12 +127,63 @@ const PostComments: FC<PostCommentsProps> = ({
         ) : null}
       </div>
 
+      {!commentId && isQuestion && isAnswered && (
+        <>
+          <Accordion type="single" defaultValue={"acceptedAnswers"} collapsible>
+            <AccordionItem value="acceptedAnswers">
+              <AccordionTrigger className="rounded-lg px-2">
+                Accepted Answers
+              </AccordionTrigger>
+              <AccordionContent className="">
+                <ul className="flex w-full flex-col gap-2 rounded-xl border border-green-600/50 bg-green-700/15 dark:bg-green-700/10">
+                  {isAcceptedAnswersLoading ? (
+                    <li>
+                      <CommentSkeleton />
+                    </li>
+                  ) : null}
+                  {acceptedAnswers?.map((answer) => {
+                    const votesAmt = getVotesAmount({ votes: answer.votes });
+
+                    const currentVote = comment?.votes.find(
+                      (vote) => vote.userId === user?.id,
+                    );
+
+                    return (
+                      <li key={answer.id}>
+                        <Comment
+                          comment={answer}
+                          votesAmt={votesAmt}
+                          currentVoteType={currentVote?.type}
+                          user={user}
+                          pathName={pathname}
+                          level={1}
+                          className={cn(
+                            commentId
+                              ? commentId === answer.id && "bg-highlight/60"
+                              : "",
+                          )}
+                          highlightReplyId={commentId}
+                          isQuestionPost={isQuestion}
+                          isPostAuthor={postAuthorId === user?.id}
+                        />
+                      </li>
+                    );
+                  })}
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </>
+      )}
+
       <ul className="flex w-full flex-col gap-2">
-        {isLoading ? (
-          <div className="flex min-h-[16rem] w-full items-center justify-center">
-            <DotWave size={45} speed={1} color="gray" />
-          </div>
-        ) : null}
+        {isLoading
+          ? Array.from({ length: commentId ? 1 : 3 }).map((_, index) => (
+              <li key={`comment-skeleton-${index}`}>
+                <CommentSkeleton />
+              </li>
+            ))
+          : null}
         {comments?.map((comment, index) => {
           const votesAmt = getVotesAmount({ votes: comment.votes });
 
@@ -134,17 +208,23 @@ const PostComments: FC<PostCommentsProps> = ({
                     : "",
                 )}
                 highlightReplyId={commentId}
+                isQuestionPost={isQuestion}
+                isPostAuthor={postAuthorId === user?.id}
               />
             </li>
           );
         })}
 
         {isFetchingNextPage && !isLoading ? (
-          <div className="flex w-full items-center justify-center py-1">
-            <DotWave size={45} speed={1} color="gray" />
-          </div>
+          <li>
+            <CommentSkeleton />
+          </li>
         ) : null}
-        {comments?.length === 0 && !isLoading ? <NoComments /> : null}
+        {comments?.length === 0 && !isLoading && !isQuestion ? (
+          <NoComments />
+        ) : !isAcceptedAnswersLoading && acceptedAnswers?.length === 0 ? (
+          <NoComments />
+        ) : null}
       </ul>
     </div>
   );

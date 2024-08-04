@@ -12,6 +12,11 @@ interface InfiniteUserCommentsProps extends CommonInfiniteCommentsProps {
   authorId: string;
 }
 
+interface InfiniteUserAnswerProps extends CommonInfiniteCommentsProps {
+  type: "userAnswer";
+  authorId: string;
+}
+
 interface InfinitePostCommentsProps extends CommonInfiniteCommentsProps {
   type: "postComment";
   postId: string;
@@ -22,48 +27,69 @@ interface InfiniteSearchCommentsProps extends CommonInfiniteCommentsProps {
   query: string;
 }
 
-type Options = InfiniteUserCommentsProps | InfinitePostCommentsProps | InfiniteSearchCommentsProps;
+type Options =
+  | InfiniteUserCommentsProps
+  | InfiniteUserAnswerProps
+  | InfinitePostCommentsProps
+  | InfiniteSearchCommentsProps;
 
 type DataReturnType<T extends Options> = T extends InfiniteUserCommentsProps
   ? InfiniteData<RouterOutputs["comment"]["infiniteUserComments"]>
-  : T extends InfinitePostCommentsProps ? InfiniteData<RouterOutputs["comment"]["infiniteComments"]> :
-  InfiniteData<RouterOutputs["search"]["infiniteSearchComments"]>;
+  : T extends InfiniteUserAnswerProps
+    ? InfiniteData<RouterOutputs["comment"]["infiniteUserAnswers"]>
+    : T extends InfinitePostCommentsProps
+      ? InfiniteData<RouterOutputs["comment"]["infiniteComments"]>
+      : InfiniteData<RouterOutputs["search"]["infiniteSearchComments"]>;
 
 export function useInfiniteCommentFeed<T extends Options>(options: T) {
   const trpcInfiniteQueryRequest =
     options.type === "userComment"
       ? trpc.comment.infiniteUserComments.useInfiniteQuery(
-        {
-          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-          authorId: options.authorId,
-          currentUserId: options.userId,
-        },
-        {
-          getNextPageParam: (lastPage) => lastPage?.nextCursor,
-          enabled: !options?.disabled,
-        },
-      )
-      : options.type === "postComment" ? trpc.comment.infiniteComments.useInfiniteQuery(
-        {
-          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-          postId: options.postId,
-          userId: options.userId,
-        },
-        {
-          getNextPageParam: (lastPage) => lastPage?.nextCursor,
-          enabled: !options?.disabled,
-        },
-      ) : trpc.search.infiniteSearchComments.useInfiniteQuery(
-        {
-          limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-          query: options.query,
-          userId: options.userId,
-        },
-        {
-          getNextPageParam: (lastPage) => lastPage?.nextCursor,
-          enabled: !options?.disabled,
-        },
-      );
+          {
+            limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+            authorId: options.authorId,
+            currentUserId: options.userId,
+          },
+          {
+            getNextPageParam: (lastPage) => lastPage?.nextCursor,
+            enabled: !options?.disabled,
+          },
+        )
+      : options.type === "userAnswer"
+        ? trpc.comment.infiniteUserAnswers.useInfiniteQuery(
+            {
+              limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+              authorId: options.authorId,
+              currentUserId: options.userId,
+            },
+            {
+              getNextPageParam: (lastPage) => lastPage?.nextCursor,
+              enabled: !options?.disabled,
+            },
+          )
+        : options.type === "postComment"
+          ? trpc.comment.infiniteComments.useInfiniteQuery(
+              {
+                limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+                postId: options.postId,
+                userId: options.userId,
+              },
+              {
+                getNextPageParam: (lastPage) => lastPage?.nextCursor,
+                enabled: !options?.disabled,
+              },
+            )
+          : trpc.search.infiniteSearchComments.useInfiniteQuery(
+              {
+                limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+                query: options.query,
+                userId: options.userId,
+              },
+              {
+                getNextPageParam: (lastPage) => lastPage?.nextCursor,
+                enabled: !options?.disabled,
+              },
+            );
 
   const {
     data: rawData,

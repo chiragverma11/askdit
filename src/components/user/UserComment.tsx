@@ -14,6 +14,12 @@ import MoreOptions from "../MoreOptions";
 import ShareButton from "../ShareButton";
 import UserAvatar from "../UserAvatar";
 import { Separator } from "../ui/Separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/Tooltip";
 
 interface UserCommentProps extends React.ComponentPropsWithoutRef<"div"> {
   comment: UserComments[number];
@@ -142,8 +148,28 @@ const UserComment: FC<UserCommentProps> = ({
                   pathName={pathname}
                   isAuthor={isAuthor}
                   onCommentDelete={deleteComment}
+                  isQuestionPost={true}
+                  acceptedAnswer={comment.acceptedAnswer}
+                  level={comment.replyToId ? 2 : 1}
+                  isPostAuthor={false}
                 />
               ) : null}
+              {comment.acceptedAnswer && (
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Icons.acceptedAnswer className="z-[1] ml-1 h-4 w-4 font-bold text-green-600" />
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="bottom"
+                      className="px-2 py-1 text-xs"
+                      sideOffset={7}
+                    >
+                      <p>Accepted Answer</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </div>
           </div>
         </div>

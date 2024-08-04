@@ -1,8 +1,8 @@
-import { VoteType } from "@prisma/client";
+import { Prisma, PrismaClient, VoteType } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
 import {
   INFINITE_SCROLL_COMMENT_RESULTS,
   INFINITE_SCROLL_PAGINATION_RESULTS,
-  SEARCH_SUGGESTIONS_LIMIT,
 } from "./config";
 import { db } from "./db";
 
@@ -12,7 +12,10 @@ export const getCommunity = async (
 ) => {
   const subreddit = await db.subreddit.findFirst({
     where: {
-      name: communityName,
+      name: {
+        equals: communityName,
+        mode: "insensitive",
+      },
     },
     include: {
       _count: {
@@ -24,7 +27,11 @@ export const getCommunity = async (
         include: {
           author: true,
           votes: true,
-          comments: true,
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
           subreddit: true,
           bookmarks: {
             where: {
@@ -48,13 +55,20 @@ export const getGeneralFeedPosts = async () => {
     include: {
       author: true,
       votes: true,
-      comments: true,
       subreddit: true,
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
     },
     take: INFINITE_SCROLL_PAGINATION_RESULTS,
+    where: {
+      isQuestion: false,
+    },
   });
 
   return posts;
@@ -81,15 +95,20 @@ export const getAuthenticatedFeedPosts = async ({
       subredditId: {
         in: communityIds,
       },
+      isQuestion: false,
     },
     include: {
       author: true,
       votes: true,
-      comments: true,
       subreddit: true,
       bookmarks: {
         where: {
           userId: userId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
         },
       },
     },
@@ -125,10 +144,14 @@ export const getCommunityPost = async ({
           },
         },
       },
-      comments: true,
       bookmarks: {
         where: {
           userId: userId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
         },
       },
     },
@@ -166,6 +189,24 @@ export const getCreator = async ({ creatorId }: { creatorId: string }) => {
   return creator;
 };
 
+export const getCommunityMetadata = async ({ name }: { name: string }) => {
+  const community = await db.subreddit.findFirst({
+    where: {
+      name: {
+        equals: name,
+        mode: "insensitive",
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+    },
+  });
+
+  return community;
+};
+
 export const getCommunityInfo = async ({ name }: { name: string }) => {
   const community = await db.subreddit.findFirst({
     where: { name },
@@ -175,12 +216,16 @@ export const getCommunityInfo = async ({ name }: { name: string }) => {
 };
 
 export const getUserInfo = async ({ username }: { username: string }) => {
-  const userInfo = await db.user.findUnique({
+  const userInfo = await db.user.findFirst({
     where: {
-      username,
+      username: {
+        equals: username,
+        mode: "insensitive",
+      },
     },
     select: {
       id: true,
+      username: true,
       name: true,
       image: true,
     },
@@ -218,15 +263,20 @@ export const getUserPosts = async ({
   const userPosts = await db.post.findMany({
     where: {
       authorId,
+      isQuestion: false,
     },
     include: {
       author: true,
       votes: true,
-      comments: true,
       subreddit: true,
       bookmarks: {
         where: {
           userId: currentUserId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
         },
       },
     },
@@ -252,6 +302,7 @@ export const getUserComments = async ({
     where: {
       authorId,
       deleted: false,
+      acceptedAnswer: false,
     },
     include: {
       author: true,
@@ -299,11 +350,15 @@ export const getUserVotedPosts = async ({
     include: {
       author: true,
       votes: true,
-      comments: true,
       subreddit: true,
       bookmarks: {
         where: {
           userId: userId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
         },
       },
     },
@@ -326,7 +381,11 @@ export const getUserBookmarks = async ({ userId }: { userId: string }) => {
         include: {
           author: true,
           votes: true,
-          comments: true,
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
           subreddit: true,
         },
       },
@@ -370,8 +429,12 @@ export const getSearchPosts = async ({ query }: { query: string }) => {
     include: {
       author: true,
       votes: true,
-      comments: true,
       subreddit: true,
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
     },
   });
 
@@ -414,7 +477,6 @@ export const getSearchCommunities = async ({
   return communties;
 };
 
-
 export const getSearchComments = async ({
   query,
   userId,
@@ -429,7 +491,7 @@ export const getSearchComments = async ({
         contains: query,
         mode: "insensitive",
       },
-      deleted: false
+      deleted: false,
     },
     orderBy: {
       createdAt: "desc",
@@ -456,7 +518,6 @@ export const getSearchComments = async ({
 
   return comments;
 };
-
 
 export const getSearchUsers = async ({
   query,
@@ -489,3 +550,221 @@ export const getSearchUsers = async ({
   return users;
 };
 
+export const updatePostIsAnswered = async (
+  tx: Omit<
+    PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+  >,
+  commentId: string,
+  postId: string,
+) => {
+  const acceptedAnswers = await tx.comment.findMany({
+    where: {
+      postId,
+      acceptedAnswer: true,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (acceptedAnswers.length === 0) {
+    await tx.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        isAnswered: true,
+      },
+    });
+  } else if (acceptedAnswers.length === 1) {
+    if (acceptedAnswers.some((answer) => answer.id === commentId)) {
+      await tx.post.update({
+        where: {
+          id: postId,
+        },
+        data: {
+          isAnswered: false,
+        },
+      });
+    }
+  }
+};
+
+export const getPopularPosts = async ({
+  currentUserId,
+}: {
+  currentUserId: string | undefined;
+}) => {
+  const popularPosts = await db.post.findMany({
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+    orderBy: [
+      { votes: { _count: "desc" } },
+      { comments: { _count: "desc" } },
+      { createdAt: "desc" },
+    ],
+    include: {
+      author: true,
+      votes: true,
+      subreddit: true,
+      bookmarks: {
+        where: {
+          userId: currentUserId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
+    },
+    where: {
+      votes: { some: { type: "UP" } },
+    },
+  });
+
+  return popularPosts;
+};
+
+export const getPostTitle = async ({ postId }: { postId: string }) => {
+  const post = await db.post.findUnique({
+    where: {
+      id: postId,
+    },
+    select: {
+      title: true,
+    },
+  });
+
+  return post?.title;
+};
+
+export const getQuestions = async ({
+  currentUserId,
+}: {
+  currentUserId: string | undefined;
+}) => {
+  const userSubscriptions = await db.subscription.findMany({
+    where: {
+      userId: currentUserId,
+    },
+    select: {
+      subredditId: true,
+    },
+  });
+
+  const communityIds = userSubscriptions.map((sub) => sub.subredditId);
+
+  const posts = await db.post.findMany({
+    where: {
+      subredditId: {
+        in: communityIds,
+      },
+      isQuestion: true,
+    },
+    include: {
+      author: true,
+      votes: true,
+      subreddit: true,
+      bookmarks: {
+        where: {
+          userId: currentUserId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return { posts, communityIds };
+};
+
+export const getUserQuestions = async ({
+  username,
+  currentUserId,
+}: {
+  username: string;
+  currentUserId: string | undefined;
+}) => {
+  const authorId = await getUserIdByUsername({ username });
+
+  const userQuestions = await db.post.findMany({
+    where: {
+      authorId,
+      isQuestion: true,
+    },
+    include: {
+      author: true,
+      votes: true,
+      subreddit: true,
+      bookmarks: {
+        where: {
+          userId: currentUserId,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return { authorId, userQuestions };
+};
+
+export const getUserAnswers = async ({
+  username,
+  currentUserId,
+}: {
+  username: string;
+  currentUserId: string | undefined;
+}) => {
+  const authorId = await getUserIdByUsername({ username });
+
+  const userAnswers = await db.comment.findMany({
+    where: {
+      authorId,
+      deleted: false,
+      post: {
+        isQuestion: true,
+      },
+      replyToId: null,
+    },
+    include: {
+      author: true,
+      votes: true,
+      bookmarks: {
+        where: {
+          userId: currentUserId,
+        },
+      },
+      post: {
+        select: {
+          subreddit: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  return { authorId, userAnswers };
+};

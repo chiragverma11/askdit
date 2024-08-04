@@ -15,7 +15,10 @@ export async function middleware(req: NextRequest) {
   }
 
   if (!token) {
-    return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+    const redirectUrl = new URL(`/sign-in`, req.nextUrl);
+    redirectUrl.searchParams.set("callbackUrl", pathname);
+
+    return NextResponse.redirect(redirectUrl);
   }
 }
 
@@ -26,5 +29,6 @@ export const config = {
     "/submit",
     "/r/:path/submit",
     "/communities/create",
+    "/settings/:path*",
   ],
 };

@@ -1,10 +1,19 @@
 import { User } from "next-auth";
+import { NextRequest } from "next/server";
 
-export type Context = {
+type CreateContextOptions = {
+  req: NextRequest;
   user?: User;
 };
-// export async function createContext(opts: CreateNextContextOptions) {
-//   return {
-//     ,
-//   };
-// }
+
+const createInnerTRPCContext = (opts: CreateContextOptions) => {
+  return opts;
+};
+
+export const createTRPCContext = (opts: { req: NextRequest }) => {
+  return createInnerTRPCContext({
+    ...opts,
+  });
+};
+
+export type Context = Awaited<ReturnType<typeof createTRPCContext>>;

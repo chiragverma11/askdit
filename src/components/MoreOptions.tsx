@@ -24,27 +24,37 @@ import {
   DropdownMenuTrigger,
 } from "./ui/DropdownMenu";
 
-interface MoreOptionsProps {
-  type: "post" | "comment";
+interface CommonMoreOptionsProps {
   id: string;
   bookmark: boolean;
   isAuthor: boolean;
   redirectUrl: string;
   pathName: string;
-  onCommentDelete?: () => void;
 }
 
-const MoreOptions: FC<MoreOptionsProps> = ({
-  type,
-  id,
-  bookmark,
-  isAuthor,
-  redirectUrl,
-  pathName,
-  onCommentDelete,
-}) => {
+interface PostOptionsProps extends CommonMoreOptionsProps {
+  type: "post";
+}
+
+interface CommentOptionsProps extends CommonMoreOptionsProps {
+  type: "comment";
+  onCommentDelete: () => void;
+  isPostAuthor: boolean;
+  isQuestionPost: boolean;
+  acceptedAnswer: boolean;
+  level: number;
+}
+
+type MoreOptionsProps = PostOptionsProps | CommentOptionsProps;
+
+const MoreOptions: FC<MoreOptionsProps> = ({ ...props }) => {
+  const { type, id, bookmark, isAuthor, redirectUrl, pathName } = props;
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(bookmark);
+  const [isMarkedAsAnswer, setIsMarkedAsAnswer] = useState(
+    type === "comment" && props.acceptedAnswer,
+  );
 
   const router = useRouter();
 
@@ -58,28 +68,79 @@ const MoreOptions: FC<MoreOptionsProps> = ({
       }
       router.push(redirectUrl);
     },
+    onError: (error) => {
+      toast.error("Failed to delete post", {
+        description: error.message,
+      });
+    },
   });
 
   const { mutate: deleteComment } = trpc.comment.delete.useMutation({
     onSuccess: () => {
       toast.success("Comment deleted successfully");
-      if (onCommentDelete) {
-        onCommentDelete();
+      if (type === "comment") {
+        props.onCommentDelete();
       }
+    },
+    onError: (error) => {
+      toast.error("Failed to delete comment", {
+        description: error.message,
+      });
     },
   });
 
   const { mutate: bookmarkPost } = trpc.post.bookmark.useMutation({
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       setIsBookmarked(!isBookmarked);
+    },
+    onError: (error, variables) => {
+      toast.error(`Failed to ${variables.remove ? "unsave" : "save"} post`, {
+        description: error.message,
+      });
     },
   });
 
   const { mutate: bookmarkComment } = trpc.comment.bookmark.useMutation({
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       setIsBookmarked(!isBookmarked);
     },
+    onError: (error, variables) => {
+      toast.error(`Failed to ${variables.remove ? "unsave" : "save"} comment`, {
+        description: error.message,
+      });
+    },
   });
+
+  const { mutate: markAnswer, isLoading: isMarkingAnswer } =
+    trpc.comment.markAnswer.useMutation({
+      onSuccess: () => {
+        setIsMarkedAsAnswer((prev) => !prev);
+      },
+      onError: (error) => {
+        toast.error(
+          `Failed to ${isMarkedAsAnswer ? "unmark" : "mark"} answer`,
+          {
+            description: error.message,
+          },
+        );
+      },
+    });
+
+  const handleMarkAnswer = () => {
+    if (!isMarkingAnswer)
+      markAnswer(
+        { commentId: id },
+        {
+          onSuccess: () => {
+            toast.success(
+              isMarkedAsAnswer
+                ? "Unmarked as answer successfully"
+                : "Marked as answer successfully",
+            );
+          },
+        },
+      );
+  };
 
   const handleBookmark = () => {
     type === "post"
@@ -150,6 +211,24 @@ const MoreOptions: FC<MoreOptionsProps> = ({
         onCloseAutoFocus={(e) => e.preventDefault()}
         className="border-default/40 bg-emphasis dark:bg-subtle"
       >
+        {type === "comment" &&
+          props.level === 1 &&
+          props.isQuestionPost &&
+          props.isPostAuthor && (
+            <DropdownMenuItem
+              className="flex cursor-pointer items-center"
+              asChild
+            >
+              <div onClick={handleMarkAnswer}>
+                {isMarkedAsAnswer ? (
+                  <Icons.unMark className="mr-2 h-4 w-4" />
+                ) : (
+                  <Icons.mark className="mr-2 h-4 w-4" />
+                )}
+                {isMarkedAsAnswer ? "Unmark answer" : "Mark as answer"}
+              </div>
+            </DropdownMenuItem>
+          )}
         <DropdownMenuItem className="flex cursor-pointer items-center" asChild>
           <div onClick={handleBookmark}>
             {isBookmarked ? (

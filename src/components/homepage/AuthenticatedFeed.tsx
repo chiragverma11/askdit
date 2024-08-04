@@ -1,10 +1,8 @@
 import { getAuthenticatedFeedPosts } from "@/lib/prismaQueries";
-import { cn } from "@/lib/utils";
 import { Session } from "next-auth";
-import Link from "next/link";
 import { FC } from "react";
+import { NoContent, NoContentAction, NoContentTitle } from "../NoContent";
 import PostFeed from "../PostFeed";
-import { buttonVariants } from "../ui/Button";
 
 interface AuthenticatedFeedProps {
   session: Session | null;
@@ -16,7 +14,16 @@ const AuthenticatedFeed: FC<AuthenticatedFeedProps> = async ({ session }) => {
   });
 
   if (communityIds.length === 0 && posts.length === 0) {
-    return <NoAuthenticatedPost />;
+    return (
+      <NoContent>
+        <NoContentTitle>
+          You haven&apos;t joined any community yet
+        </NoContentTitle>
+        <NoContentAction href="/communities?explore=true">
+          Explore Communities
+        </NoContentAction>
+      </NoContent>
+    );
   }
 
   return (
@@ -26,23 +33,6 @@ const AuthenticatedFeed: FC<AuthenticatedFeedProps> = async ({ session }) => {
       userId={session?.user.id}
       communityIds={communityIds}
     />
-  );
-};
-
-const NoAuthenticatedPost = () => {
-  return (
-    <div className="flex flex-col items-center gap-4 p-4">
-      <p className="text-default">You haven&apos;t joined any community yet</p>
-      <Link
-        href="/communities?explore=true"
-        className={cn(
-          buttonVariants({ size: "sm", variant: "outline" }),
-          "rounded-lg",
-        )}
-      >
-        Explore Communities
-      </Link>
-    </div>
   );
 };
 

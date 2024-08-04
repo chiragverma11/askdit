@@ -60,7 +60,7 @@ const UserInfoMobile: FC<UserInfoMobileProps> = ({
         </div>
         <div className="flex flex-col">
           <p className="text-2xl font-semibold">{userInfo.name}</p>
-          <p className="text-xs text-subtle">u/{userInfo.username}</p>
+          <p className="text-xs text-default/60">u/{userInfo.username}</p>
         </div>
       </div>
       <Button

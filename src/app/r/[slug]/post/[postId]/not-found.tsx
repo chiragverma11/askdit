@@ -1,23 +1,29 @@
+import {
+  NoContent,
+  NoContentAction,
+  NoContentDescription,
+  NoContentTitle,
+} from "@/components/NoContent";
+import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
-import { buttonVariants } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 export default function NotFound() {
   return (
     <MainContentWrapper>
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="flex flex-col justify-center gap-4 text-center">
-          <h2 className="text-lg">
-            Sorry, there&apos;s nothing here. This post might have been removed.
-          </h2>
-          <div className="mx-auto mt-4 flex gap-4">
-            <Link href="/" className={cn(buttonVariants({ size: "sm" }))}>
-              Go Home
-            </Link>
+      <FeedWrapper>
+        <NoContent className="h-[75vh]">
+          <div className="flex flex-col items-center justify-center gap-4 text-center">
+            <h1 className="text-7xl font-semibold sm:text-8xl">404</h1>
+            <NoContentTitle className="leading-tight tracking-normal sm:text-xl">
+              Sorry, there&apos;s nothing here.
+            </NoContentTitle>
+            <NoContentDescription>
+              This post might have been removed.
+            </NoContentDescription>
+            <NoContentAction href="/">Take me home</NoContentAction>
           </div>
-        </div>
-      </div>
+        </NoContent>
+      </FeedWrapper>
     </MainContentWrapper>
   );
 }
