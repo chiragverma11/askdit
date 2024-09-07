@@ -65,6 +65,13 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  alternates: {
+    canonical: siteConfig.url,
+  },
+  verification: {
+    google: "lngl4PNxX8TWw0Zq0yxC07Qp53BVZeE0Rs442yo3kjI",
+    yandex: "bec04933c3d8aa79",
+  },
 };
 
 export default function RootLayout({
