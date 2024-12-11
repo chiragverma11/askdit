@@ -19,14 +19,13 @@ import NotFound from "./not-found";
 
 interface UserLayoutProps {
   children: React.ReactNode;
-  params: {
+  params: Promise<{
     username: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({
-  params,
-}: UserLayoutProps): Promise<Metadata> {
+export async function generateMetadata(props: UserLayoutProps): Promise<Metadata> {
+  const params = await props.params;
   const username = params.username;
 
   const user = await db.user.findFirst({
@@ -62,10 +61,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function UserLayout({
-  children,
-  params,
-}: UserLayoutProps) {
+export default async function UserLayout(props: UserLayoutProps) {
+  const params = await props.params;
+
+  const {
+    children
+  } = props;
+
   const username = params.username;
   const userInfo = await getUserInfo({ username });
 

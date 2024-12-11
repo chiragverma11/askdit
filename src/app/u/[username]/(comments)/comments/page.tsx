@@ -5,14 +5,15 @@ import { getUserComments } from "@/lib/prismaQueries";
 import { FC } from "react";
 
 interface UserProfileCommentsPageProps {
-  params: {
+  params: Promise<{
     username: string;
-  };
+  }>;
 }
 
-const UserProfileCommentsPage: FC<UserProfileCommentsPageProps> = async ({
-  params,
-}) => {
+const UserProfileCommentsPage: FC<UserProfileCommentsPageProps> = async (
+  props,
+) => {
+  const params = await props.params;
   const { username } = params;
 
   const session = await getAuthSession();

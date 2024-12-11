@@ -5,14 +5,15 @@ import { getUserAnswers } from "@/lib/prismaQueries";
 import { FC } from "react";
 
 interface UserProfileAnswersPageProps {
-  params: {
+  params: Promise<{
     username: string;
-  };
+  }>;
 }
 
-const UserProfileAnswersPage: FC<UserProfileAnswersPageProps> = async ({
-  params,
-}) => {
+const UserProfileAnswersPage: FC<UserProfileAnswersPageProps> = async (
+  props,
+) => {
+  const params = await props.params;
   const { username } = params;
 
   const session = await getAuthSession();

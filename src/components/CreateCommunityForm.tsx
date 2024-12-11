@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FC } from "react";
+import { FC, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -61,9 +61,11 @@ const CreateCommunityForm: FC<CreateCommunityFormProps> = ({}) => {
           toast.error("Can't create community", {
             description: "Login to create community.",
             action: (
-              <AuthLink href="/sign-in" onClick={() => toast.dismiss()}>
-                Login
-              </AuthLink>
+              <Suspense>
+                <AuthLink href="/sign-in" onClick={() => toast.dismiss()}>
+                  Login
+                </AuthLink>
+              </Suspense>
             ),
           });
         } else if (error.data?.httpStatus === 409) {

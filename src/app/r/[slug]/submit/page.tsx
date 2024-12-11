@@ -9,15 +9,14 @@ import { notFound } from "next/navigation";
 import { FC } from "react";
 
 interface CreatePostSubredditProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
-  searchParams: { [key: string]: string | string[] | undefined };
+  }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export async function generateMetadata({
-  params,
-}: CreatePostSubredditProps): Promise<Metadata> {
+export async function generateMetadata(props: CreatePostSubredditProps): Promise<Metadata> {
+  const params = await props.params;
   const communityName = params.slug;
 
   const community = await getCommunityMetadata({ name: communityName });
@@ -45,10 +44,9 @@ export async function generateMetadata({
   };
 }
 
-const CreatePostSubreddit: FC<CreatePostSubredditProps> = async ({
-  params,
-  searchParams,
-}) => {
+const CreatePostSubreddit: FC<CreatePostSubredditProps> = async props => {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const community = await getCommunityInfo({ name: params.slug });
 
   if (!community) return notFound();

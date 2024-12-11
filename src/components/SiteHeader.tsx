@@ -8,6 +8,7 @@ import SearchBar from "./SearchBar";
 import UserProfileNav from "./UserProfileNav";
 import Notifications from "./notification/Notifications";
 import { buttonVariants } from "./ui/Button";
+import { Suspense } from "react";
 
 const SiteHeader = async () => {
   const session = await getAuthSession();
@@ -35,15 +36,17 @@ const SiteHeader = async () => {
           {session?.user ? (
             <UserProfileNav user={session.user} />
           ) : (
-            <AuthLink
-              href="/sign-in"
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "sm" }),
-                "border-2 border-brand-default/50 font-semibold text-default hover:border-brand-default/75 hover:bg-zinc-200/50 dark:hover:bg-transparent",
-              )}
-            >
-              Sign In
-            </AuthLink>
+            <Suspense>
+              <AuthLink
+                href="/sign-in"
+                className={cn(
+                  buttonVariants({ variant: "ghost", size: "sm" }),
+                  "border-2 border-brand-default/50 font-semibold text-default hover:border-brand-default/75 hover:bg-zinc-200/50 dark:hover:bg-transparent",
+                )}
+              >
+                Sign In
+              </AuthLink>
+            </Suspense>
           )}
         </nav>
       </div>

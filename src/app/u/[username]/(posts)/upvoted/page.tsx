@@ -6,14 +6,15 @@ import { getUserIdByUsername, getUserVotedPosts } from "@/lib/prismaQueries";
 import { FC } from "react";
 
 interface UserProfileUpvotedPageProps {
-  params: {
+  params: Promise<{
     username: string;
-  };
+  }>;
 }
 
-const UserProfileUpvotedPage: FC<UserProfileUpvotedPageProps> = async ({
-  params,
-}) => {
+const UserProfileUpvotedPage: FC<UserProfileUpvotedPageProps> = async (
+  props,
+) => {
+  const params = await props.params;
   const { username } = params;
 
   const session = await getAuthSession();

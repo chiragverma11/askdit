@@ -6,14 +6,15 @@ import { getUserIdByUsername, getUserVotedPosts } from "@/lib/prismaQueries";
 import { FC } from "react";
 
 interface UserProfileDownvotedPageProps {
-  params: {
+  params: Promise<{
     username: string;
-  };
+  }>;
 }
 
-const UserProfileDownvotedPage: FC<UserProfileDownvotedPageProps> = async ({
-  params,
-}) => {
+const UserProfileDownvotedPage: FC<UserProfileDownvotedPageProps> = async (
+  props,
+) => {
+  const params = await props.params;
   const { username } = params;
 
   const session = await getAuthSession();

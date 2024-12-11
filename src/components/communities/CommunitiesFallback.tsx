@@ -4,7 +4,7 @@ import AuthLink from "@/components/AuthLink";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { FC } from "react";
+import { FC, Suspense } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import {
@@ -75,12 +75,14 @@ const UnauthenticatedFallback = () => {
         Sign In to explore & Join Communities
       </NoContentDescription>
       <NoContentAction href="/communities/create" asChild>
-        <AuthLink
-          href="/sign-in"
-          className={cn(buttonVariants({ size: "sm" }))}
-        >
-          Sign In
-        </AuthLink>
+        <Suspense>
+          <AuthLink
+            href="/sign-in"
+            className={cn(buttonVariants({ size: "sm" }))}
+          >
+            Sign In
+          </AuthLink>
+        </Suspense>
       </NoContentAction>
     </NoContent>
   );

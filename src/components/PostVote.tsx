@@ -3,7 +3,7 @@
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { VoteType } from "@prisma/client";
-import { FC, HTMLAttributes, useEffect, useState } from "react";
+import { FC, HTMLAttributes, Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 import AuthLink from "./AuthLink";
 import { Icons } from "./Icons";
@@ -88,20 +88,22 @@ const PostVote: FC<PostVoteProps> = ({
           />
         </span>
       ) : (
-        <AuthLink
-          href="/sign-in"
-          className="group/upvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-red-400/10 dark:hover:bg-red-400/5"
-        >
-          <Icons.upvote
-            className={cn(
-              "h-6 w-6",
-              currentVoteType === "UP"
-                ? "fill-red-500 text-red-500"
-                : "text-inherit group-hover/upvote:text-red-600/75",
-            )}
-            strokeWidth={1.5}
-          />
-        </AuthLink>
+        <Suspense>
+          <AuthLink
+            href="/sign-in"
+            className="group/upvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-red-400/10 dark:hover:bg-red-400/5"
+          >
+            <Icons.upvote
+              className={cn(
+                "h-6 w-6",
+                currentVoteType === "UP"
+                  ? "fill-red-500 text-red-500"
+                  : "text-inherit group-hover/upvote:text-red-600/75",
+              )}
+              strokeWidth={1.5}
+            />
+          </AuthLink>
+        </Suspense>
       )}
       <div className="flex items-center justify-center">
         <span
@@ -135,20 +137,22 @@ const PostVote: FC<PostVoteProps> = ({
           />
         </span>
       ) : (
-        <AuthLink
-          href="/sign-in"
-          className="group/downvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-indigo-400/10 dark:hover:bg-indigo-400/5"
-        >
-          <Icons.downvote
-            className={cn(
-              "h-6 w-6",
-              currentVoteType === "DOWN"
-                ? "fill-indigo-500 text-indigo-500"
-                : "text-inherit group-hover/downvote:text-indigo-600/75",
-            )}
-            strokeWidth={1.5}
-          />
-        </AuthLink>
+        <Suspense>
+          <AuthLink
+            href="/sign-in"
+            className="group/downvote flex aspect-square h-8 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-indigo-400/10 dark:hover:bg-indigo-400/5"
+          >
+            <Icons.downvote
+              className={cn(
+                "h-6 w-6",
+                currentVoteType === "DOWN"
+                  ? "fill-indigo-500 text-indigo-500"
+                  : "text-inherit group-hover/downvote:text-indigo-600/75",
+              )}
+              strokeWidth={1.5}
+            />
+          </AuthLink>
+        </Suspense>
       )}
     </span>
   );

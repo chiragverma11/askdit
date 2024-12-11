@@ -24,10 +24,11 @@ export const metadata: Metadata = {
 };
 
 interface CreatePostPageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-const CreatePostPage: FC<CreatePostPageProps> = async ({ searchParams }) => {
+const CreatePostPage: FC<CreatePostPageProps> = async (props) => {
+  const searchParams = await props.searchParams;
   return (
     <MainContentWrapper>
       <FeedWrapper className="px-2 md:max-w-[680px] md:px-0">

@@ -32,7 +32,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -75,9 +75,11 @@ const ProfileSettings: FC<ProfileSettingsProps> = ({ session }) => {
           toast.error("Can't update profile", {
             description: "Login to update profile.",
             action: (
-              <AuthLink onClick={() => toast.dismiss()} href="/sign-in">
-                Login
-              </AuthLink>
+              <Suspense>
+                <AuthLink onClick={() => toast.dismiss()} href="/sign-in">
+                  Login
+                </AuthLink>
+              </Suspense>
             ),
           });
         } else if (error.data?.httpStatus === 409) {

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, Suspense } from "react";
 import AuthLink from "./AuthLink";
 import { Icons } from "./Icons";
 import UserAuthForm from "./UserAuthForm";
@@ -14,16 +14,20 @@ const SignIn: FC<SignInProps> = ({}) => {
         </div>
         <h1 className="text-2xl font-semibold">Welcome back</h1>
       </div>
-      <UserAuthForm authType="sign-in" />
+      <Suspense>
+        <UserAuthForm authType="sign-in" />
+      </Suspense>
       <p className="text-center text-sm">
         Don&apos;t have an account yet?{" "}
-        <AuthLink
-          href="/sign-up"
-          paramsAsCallback={true}
-          className="font-medium text-sky-600 hover:underline hover:underline-offset-2"
-        >
-          Sign Up
-        </AuthLink>
+        <Suspense>
+          <AuthLink
+            href="/sign-up"
+            paramsAsCallback={true}
+            className="font-medium text-sky-600 hover:underline hover:underline-offset-2"
+          >
+            Sign Up
+          </AuthLink>
+        </Suspense>
       </p>
     </div>
   );

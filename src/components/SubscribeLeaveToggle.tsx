@@ -4,7 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
-import React, { FC, useState, useTransition } from "react";
+import React, { FC, Suspense, useState, useTransition } from "react";
 import { toast } from "sonner";
 import AuthLink from "./AuthLink";
 import { Button, buttonVariants } from "./ui/Button";
@@ -98,16 +98,18 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
       Join
     </Button>
   ) : (
-    <AuthLink
-      className={cn(
-        buttonVariants({ size: "xs" }),
-        "rounded-lg px-3 lg:hidden",
-        className,
-      )}
-      href="/sign-in"
-    >
-      Join
-    </AuthLink>
+    <Suspense>
+      <AuthLink
+        className={cn(
+          buttonVariants({ size: "xs" }),
+          "rounded-lg px-3 lg:hidden",
+          className,
+        )}
+        href="/sign-in"
+      >
+        Join
+      </AuthLink>
+    </Suspense>
   );
 };
 
