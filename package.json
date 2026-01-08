@@ -68,7 +68,7 @@
     "lucide-react": "^0.408.0",
     "nanoid": "^5.0.7",
     "nanoid-dictionary": "^4.3.0",
-    "next": "14.2.3",
+    "next": "14.2.35",
     "next-auth": "^4.24.7",
     "next-themes": "^0.3.0",
     "rate-limiter-flexible": "^5.0.3",
