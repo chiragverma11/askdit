@@ -3,6 +3,7 @@ import NoUserContent from "@/components/user/NoUserContent";
 import UserBookmarkFeed from "@/components/user/UserBookmarkFeed";
 import { getAuthSession } from "@/lib/auth";
 import { getUserBookmarks, getUserIdByUsername } from "@/lib/prismaQueries";
+import { decodePathParam } from "@/lib/utils";
 import { FC } from "react";
 
 interface UserProfileSavedPageProps {
@@ -13,7 +14,7 @@ interface UserProfileSavedPageProps {
 
 const UserProfileSavedPage: FC<UserProfileSavedPageProps> = async (props) => {
   const params = await props.params;
-  const { username } = params;
+  const username = decodePathParam(params.username);
 
   const session = await getAuthSession();
   const userId = await getUserIdByUsername({ username });

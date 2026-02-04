@@ -15,6 +15,18 @@ export function absoluteUrl(pathname: string) {
   return new URL(pathname, env.NEXT_PUBLIC_APP_URL);
 }
 
+export function decodePathParam(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+export function encodePathSegment(value: string) {
+  return encodeURIComponent(value);
+}
+
 export function getDefaultCommunityBg({
   communityName,
 }: {
