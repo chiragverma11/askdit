@@ -5,7 +5,7 @@ import { RouterOutputs, trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { useIntersection, useMediaQuery } from "@mantine/hooks";
 import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Icons } from "../Icons";
 import { Button } from "../ui/Button";
 import {
@@ -27,9 +27,7 @@ import NotificationCard, { NotificationCardSkeleton } from "./NotificationCard";
 export type Notification =
   RouterOutputs["notification"]["getNotifications"]["notifications"][0];
 
-interface NotificationsProps {}
-
-const Notifications: FC<NotificationsProps> = (props) => {
+const Notifications = () => {
   const isLg = useMediaQuery("(min-width: 1024px)");
 
   if (isLg) {
@@ -39,7 +37,7 @@ const Notifications: FC<NotificationsProps> = (props) => {
   }
 };
 
-const NotificationsDropdown: FC<NotificationsProps> = () => {
+const NotificationsDropdown = () => {
   const [open, setOpen] = useState(false);
 
   const { data: unreadCount } = trpc.notification.getUnreadCount.useQuery();
@@ -75,7 +73,7 @@ const NotificationsDropdown: FC<NotificationsProps> = () => {
   );
 };
 
-const NotificationsDrawer: FC<NotificationsProps> = () => {
+const NotificationsDrawer = () => {
   const [open, setOpen] = useState(false);
 
   const { data: unreadCount } = trpc.notification.getUnreadCount.useQuery();
@@ -150,11 +148,7 @@ interface NotificationsContainerProps {
   onClose: () => void;
 }
 
-const NotificationsContainer: FC<NotificationsContainerProps> = ({
-  open,
-  onClose,
-}) => {
-  const lastNotificationRef = useRef<HTMLElement>(null);
+const NotificationsContainer = ({ open, onClose }: NotificationsContainerProps) => {
   const { ref, entry } = useIntersection({
     root: lastNotificationRef.current,
     threshold: 0.1,

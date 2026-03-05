@@ -3,7 +3,6 @@ import SignIn from "@/components/SignIn";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import { absoluteUrl } from "@/lib/utils";
 import { Metadata } from "next";
-import { FC } from "react";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -18,9 +17,7 @@ export const metadata: Metadata = {
   },
 };
 
-interface SignInPageProps {}
-
-const SignInPage: FC<SignInPageProps> = ({}) => {
+const SignInPage = () => {
   return (
     <MainContentWrapper>
       <div className="flex h-full max-w-2xl grow flex-col items-center gap-10 px-4 pt-4">

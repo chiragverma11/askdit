@@ -3,7 +3,6 @@ import SignUp from "@/components/SignUp";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import { absoluteUrl } from "@/lib/utils";
 import { Metadata } from "next";
-import { FC } from "react";
 
 export const metadata: Metadata = {
   title: "Sign up",
@@ -18,9 +17,7 @@ export const metadata: Metadata = {
   },
 };
 
-interface SignUpPageProps {}
-
-const SignUpPage: FC<SignUpPageProps> = ({}) => {
+const SignUpPage = () => {
   return (
     <MainContentWrapper>
       <div className="flex h-full max-w-2xl grow flex-col items-center gap-10 px-4 pt-4">

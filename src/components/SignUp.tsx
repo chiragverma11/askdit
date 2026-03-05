@@ -1,11 +1,9 @@
-import { FC, Suspense } from "react";
+import { Suspense } from "react";
 import AuthLink from "./AuthLink";
 import { Icons } from "./Icons";
 import UserAuthForm from "./UserAuthForm";
 
-interface SignUpProps {}
-
-const SignUp: FC<SignUpProps> = ({}) => {
+const SignUp = () => {
   return (
     <div className="flex w-full flex-col justify-center gap-10">
       <div className="flex flex-col items-center gap-6">
