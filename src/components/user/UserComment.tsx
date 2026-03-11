@@ -178,7 +178,7 @@ const UserComment: FC<UserCommentProps> = ({
   );
 };
 
-interface ReplyButtonProps extends React.ComponentPropsWithoutRef<"span"> {}
+type ReplyButtonProps = React.ComponentPropsWithoutRef<"span">;
 
 const ReplyButton: FC<ReplyButtonProps> = ({ onClick }) => {
   return (

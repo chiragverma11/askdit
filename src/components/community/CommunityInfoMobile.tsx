@@ -9,7 +9,7 @@ import UserAvatar from "../UserAvatar";
 import { Accordion, AccordionContent, AccordionTrigger } from "../ui/Accordion";
 import { buttonVariants } from "../ui/Button";
 
-interface Moderator extends Pick<User, "name" | "username" | "image"> {}
+type Moderator = Pick<User, "name" | "username" | "image">;
 
 type CommunityInfo = Pick<
   Subreddit,
@@ -51,7 +51,7 @@ const CommunityInfoMobile: FC<CommunityInfoMobileProps> = ({
   );
 };
 
-interface AboutCommunityProps extends CommunityInfoMobileProps {}
+type AboutCommunityProps = CommunityInfoMobileProps;
 
 const AboutCommunity: FC<AboutCommunityProps> = ({ communityInfo }) => {
   return (
@@ -73,8 +73,7 @@ const AboutCommunity: FC<AboutCommunityProps> = ({ communityInfo }) => {
   );
 };
 
-interface CommunityModeratorsCardProps
-  extends Pick<CommunityInfo, "moderators"> {}
+type CommunityModeratorsCardProps = Pick<CommunityInfo, "moderators">;
 
 const CommunityModeratorsCard: FC<CommunityModeratorsCardProps> = ({
   moderators,

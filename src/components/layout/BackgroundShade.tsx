@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import React, { FC } from "react";
 
-interface BackgroundShadeProps extends React.HTMLAttributes<HTMLDivElement> {}
+type BackgroundShadeProps = React.HTMLAttributes<HTMLDivElement>;
 
 const BackgroundShade: FC<BackgroundShadeProps> = ({ className }) => {
   return (

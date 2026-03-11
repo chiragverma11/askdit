@@ -6,7 +6,7 @@ import React, { FC } from "react";
 import { Icons } from "../Icons";
 import { Button } from "./Button";
 
-interface ModalProps extends React.ComponentPropsWithoutRef<"div"> {}
+type ModalProps = React.ComponentPropsWithoutRef<"div">;
 
 const Modal: FC<ModalProps> = ({ children, className, ...props }) => {
   return (
@@ -22,7 +22,7 @@ const Modal: FC<ModalProps> = ({ children, className, ...props }) => {
   );
 };
 
-interface ModalContentProps extends React.ComponentPropsWithoutRef<"div"> {}
+type ModalContentProps = React.ComponentPropsWithoutRef<"div">;
 
 const ModalContent: FC<ModalContentProps> = ({
   className,
@@ -46,8 +46,7 @@ const ModalContent: FC<ModalContentProps> = ({
   );
 };
 
-interface ModalCloseButtonProps
-  extends React.ComponentPropsWithoutRef<typeof Button> {}
+type ModalCloseButtonProps = React.ComponentPropsWithoutRef<typeof Button>;
 
 const ModalCloseButton: FC<ModalCloseButtonProps> = ({
   variant = "ghost",

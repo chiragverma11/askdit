@@ -77,7 +77,7 @@ const UserInfoMobile: FC<UserInfoMobileProps> = ({
   );
 };
 
-interface MoreInfoProps extends UserInfoMobileProps {}
+type MoreInfoProps = UserInfoMobileProps;
 
 const MoreInfo: FC<MoreInfoProps> = ({ session, userInfo }) => {
   return (

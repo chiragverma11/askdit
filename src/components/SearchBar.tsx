@@ -31,7 +31,7 @@ import UserAvatar from "./UserAvatar";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/Dialog";
 
-interface SearchBarProps extends React.ComponentPropsWithoutRef<"div"> { }
+type SearchBarProps = React.ComponentPropsWithoutRef<"div">;
 
 const SearchBar: FC<SearchBarProps> = (props) => {
   const isLg = useMediaQuery("(min-width: 1024px)");
@@ -43,7 +43,7 @@ const SearchBar: FC<SearchBarProps> = (props) => {
   return <SearchBarDialog {...props} />;
 };
 
-interface SearchBarDialogProps extends React.ComponentPropsWithoutRef<"div"> { }
+type SearchBarDialogProps = React.ComponentPropsWithoutRef<"div">;
 
 const SearchBarPopover: FC<SearchBarDialogProps> = ({
   className,
@@ -370,8 +370,6 @@ const SearchBarPopover: FC<SearchBarDialogProps> = ({
     </Popover>
   );
 };
-
-interface SearchBarDialogProps extends React.ComponentPropsWithoutRef<"div"> { }
 
 const SearchBarDialog: FC<SearchBarDialogProps> = ({ className, ...props }) => {
   const [open, setOpen] = useState(false);
