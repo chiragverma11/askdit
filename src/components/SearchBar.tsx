@@ -18,13 +18,16 @@ import {
   SearchFormValidator,
   SearchRequestType,
 } from "@/lib/validators/search";
-import { type RecentSearch, useRecentSearchStore } from "@/store/recentSearchStore";
+import {
+  type RecentSearch,
+  useRecentSearchStore,
+} from "@/store/recentSearchStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDebouncedValue, useHotkeys, useMediaQuery } from "@mantine/hooks";
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import CommunityAvatar from "./CommunityAvatar";
 import { Icons } from "./Icons";
 import UserAvatar from "./UserAvatar";
@@ -50,7 +53,7 @@ const SearchBarPopover: FC<SearchBarDialogProps> = ({
   ...props
 }) => {
   const [open, setOpen] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement | null>();
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const popoverTriggerRef = useRef<HTMLDivElement>(null);
   const popoverContentRef = useRef<HTMLDivElement>(null);
 
@@ -71,7 +74,7 @@ const SearchBarPopover: FC<SearchBarDialogProps> = ({
     (state) => state.clearRecentSearches,
   );
 
-  const { register, watch, trigger, setValue, handleSubmit } =
+  const { register, control, setValue, handleSubmit } =
     useForm<SearchRequestType>({
       resolver: zodResolver(SearchFormValidator),
       defaultValues: {
@@ -81,16 +84,14 @@ const SearchBarPopover: FC<SearchBarDialogProps> = ({
       },
     });
 
+  const queryValue = useWatch({ control, name: "query" });
   const { ref, ...rest } = register("query");
 
-  const [query] = useDebouncedValue(watch("query"), 300);
+  const [query] = useDebouncedValue(queryValue ?? "", 300);
 
-  const {
-    data: searchSuggestions,
-    refetch: refetchSearchSuggestions,
-    isFetching: isFetchingSearchSuggestions,
-  } = trpc.search.searchSuggestions.useQuery(
-    { query: query, userId: session?.user.id },
+  const { data: searchSuggestions, refetch: refetchSearchSuggestions } =
+    trpc.search.searchSuggestions.useQuery(
+    { query: query, userId: session?.user ? session.user.id : undefined },
     {
       enabled: false,
       refetchOnWindowFocus: false,
@@ -165,15 +166,6 @@ const SearchBarPopover: FC<SearchBarDialogProps> = ({
     setValue("query", recentSearch.searchQuery);
     onSubmit({ query: recentSearch.searchQuery });
   };
-
-  useEffect(() => {
-    if (
-      searchInputRef.current &&
-      document.activeElement === searchInputRef.current
-    ) {
-      setOpen(true);
-    }
-  }, []);
 
   useEffect(() => {
     if (open && searchSuggestions?.query !== query) {
@@ -256,7 +248,7 @@ const SearchBarPopover: FC<SearchBarDialogProps> = ({
         onBlur={handleContentBlur}
       >
         <Command className="bg-subtle">
-          <CommandList className="max-h-[80vh] text-sm ">
+          <CommandList className="max-h-[80vh] text-sm">
             {query.length === 0 && recentSearches.length > 0 && (
               <CommandGroup>
                 <div
@@ -373,7 +365,7 @@ const SearchBarPopover: FC<SearchBarDialogProps> = ({
 
 const SearchBarDialog: FC<SearchBarDialogProps> = ({ className, ...props }) => {
   const [open, setOpen] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement | null>();
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const popoverTriggerRef = useRef<HTMLDivElement>(null);
 
   const pathname = usePathname();
@@ -393,7 +385,7 @@ const SearchBarDialog: FC<SearchBarDialogProps> = ({ className, ...props }) => {
     (state) => state.clearRecentSearches,
   );
 
-  const { register, watch, trigger, setValue, handleSubmit } =
+  const { register, control, setValue, handleSubmit } =
     useForm<SearchRequestType>({
       resolver: zodResolver(SearchFormValidator),
       defaultValues: {
@@ -403,15 +395,13 @@ const SearchBarDialog: FC<SearchBarDialogProps> = ({ className, ...props }) => {
       },
     });
 
+  const queryValue = useWatch({ control, name: "query" });
   const { ref, ...rest } = register("query");
 
-  const [query] = useDebouncedValue(watch("query"), 300);
+  const [query] = useDebouncedValue(queryValue ?? "", 300);
 
-  const {
-    data: searchSuggestions,
-    refetch: refetchSearchSuggestions,
-    isFetching: isFetchingSearchSuggestions,
-  } = trpc.search.searchSuggestions.useQuery(
+  const { data: searchSuggestions, refetch: refetchSearchSuggestions } =
+    trpc.search.searchSuggestions.useQuery(
     { query: query, userId: session?.user.id },
     {
       enabled: false,
@@ -530,7 +520,7 @@ const SearchBarDialog: FC<SearchBarDialogProps> = ({ className, ...props }) => {
       <DialogContent
         onOpenAutoFocus={(e) => e.preventDefault()}
         onCloseAutoFocus={(e) => e.preventDefault()}
-        className="h-full border-0 bg-black max-w-full"
+        className="h-full max-w-full border-0 bg-black"
         closeButton={false}
       >
         <Command className="absolute inset-0 bg-default/80">

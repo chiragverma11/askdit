@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { useDebouncedValue, useIntersection } from "@mantine/hooks";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import React, { FC, useMemo, useRef } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Icons } from "./Icons";
 import { Button } from "./ui/Button";
 
@@ -30,13 +30,20 @@ const HorizontalMenu: FC<HorizontalMenuProps> = ({
   ...props
 }) => {
   const menuListRef = useRef<React.ElementRef<"ul">>(null);
+  const [menuRoot, setMenuRoot] = useState<React.ElementRef<"ul"> | null>(
+    null,
+  );
+
+  useEffect(() => {
+    setMenuRoot(menuListRef.current);
+  }, []);
 
   const { ref: firstItemRef, entry: firstItemEntry } = useIntersection({
-    root: menuListRef.current,
+    root: menuRoot,
     threshold: 1,
   });
   const { ref: lastItemRef, entry: lastItemEntry } = useIntersection({
-    root: menuListRef.current,
+    root: menuRoot,
     threshold: 1,
   });
 

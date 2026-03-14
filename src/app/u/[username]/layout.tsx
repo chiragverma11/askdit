@@ -76,7 +76,7 @@ export default async function UserLayout(props: UserLayoutProps) {
   }
 
   // Redirect if username's case in params is not same as in db
-  if (username !== userInfo.username) {
+  if (userInfo.username && username !== userInfo.username) {
     redirect(`/u/${encodePathSegment(userInfo.username)}`);
   }
 

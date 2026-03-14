@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Slot } from "@radix-ui/react-slot";
 import { VariantProps } from "class-variance-authority";
 import Link from "next/link";
 import * as React from "react";
@@ -64,29 +65,16 @@ const NoContentAction = React.forwardRef<
     },
     ref,
   ) => {
-    if (
-      asChild &&
-      React.isValidElement(children) &&
-      React.Children.count(children) === 1
-    ) {
-      return React.cloneElement(children as React.ReactElement, {
-        ref,
-        className: cn(
-          buttonVariants({ variant, size, className }),
-          children.props.className,
-        ),
-        ...props,
-      });
-    }
+    const Component = asChild ? Slot : Link;
 
     return (
-      <Link
+      <Component
         className={cn("w-fit", buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
       >
         {children}
-      </Link>
+      </Component>
     );
   },
 );

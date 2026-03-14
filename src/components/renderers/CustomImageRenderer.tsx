@@ -5,7 +5,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
 
-const CustomImageRenderer = ({ data }: any) => {
+interface ImageRendererData {
+  file: {
+    url: string;
+    width?: number;
+    height?: number;
+  };
+  caption?: string;
+}
+
+const CustomImageRenderer = ({ data }: { data: ImageRendererData }) => {
   const src = data.file?.url;
 
   const params = new URL(src).searchParams;

@@ -1,4 +1,3 @@
-import { FeedViewType } from "@/types/utilities";
 import { nanoid } from "nanoid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";

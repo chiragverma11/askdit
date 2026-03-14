@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { protectedProcedure, publicProcedure, router } from "../trpc";
+import { protectedProcedure, router } from "../trpc";
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
 import { z } from "zod";
 

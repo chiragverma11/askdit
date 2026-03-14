@@ -30,11 +30,7 @@ export type Notification =
 const Notifications = () => {
   const isLg = useMediaQuery("(min-width: 1024px)");
 
-  if (isLg) {
-    return <NotificationsDropdown {...props} />;
-  } else if (!isLg) {
-    return <NotificationsDrawer {...props} />;
-  }
+  return isLg ? <NotificationsDropdown /> : <NotificationsDrawer />;
 };
 
 const NotificationsDropdown = () => {
@@ -150,7 +146,6 @@ interface NotificationsContainerProps {
 
 const NotificationsContainer = ({ open, onClose }: NotificationsContainerProps) => {
   const { ref, entry } = useIntersection({
-    root: lastNotificationRef.current,
     threshold: 0.1,
   });
 
@@ -195,7 +190,9 @@ const NotificationsContainer = ({ open, onClose }: NotificationsContainerProps) 
                 <li
                   key={notification.id}
                   onClick={() => {
-                    !isMarkingAsRead && markAsRead({ id: notification.id });
+                    if (!isMarkingAsRead) {
+                      markAsRead({ id: notification.id });
+                    }
                     onClose();
                   }}
                   ref={ref}
@@ -210,7 +207,9 @@ const NotificationsContainer = ({ open, onClose }: NotificationsContainerProps) 
               <li
                 key={notification.id}
                 onClick={() => {
-                  !isMarkingAsRead && markAsRead({ id: notification.id });
+                  if (!isMarkingAsRead) {
+                    markAsRead({ id: notification.id });
+                  }
                   onClose();
                 }}
               >

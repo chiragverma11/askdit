@@ -27,7 +27,7 @@ const style: Style = {
 };
 
 interface EditorOutputProps {
-  content: any;
+  content: unknown;
   limitHeight: boolean;
 }
 

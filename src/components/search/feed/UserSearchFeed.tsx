@@ -6,7 +6,7 @@ import { getSearchUsers } from "@/lib/prismaQueries";
 import { trpc } from "@/lib/trpc";
 import { useIntersection } from "@mantine/hooks";
 import Link from "next/link";
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
 type SearchUsersType = Awaited<ReturnType<typeof getSearchUsers>>;
@@ -17,19 +17,22 @@ interface UserSearchFeedProps {
   initialUsers: SearchUsersType;
 }
 
-const UserSearchFeed: FC<UserSearchFeedProps> = ({ query, userId, initialUsers }) => {
-  const lastPostRef = useRef<HTMLElement>(null);
+const UserSearchFeed: FC<UserSearchFeedProps> = ({
+  query,
+  userId,
+  initialUsers,
+}) => {
   const { ref, entry } = useIntersection({
-    root: lastPostRef.current,
     threshold: 0.1,
   });
 
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    trpc.search.infiniteSearchUsers.useInfiniteQuery({
-      limit: INFINITE_SCROLL_PAGINATION_RESULTS,
-      query,
-      userId,
-    },
+    trpc.search.infiniteSearchUsers.useInfiniteQuery(
+      {
+        limit: INFINITE_SCROLL_PAGINATION_RESULTS,
+        query,
+        userId,
+      },
       {
         getNextPageParam: (lastPage) => lastPage?.nextCursor,
       },
@@ -41,8 +44,7 @@ const UserSearchFeed: FC<UserSearchFeedProps> = ({ query, userId, initialUsers }
     }
   }, [entry, fetchNextPage, isLoading, hasNextPage]);
 
-  const users =
-    data?.pages.flatMap((page) => page.users) ?? initialUsers;
+  const users = data?.pages.flatMap((page) => page.users) ?? initialUsers;
 
   return (
     <ul className="flex w-full flex-col items-center gap-4 px-4 pb-16 lg:max-h-none lg:pb-4 lg:pr-4">
@@ -70,8 +72,6 @@ const UserSearchFeed: FC<UserSearchFeedProps> = ({ query, userId, initialUsers }
       ) : null}
     </ul>
   );
-
-
 };
 
 interface UserCardProps {

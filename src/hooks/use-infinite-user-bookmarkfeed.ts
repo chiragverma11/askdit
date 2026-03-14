@@ -1,7 +1,7 @@
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/config";
 import { trpc } from "@/lib/trpc";
 import { useIntersection } from "@mantine/hooks";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 interface InfiniteUserBookmarkProps {
   userId: string | undefined;
@@ -10,9 +10,7 @@ interface InfiniteUserBookmarkProps {
 export function useInfiniteUserBookmarkFeed({
   userId,
 }: InfiniteUserBookmarkProps) {
-  const lastBookmarkRef = useRef<HTMLElement>(null);
   const { ref, entry } = useIntersection({
-    root: lastBookmarkRef.current,
     threshold: 0.1,
   });
 

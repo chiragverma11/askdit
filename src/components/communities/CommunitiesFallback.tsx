@@ -3,7 +3,6 @@
 import AuthLink from "@/components/AuthLink";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 import { FC, Suspense } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";

@@ -18,7 +18,7 @@ import { Button, buttonVariants } from "./ui/Button";
 interface AddCommentProps {
   postId: string;
   refetchComments: () => void;
-  user?: any;
+  user?: unknown;
   isQuestionPost: boolean;
 }
 

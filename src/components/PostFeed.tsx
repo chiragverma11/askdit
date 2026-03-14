@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect } from "react";
 
 import { useInfinitePostFeed } from "@/hooks/use-infinite-postfeed";
 import { getVotesAmount } from "@/lib/utils";
@@ -9,7 +9,6 @@ import { FeedViewType } from "@/types/utilities";
 import { useIntersection } from "@mantine/hooks";
 import {
   Bookmark,
-  Comment,
   Post as PrismaPost,
   Subreddit,
   User,
@@ -122,9 +121,7 @@ const PostFeed: FC<PostFeedProps> = ({
   const pathname = usePathname();
   const feedViewType = useFeedViewStore((state) => state.feedViewType);
 
-  const lastPostRef = useRef<HTMLElement>(null);
   const { ref, entry } = useIntersection({
-    root: lastPostRef.current,
     threshold: 0.1,
   });
 

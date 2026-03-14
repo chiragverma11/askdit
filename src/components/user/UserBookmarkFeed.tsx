@@ -18,8 +18,9 @@ const UserBookmarkFeed: FC<UserBookmarkFeedProps> = ({
   initialBookmarks,
   userId,
 }) => {
-  const { data, isLoading, isFetchingNextPage, ref } =
-    useInfiniteUserBookmarkFeed({ userId });
+  const { data, isFetchingNextPage, ref } = useInfiniteUserBookmarkFeed({
+    userId,
+  });
 
   const bookmarks = data ?? initialBookmarks;
 

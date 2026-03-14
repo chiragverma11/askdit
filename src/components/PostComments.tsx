@@ -7,7 +7,7 @@ import { useIntersection } from "@mantine/hooks";
 import { User } from "next-auth";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect } from "react";
 import AddComment from "./AddComment";
 import Comment, { CommentSkeleton } from "./Comment";
 import { Icons } from "./Icons";
@@ -40,9 +40,7 @@ const PostComments: FC<PostCommentsProps> = ({
 }) => {
   const pathname = usePathname();
   const params = useParams();
-  const lastCommentRef = useRef<HTMLElement>(null);
   const { ref, entry } = useIntersection({
-    root: lastCommentRef.current,
     threshold: 0.1,
   });
 

@@ -68,14 +68,25 @@ export const rateLimitMiddleware = async (
   }
 };
 
-export const ipFingerprint = (req: Request | Record<any, any>) => {
-  const forwarded =
-    req instanceof Request
-      ? req.headers.get("x-forwarded-for")
-      : req.headers["x-forwarded-for"];
+interface NodeRequestLike {
+  headers?: Record<string, string | string[] | undefined>;
+  socket?: {
+    remoteAddress?: string | null;
+  };
+}
+
+export const ipFingerprint = (req: Request | NodeRequestLike) => {
+  if (req instanceof Request) {
+    const forwarded = req.headers.get("x-forwarded-for");
+    const ip = forwarded ? forwarded.split(/, /)[0] : null;
+
+    return ip || "127.0.0.1";
+  }
+
+  const forwarded = req.headers?.["x-forwarded-for"];
   const ip = forwarded
     ? (typeof forwarded === "string" ? forwarded : forwarded[0])?.split(/, /)[0]
-    : (req as any)?.socket?.remoteAddress ?? null;
+    : req.socket?.remoteAddress ?? null;
 
   return ip || "127.0.0.1";
 };

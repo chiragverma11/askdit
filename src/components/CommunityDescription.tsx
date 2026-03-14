@@ -7,7 +7,7 @@ import { DescriptionValidator } from "@/lib/validators/community";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useClickOutside } from "@mantine/hooks";
 import React, { FC, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -57,7 +57,9 @@ const CommunityDescription: FC<CommunityDescriptionProps> = ({
               "cursor-pointer gap-2 rounded-md border border-transparent transition-[padding] hover:border-default hover:p-1",
           )}
           onClick={() => {
-            isAuthor && setAddingDescription(true);
+            if (isAuthor) {
+              setAddingDescription(true);
+            }
           }}
         >
           {description}
@@ -90,13 +92,16 @@ const AddCommunityDescription = React.forwardRef<
   HTMLDivElement,
   AddDescriptionProps
 >(({ description, communityId, setDescription, close }, ref) => {
-  const { handleSubmit, register, watch } = useForm<AddDescriptionRequestType>({
-    resolver: zodResolver(DescriptionValidator),
-    defaultValues: {
-      description: description ?? "",
-      communityId: communityId,
-    },
-  });
+  const { handleSubmit, register, control } =
+    useForm<AddDescriptionRequestType>({
+      resolver: zodResolver(DescriptionValidator),
+      defaultValues: {
+        description: description ?? "",
+        communityId: communityId,
+      },
+    });
+
+  const descriptionValue = useWatch({ control, name: "description" });
 
   const { ref: descriptionRef, ...rest } = register("description");
 
@@ -134,7 +139,7 @@ const AddCommunityDescription = React.forwardRef<
         />
         <div className="flex items-center justify-between text-xs">
           <span className="text-subtle">
-            {watch("description").length}/{COMMUNITY_DESCRIPTION_LENGTH}
+            {(descriptionValue?.length ?? 0)}/{COMMUNITY_DESCRIPTION_LENGTH}
           </span>
           <div className="flex items-center justify-between gap-2">
             <Button

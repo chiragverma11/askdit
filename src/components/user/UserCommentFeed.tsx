@@ -5,7 +5,7 @@ import { getVotes } from "@/lib/utils";
 import { UserComments } from "@/types/utilities";
 import { useIntersection } from "@mantine/hooks";
 import { Session } from "next-auth";
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect } from "react";
 import UserComment, {
   SamePostUserComments,
   UserCommentSkeleton,
@@ -31,9 +31,7 @@ const UserCommentFeed: FC<UserCommentFeedProps | UserAnswerFeedProps> = ({
   session,
   authorId,
 }) => {
-  const lastCommentRef = useRef<HTMLElement>(null);
   const { ref, entry } = useIntersection({
-    root: lastCommentRef.current,
     threshold: 0.1,
   });
 

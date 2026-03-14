@@ -2,7 +2,6 @@
 
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
-import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import React, { FC, Suspense, useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -30,42 +29,42 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
   ...props
 }) => {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [isSub, setIsSub] = useState<boolean>(isSubscribed);
 
-  const { mutate: subscribe, isLoading: isSubLoading } =
-    trpc.community.subscribe.useMutation({
-      onSuccess: () => {
-        toast.success(`Successfully joined r/${subredditName}`);
-        !disableRefresh &&
-          startTransition(() => {
-            router.refresh();
-          });
-      },
-      onError(error) {
-        setIsSub(false);
-        toast.error(`Failed to join r/${subredditName}`, {
-          description: error.message,
+  const { mutate: subscribe } = trpc.community.subscribe.useMutation({
+    onSuccess: () => {
+      toast.success(`Successfully joined r/${subredditName}`);
+      if (!disableRefresh) {
+        startTransition(() => {
+          router.refresh();
         });
-      },
-    });
+      }
+    },
+    onError(error) {
+      setIsSub(false);
+      toast.error(`Failed to join r/${subredditName}`, {
+        description: error.message,
+      });
+    },
+  });
 
-  const { mutate: unsubscribe, isLoading: isUnsubLoading } =
-    trpc.community.unsubscribe.useMutation({
-      onSuccess: () => {
-        toast.success(`Successfully left r/${subredditName}`);
-        !disableRefresh &&
-          startTransition(() => {
-            router.refresh();
-          });
-      },
-      onError(error) {
-        setIsSub(true);
-        toast.error(`Failed to leave r/${subredditName}`, {
-          description: error.message,
+  const { mutate: unsubscribe } = trpc.community.unsubscribe.useMutation({
+    onSuccess: () => {
+      toast.success(`Successfully left r/${subredditName}`);
+      if (!disableRefresh) {
+        startTransition(() => {
+          router.refresh();
         });
-      },
-    });
+      }
+    },
+    onError(error) {
+      setIsSub(true);
+      toast.error(`Failed to leave r/${subredditName}`, {
+        description: error.message,
+      });
+    },
+  });
 
   return isSub ? (
     <Button

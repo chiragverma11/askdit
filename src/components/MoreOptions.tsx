@@ -143,41 +143,47 @@ const MoreOptions: FC<MoreOptionsProps> = ({ ...props }) => {
   };
 
   const handleBookmark = () => {
-    type === "post"
-      ? bookmarkPost(
-          { postId: id, remove: isBookmarked },
-          {
-            onSuccess: () => {
-              toast.success(
-                isBookmarked
-                  ? "Post unsaved successfully"
-                  : "Post saved successfully",
-              );
-            },
+    if (type === "post") {
+      bookmarkPost(
+        { postId: id, remove: isBookmarked },
+        {
+          onSuccess: () => {
+            toast.success(
+              isBookmarked
+                ? "Post unsaved successfully"
+                : "Post saved successfully",
+            );
           },
-        )
-      : bookmarkComment(
-          { commentId: id, remove: isBookmarked },
-          {
-            onSuccess: () => {
-              toast.success(
-                isBookmarked
-                  ? "Comment unsaved successfully"
-                  : "Comment saved successfully",
-              );
-            },
-          },
-        );
+        },
+      );
+      return;
+    }
+
+    bookmarkComment(
+      { commentId: id, remove: isBookmarked },
+      {
+        onSuccess: () => {
+          toast.success(
+            isBookmarked
+              ? "Comment unsaved successfully"
+              : "Comment saved successfully",
+          );
+        },
+      },
+    );
   };
 
   const handleDeletion = () => {
-    type === "post"
-      ? deletePost({
-          postId: id,
-        })
-      : deleteComment({
-          commentId: id,
-        });
+    if (type === "post") {
+      deletePost({
+        postId: id,
+      });
+      return;
+    }
+
+    deleteComment({
+      commentId: id,
+    });
   };
 
   const handleAlertDialogOpenChange = (open: boolean) => {

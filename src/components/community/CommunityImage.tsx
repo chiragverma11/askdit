@@ -60,7 +60,7 @@ const ImageUpdater: FC<ImageUpdaterProps> = ({
 }) => {
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const { mutate: updateCommunityProfileImage, isLoading } =
+  const { mutate: updateCommunityProfileImage } =
     trpc.community.updateProfileImage.useMutation({
       onSuccess: (data) => {
         toast.success("Image updated");

@@ -10,7 +10,7 @@ import { PostType } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import { FC, useCallback, useMemo, useRef } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Icons } from "../Icons";
@@ -39,7 +39,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
 
   const postType: PostType = "POST";
 
-  const { register, watch, handleSubmit } = useForm<FormData>({
+  const { register, control, handleSubmit } = useForm<FormData>({
     resolver: zodResolver(PostValidator),
     defaultValues: {
       title: "",
@@ -50,6 +50,8 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
       isQuestion: isQuestion,
     },
   });
+
+  const titleValue = useWatch({ control, name: "title" });
 
   const { ref: titleValidationRef, ...rest } = register("title");
 
@@ -98,7 +100,7 @@ const CreateEditorPost: FC<CreateEditorPostProps> = ({
       <form onSubmit={handleSubmit(onSubmit)} id="communityPostForm">
         <div className="prose prose-stone w-full dark:prose-invert">
           <SubmitPostTitle
-            titleLength={watch("title").length}
+            titleLength={titleValue?.length ?? 0}
             titleValidationRef={titleValidationRef}
             useFormRegisterRest={rest}
             _titleRef={_titleRef}

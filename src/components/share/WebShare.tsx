@@ -93,10 +93,11 @@ export const WebShare = memo((props: WebShareProps) => {
   return (
     <>
       {/* Overrides Children element's `onClick` event */}
-      {React.isValidElement(props.children) &&
+      {React.isValidElement<{ onClick?: React.MouseEventHandler }>(
+        props.children,
+      ) &&
         React.Children.count(props.children) === 1 &&
-        cloneElement(props.children as React.ReactElement, {
-          ...(props.children as React.ReactElement)?.props,
+        cloneElement(props.children, {
           onClick: handleOnClick,
         })}
 
@@ -347,7 +348,7 @@ const QRCode = ({
   className,
   imageClassName,
 }: {
-  url: any;
+  url: string;
   grow?: "horizontal" | "vertical";
   className?: string;
   imageClassName?: string;
@@ -382,7 +383,7 @@ const QRCode = ({
         const imageObjectURL = URL.createObjectURL(blob);
         setImageSrc(imageObjectURL);
         setLoading(false);
-      } catch (error) {
+      } catch {
         setLoading(false);
       }
     };
