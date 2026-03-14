@@ -1,7 +1,7 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const token = await getToken({ req });
   const pathname = req.nextUrl.pathname;
   const startsWithSignIn = pathname.startsWith("/sign-in");
@@ -11,7 +11,7 @@ export async function middleware(req: NextRequest) {
     if (token) {
       return NextResponse.redirect(new URL("/", req.url));
     }
-    return null;
+    return NextResponse.next();
   }
 
   if (!token) {
@@ -20,6 +20,8 @@ export async function middleware(req: NextRequest) {
 
     return NextResponse.redirect(redirectUrl);
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
