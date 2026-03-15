@@ -30,7 +30,7 @@ const Items = {
   Communities: "Communities",
 } as const;
 
-interface AsideBarProps extends HTMLAttributes<HTMLElement> { }
+type AsideBarProps = HTMLAttributes<HTMLElement>;
 
 const AsideBar: FC<AsideBarProps> = ({ className }) => {
   const pathname = usePathname() || "/";

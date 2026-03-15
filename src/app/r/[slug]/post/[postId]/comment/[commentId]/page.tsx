@@ -15,11 +15,10 @@ import { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { FC } from "react";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string; postId: string };
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string; postId: string }>;
 }): Promise<Metadata> {
+  const params = await props.params;
   const { slug: communityName, postId } = params;
 
   const postTitle = await getPostTitle({ postId });
@@ -45,18 +44,17 @@ export async function generateMetadata({
 }
 
 interface CommunityPostCommentProps {
-  params: {
+  params: Promise<{
     slug: string;
     postId: string;
     commentId?: string;
-  };
-  searchParams: { [key: string]: string | string[] | undefined };
+  }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-const CommunityPostComment: FC<CommunityPostCommentProps> = async ({
-  params,
-  searchParams,
-}) => {
+const CommunityPostComment: FC<CommunityPostCommentProps> = async (props) => {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { postId, commentId, slug } = params;
   const session = await getAuthSession();
 

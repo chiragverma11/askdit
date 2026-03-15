@@ -23,12 +23,12 @@ import {
 } from "./ui/Tooltip";
 
 type InfinitePostCommentsOutput = RouterOutputs["comment"]["infiniteComments"];
+type MoreRepliesOutput = RouterOutputs["comment"]["getMoreReplies"];
+type CommentItem = InfinitePostCommentsOutput["comments"][number];
+type ReplyItem = MoreRepliesOutput["comments"][number];
 
 interface CommentProps extends React.ComponentPropsWithoutRef<"div"> {
-  comment: PartialK<
-    Pick<InfinitePostCommentsOutput, "comments">["comments"][number],
-    "replies"
-  >;
+  comment: PartialK<CommentItem, "replies">;
   votesAmt: number;
   currentVoteType?: VoteType;
   user?: User;
@@ -52,7 +52,9 @@ const Comment: FC<CommentProps> = ({
   isPostAuthor,
 }) => {
   const [isReplying, setIsReplying] = useState(false);
-  const [replies, setReplies] = useState(comment.replies ?? []);
+  const [replies, setReplies] = useState<ReplyItem[]>(
+    (comment.replies as ReplyItem[] | undefined) ?? [],
+  );
   const [skip, setSkip] = useState(comment.replies?.length ?? 0);
   const [totalReplies, setTotalReplies] = useState(comment._count.replies);
   const [isDeleted, setIsDeleted] = useState(comment?.deleted);
@@ -77,7 +79,7 @@ const Comment: FC<CommentProps> = ({
   });
 
   const addNewReply = (
-    newReply: Pick<InfinitePostCommentsOutput, "comments">["comments"][number],
+    newReply: ReplyItem,
   ) => {
     setReplies((prevReplies) => [newReply, ...prevReplies]);
     setTotalReplies((prevTotalReplies) => prevTotalReplies + 1);
@@ -242,7 +244,7 @@ const Comment: FC<CommentProps> = ({
                 return (
                   <div key={reply.id} className="-ml-5">
                     <Comment
-                      comment={reply}
+                      comment={reply as CommentProps["comment"]}
                       votesAmt={votesAmt}
                       currentVoteType={currentVote?.type}
                       user={user}
@@ -297,7 +299,7 @@ const Comment: FC<CommentProps> = ({
   );
 };
 
-interface ReplyButtonProps extends React.HTMLAttributes<HTMLElement> {}
+type ReplyButtonProps = React.HTMLAttributes<HTMLElement>;
 
 const ReplyButton: FC<ReplyButtonProps> = ({ onClick }) => {
   return (

@@ -2,9 +2,8 @@
 
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
-import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
-import React, { FC, useState, useTransition } from "react";
+import React, { FC, Suspense, useState, useTransition } from "react";
 import { toast } from "sonner";
 import AuthLink from "./AuthLink";
 import { Button, buttonVariants } from "./ui/Button";
@@ -30,42 +29,42 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
   ...props
 }) => {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [isSub, setIsSub] = useState<boolean>(isSubscribed);
 
-  const { mutate: subscribe, isLoading: isSubLoading } =
-    trpc.community.subscribe.useMutation({
-      onSuccess: () => {
-        toast.success(`Successfully joined r/${subredditName}`);
-        !disableRefresh &&
-          startTransition(() => {
-            router.refresh();
-          });
-      },
-      onError(error) {
-        setIsSub(false);
-        toast.error(`Failed to join r/${subredditName}`, {
-          description: error.message,
+  const { mutate: subscribe } = trpc.community.subscribe.useMutation({
+    onSuccess: () => {
+      toast.success(`Successfully joined r/${subredditName}`);
+      if (!disableRefresh) {
+        startTransition(() => {
+          router.refresh();
         });
-      },
-    });
+      }
+    },
+    onError(error) {
+      setIsSub(false);
+      toast.error(`Failed to join r/${subredditName}`, {
+        description: error.message,
+      });
+    },
+  });
 
-  const { mutate: unsubscribe, isLoading: isUnsubLoading } =
-    trpc.community.unsubscribe.useMutation({
-      onSuccess: () => {
-        toast.success(`Successfully left r/${subredditName}`);
-        !disableRefresh &&
-          startTransition(() => {
-            router.refresh();
-          });
-      },
-      onError(error) {
-        setIsSub(true);
-        toast.error(`Failed to leave r/${subredditName}`, {
-          description: error.message,
+  const { mutate: unsubscribe } = trpc.community.unsubscribe.useMutation({
+    onSuccess: () => {
+      toast.success(`Successfully left r/${subredditName}`);
+      if (!disableRefresh) {
+        startTransition(() => {
+          router.refresh();
         });
-      },
-    });
+      }
+    },
+    onError(error) {
+      setIsSub(true);
+      toast.error(`Failed to leave r/${subredditName}`, {
+        description: error.message,
+      });
+    },
+  });
 
   return isSub ? (
     <Button
@@ -98,16 +97,18 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
       Join
     </Button>
   ) : (
-    <AuthLink
-      className={cn(
-        buttonVariants({ size: "xs" }),
-        "rounded-lg px-3 lg:hidden",
-        className,
-      )}
-      href="/sign-in"
-    >
-      Join
-    </AuthLink>
+    <Suspense>
+      <AuthLink
+        className={cn(
+          buttonVariants({ size: "xs" }),
+          "rounded-lg px-3 lg:hidden",
+          className,
+        )}
+        href="/sign-in"
+      >
+        Join
+      </AuthLink>
+    </Suspense>
   );
 };
 

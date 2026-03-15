@@ -452,7 +452,7 @@ export const postRouter = router({
             },
           });
 
-          let imageIds: string[] = [];
+          const imageIds: string[] = [];
 
           if (post.type === "MEDIA") {
             type MediaPostContent = z.infer<
@@ -468,7 +468,17 @@ export const postRouter = router({
             if (!post.content) return;
 
             (post.content as EditorJSContent).blocks.forEach((block) => {
-              if (block.type === "image") imageIds.push(block.data.file.id);
+              if (block.type !== "image") {
+                return;
+              }
+
+              const fileId = (
+                block.data as { file?: { id?: string } } | undefined
+              )?.file?.id;
+
+              if (fileId) {
+                imageIds.push(fileId);
+              }
             });
           }
 

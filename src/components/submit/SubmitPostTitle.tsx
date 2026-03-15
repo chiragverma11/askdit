@@ -1,7 +1,6 @@
 import { POST_TITLE_LENGTH } from "@/lib/config";
 import { cn } from "@/lib/utils";
-import { getHotkeyHandler } from "@mantine/hooks";
-import { FC, useEffect, useRef } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 import { RefCallBack, UseFormRegisterReturn } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 
@@ -25,6 +24,16 @@ const SubmitPostTitle: FC<SubmitPostTitleProps> = ({
 }) => {
   const titleFocusRef = useRef<HTMLTextAreaElement | null>(null);
 
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+        event.preventDefault();
+        submitButtonRef?.current?.click();
+      }
+    },
+    [submitButtonRef],
+  );
+
   useEffect(() => {
     if (titleFocusRef.current) {
       titleFocusRef.current.focus();
@@ -45,14 +54,7 @@ const SubmitPostTitle: FC<SubmitPostTitleProps> = ({
           "w-full resize-none overflow-hidden bg-transparent pr-12 text-2xl font-bold focus:outline-none lg:pr-10 lg:text-4xl",
           className,
         )}
-        onKeyDown={getHotkeyHandler([
-          [
-            "mod+Enter",
-            () => {
-              submitButtonRef?.current?.click();
-            },
-          ],
-        ])}
+        onKeyDown={handleKeyDown}
         {...props}
         {...useFormRegisterRest} // For form validation
       />

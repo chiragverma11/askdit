@@ -7,7 +7,7 @@ import { PostType } from "@prisma/client";
 import { DotPulse } from "@uiball/loaders";
 import { usePathname, useRouter } from "next/navigation";
 import { FC, useEffect, useMemo, useRef } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "../ui/Button";
@@ -38,9 +38,9 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
 
   const {
     register,
-    watch,
+    control,
     handleSubmit,
-    formState: { errors, dirtyFields },
+    formState: { dirtyFields },
     trigger,
     setValue,
   } = useForm<FormData>({
@@ -54,7 +54,10 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
     },
   });
 
-  const [debouncedUrl] = useDebouncedValue(watch("content.url"), 300);
+  const titleValue = useWatch({ control, name: "title" });
+  const urlValue = useWatch({ control, name: "content.url" });
+
+  const [debouncedUrl] = useDebouncedValue(urlValue ?? "", 300);
 
   const { ref: titleValidationRef, ...rest } = register("title");
 
@@ -126,7 +129,7 @@ const CreateLinkPost: FC<CreateLinkPostProps> = ({
       <form onSubmit={handleSubmit(onSubmit)} id="communityPostLinkForm">
         <div className="prose prose-stone w-full dark:prose-invert">
           <SubmitPostTitle
-            titleLength={watch("title").length}
+            titleLength={titleValue?.length ?? 0}
             submitButtonRef={submitButtonRef}
             titleValidationRef={titleValidationRef}
             useFormRegisterRest={rest}

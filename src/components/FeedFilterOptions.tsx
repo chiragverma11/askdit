@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { FC } from "react";
 import FeedViewTypeSelector from "./FeedViewTypeSelector";
 
-interface FeedFilterOptionProps extends React.ComponentPropsWithoutRef<"div"> {}
+type FeedFilterOptionProps = React.ComponentPropsWithoutRef<"div">;
 
 const FeedFilterOptions: FC<FeedFilterOptionProps> = ({ className }) => {
   return (

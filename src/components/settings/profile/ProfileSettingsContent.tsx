@@ -32,8 +32,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { FC, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { FC, Suspense, useEffect, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -53,10 +53,13 @@ const ProfileSettings: FC<ProfileSettingsProps> = ({ session }) => {
     mode: "all",
   });
 
+  const nameValue = useWatch({ control: form.control, name: "name" });
+  const usernameValue = useWatch({ control: form.control, name: "username" });
+
   const { update: updateSession } = useSession();
   const router = useRouter();
 
-  const [debouncedUsername] = useDebouncedValue(form.watch("username"), 400);
+  const [debouncedUsername] = useDebouncedValue(usernameValue ?? "", 400);
 
   const { mutate: updateProfile, isLoading: isUpdateProfileLoading } =
     trpc.settings.updateProfile.useMutation({
@@ -75,9 +78,11 @@ const ProfileSettings: FC<ProfileSettingsProps> = ({ session }) => {
           toast.error("Can't update profile", {
             description: "Login to update profile.",
             action: (
-              <AuthLink onClick={() => toast.dismiss()} href="/sign-in">
-                Login
-              </AuthLink>
+              <Suspense>
+                <AuthLink onClick={() => toast.dismiss()} href="/sign-in">
+                  Login
+                </AuthLink>
+              </Suspense>
             ),
           });
         } else if (error.data?.httpStatus === 409) {
@@ -194,13 +199,13 @@ const ProfileSettings: FC<ProfileSettingsProps> = ({ session }) => {
                         <span
                           className={cn(
                             "text-xs font-normal text-subtle",
-                            form.watch("name")?.length ===
+                            (nameValue?.length ?? 0) ===
                               DISPLAY_NAME_MAX_LENGTH && "text-destructive",
                           )}
                         >
                           {`${
                             DISPLAY_NAME_MAX_LENGTH -
-                            (form.watch("name")?.length || 0)
+                            (nameValue?.length ?? 0)
                           } 
                         Characters Remaining`}
                         </span>
@@ -247,13 +252,13 @@ const ProfileSettings: FC<ProfileSettingsProps> = ({ session }) => {
                         <span
                           className={cn(
                             "text-xs font-normal text-subtle",
-                            form.watch("username")?.length ===
+                            (usernameValue?.length ?? 0) ===
                               USERNAME_MAX_LENGTH && "text-destructive",
                           )}
                         >
                           {`${
                             USERNAME_MAX_LENGTH -
-                            (form.watch("username")?.length || 0)
+                            (usernameValue?.length ?? 0)
                           } 
                         Characters Remaining`}
                         </span>

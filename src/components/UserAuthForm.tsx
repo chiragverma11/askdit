@@ -33,9 +33,9 @@ const UserAuthForm: FC<UserAuthFormProps> = ({ authType }) => {
         variant={"outline"}
         className="rounded-lg border border-default/60 bg-transparent px-6 font-semibold hover:bg-highlight/30 active:scale-100 lg:px-10"
         isLoading={loading}
+        aria-label={`${authTerm} with Google`}
       >
         {loading ? null : <FcGoogle className="mr-2 h-6 w-6 rounded-lg" />}
-        {/* {authTerm} with Google */}
         Continue with Google
       </Button>
     </div>

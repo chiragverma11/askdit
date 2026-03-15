@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { Icons } from "../Icons";
 import { Button } from "../ui/Button";
 
-interface MediaDropzoneProps extends React.ComponentPropsWithoutRef<"div"> {}
+type MediaDropzoneProps = React.ComponentPropsWithoutRef<"div">;
 
 const MediaDropzone: FC<MediaDropzoneProps> = ({ className }) => {
   const files = useMediaDropzoneStore((state) => state.files);

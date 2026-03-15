@@ -2,18 +2,20 @@ import PostFeed from "@/components/PostFeed";
 import NoUserContent from "@/components/user/NoUserContent";
 import { getAuthSession } from "@/lib/auth";
 import { getUserQuestions } from "@/lib/prismaQueries";
+import { decodePathParam } from "@/lib/utils";
 import { FC } from "react";
 
 interface UserProfileQuestionsPageProps {
-  params: {
+  params: Promise<{
     username: string;
-  };
+  }>;
 }
 
-const UserProfileQuestionsPage: FC<UserProfileQuestionsPageProps> = async ({
-  params,
-}) => {
-  const { username } = params;
+const UserProfileQuestionsPage: FC<UserProfileQuestionsPageProps> = async (
+  props,
+) => {
+  const params = await props.params;
+  const username = decodePathParam(params.username);
 
   const session = await getAuthSession();
 

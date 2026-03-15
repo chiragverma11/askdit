@@ -17,7 +17,7 @@ import {
 
 export type MediaContent = Pick<z.infer<typeof MediaPostValidator>, "content">;
 
-interface MediaPostProps extends MediaContent {}
+type MediaPostProps = MediaContent;
 
 const MediaPost: FC<MediaPostProps> = ({ content }) => {
   if (content.type === "IMAGE") {

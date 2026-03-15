@@ -4,7 +4,6 @@ import FeedWrapper from "@/components/layout/FeedWrapper";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import { absoluteUrl } from "@/lib/utils";
 import { Metadata } from "next";
-import { FC } from "react";
 
 export const metadata: Metadata = {
   title: "Create Community",
@@ -25,9 +24,7 @@ export const metadata: Metadata = {
   },
 };
 
-interface CreateCommunityProps {}
-
-const CreateCommunity: FC<CreateCommunityProps> = ({}) => {
+const CreateCommunity = () => {
   return (
     <MainContentWrapper>
       <FeedWrapper className="flex max-w-2xl flex-col justify-center gap-10 px-2 md:px-0">

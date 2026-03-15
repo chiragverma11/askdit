@@ -8,7 +8,7 @@ import { buttonVariants } from "./ui/Button";
 
 interface CreatePostInputProps extends React.HTMLAttributes<HTMLDivElement> {
   session: Session;
-  href?: String;
+  href?: string;
 }
 
 const CreatePostInput: FC<CreatePostInputProps> = ({

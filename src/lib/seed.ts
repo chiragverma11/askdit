@@ -10,6 +10,48 @@ export type MediaContent = Pick<
   "content"
 >["content"];
 
+interface EditorImageFile {
+  id?: string;
+  url?: string;
+  size?: number;
+  width?: number;
+  height?: number;
+}
+
+interface EditorImageBlock {
+  id: string;
+  type: "image";
+  data: {
+    file: EditorImageFile;
+  };
+}
+
+interface ImageKitFile {
+  fileId: string;
+  url: string;
+  size: number;
+  width?: number;
+  height?: number;
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const isEditorImageBlock = (
+  block: EditorJSContent["blocks"][number],
+): block is EditorImageBlock => {
+  if (block.type !== "image") {
+    return false;
+  }
+
+  if (!isRecord(block.data)) {
+    return false;
+  }
+
+  const file = (block.data as Record<string, unknown>).file;
+  return isRecord(file);
+};
+
 // export const seedUpdatedAtInComments = async () => {
 //   const comments = await db.comment.findMany({
 //     select: {
@@ -179,8 +221,9 @@ export const seedStorageUsedInPosts = async () => {
     if (post.content) {
       const storageUsed = (post.content as EditorJSContent).blocks.reduce(
         (acc, block) => {
-          if (block.type === "image") {
-            return acc + block.data.file.size;
+          if (isEditorImageBlock(block)) {
+            const fileSize = block.data.file.size;
+            return typeof fileSize === "number" ? acc + fileSize : acc;
           }
           return acc;
         },
@@ -260,7 +303,7 @@ export const seedPostImageData = async () => {
     if (post.content) {
       return (post.content as EditorJSContent).blocks.some(
         (block) =>
-          block.type === "image" && block.data?.file?.size === undefined,
+          isEditorImageBlock(block) && block.data.file.size === undefined,
       );
     }
   });
@@ -272,21 +315,27 @@ export const seedPostImageData = async () => {
       return (post.content as EditorJSContent).blocks.forEach(
         (block, blockIndex) => {
           files.forEach((file) => {
-            if (block.type === "image") {
-              if (block.data?.file?.url.split("?")[0] === file.url) {
-                (imagePosts[index].content as EditorJSContent).blocks[
-                  blockIndex
-                ].data.file.id = file.fileId;
-                (imagePosts[index].content as EditorJSContent).blocks[
-                  blockIndex
-                ].data.file.size = file.size;
-                (imagePosts[index].content as EditorJSContent).blocks[
-                  blockIndex
-                ].data.file.width = file.width;
-                (imagePosts[index].content as EditorJSContent).blocks[
-                  blockIndex
-                ].data.file.height = file.height;
-              }
+            if (!isEditorImageBlock(block)) {
+              return;
+            }
+
+            const fileUrl = block.data.file.url?.split("?")[0];
+            if (fileUrl === file.url) {
+              (imagePosts[index].content as EditorJSContent).blocks[
+                blockIndex
+              ] = {
+                ...block,
+                data: {
+                  ...block.data,
+                  file: {
+                    ...block.data.file,
+                    id: file.fileId,
+                    size: file.size,
+                    width: file.width,
+                    height: file.height,
+                  },
+                },
+              };
             }
           });
         },
@@ -310,7 +359,7 @@ export const seedPostImageData = async () => {
   return imagePosts;
 };
 
-export const getAllImagekitFiles = async () => {
+export const getAllImagekitFiles = async (): Promise<ImageKitFile[]> => {
   const imagekit = new ImageKit({
     publicKey: env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY,
     privateKey: "private_VeGJ1WzhuiITYIETo6YExjN5JHk=",
@@ -321,7 +370,7 @@ export const getAllImagekitFiles = async () => {
     path: "/askdit/post/regular/images",
   });
 
-  return files;
+  return files as ImageKitFile[];
 };
 
 export const seedUserStorageUsed = async () => {
@@ -369,14 +418,18 @@ export const seedStorageUsed = async () => {
     console.log(user.username);
 
     const posts = user.posts.filter((post) => post.type === "POST");
+    const imagePostsUrl = posts.flatMap((post) => {
+      const content = post.content as EditorJSContent | null;
 
-    const imagePostsUrl = posts.flatMap((post: any) =>
-      post.content?.blocks?.flatMap((block: any) => {
-        if (block?.type === "image") {
-          return block.data.file.url;
-        }
-      }),
-    );
+      return (
+        content?.blocks?.flatMap((block) => {
+          if (isEditorImageBlock(block) && block.data.file.url) {
+            return block.data.file.url;
+          }
+          return [];
+        }) ?? []
+      );
+    });
 
     const imagePostsUrlFiltered = imagePostsUrl.filter(
       (url) => typeof url === "string",

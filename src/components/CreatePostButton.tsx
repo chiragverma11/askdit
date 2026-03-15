@@ -7,7 +7,7 @@ import { ComponentPropsWithoutRef, ElementRef, forwardRef } from "react";
 import { Icons } from "./Icons";
 import { buttonVariants } from "./ui/Button";
 
-interface CreatePostButtonProps extends ComponentPropsWithoutRef<typeof Link> {}
+type CreatePostButtonProps = ComponentPropsWithoutRef<typeof Link>;
 
 const CreatePostButton = forwardRef<
   ElementRef<typeof Link>,

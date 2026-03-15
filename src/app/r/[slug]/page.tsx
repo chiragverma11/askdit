@@ -29,16 +29,15 @@ import { notFound, redirect } from "next/navigation";
 import { FC } from "react";
 
 interface SubredditPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
+  const params = await props.params;
   const communityName = params.slug;
   const community = await getCommunityMetadata({ name: communityName });
 
@@ -65,7 +64,8 @@ export async function generateMetadata({
   };
 }
 
-const SubredditPage: FC<SubredditPageProps> = async ({ params }) => {
+const SubredditPage: FC<SubredditPageProps> = async (props) => {
+  const params = await props.params;
   const { slug } = params;
 
   const session = await getAuthSession();

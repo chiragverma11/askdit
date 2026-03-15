@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { PostType } from "@prisma/client";
 import { usePathname, useRouter } from "next/navigation";
 import { FC, useMemo, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "../ui/Button";
@@ -43,7 +43,8 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
 
   const postType: PostType = "MEDIA";
 
-  const { register, watch, trigger, setValue, getValues } = useForm<FormData>({
+  const { register, control, trigger, setValue, getValues } =
+    useForm<FormData>({
     resolver: zodResolver(MediaPostValidator),
     defaultValues: {
       title: "",
@@ -53,6 +54,8 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
       isQuestion: isQuestion,
     },
   });
+
+  const titleValue = useWatch({ control, name: "title" });
 
   const files = useMediaDropzoneStore((state) => state.files);
   const setFileUploadStatus = useMediaDropzoneStore(
@@ -134,7 +137,7 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
           size: res.result?.size || media.file.size,
         });
         return res;
-      } catch (error) {
+      } catch {
         toast.error("Upload failed", {
           description: "Please try again later",
         });
@@ -237,7 +240,7 @@ const CreateMediaPost: FC<CreateMediaPostProps> = ({
       <form id="communityMediaPostForm" onSubmit={handleFormSubmit}>
         <div className="w-full">
           <SubmitPostTitle
-            titleLength={watch("title").length}
+            titleLength={titleValue?.length ?? 0}
             submitButtonRef={submitButtonRef}
             titleValidationRef={titleRef}
             useFormRegisterRest={rest}

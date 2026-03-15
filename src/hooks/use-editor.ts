@@ -26,7 +26,7 @@ export function useEditor({ onEditorReady, disabled }: EditorProps) {
     [entry?.isIntersecting],
   );
 
-  const editorRef = React.useRef<EditorJS>();
+  const editorRef = React.useRef<EditorJS | undefined>(undefined);
 
   const initializeEditor = React.useCallback(async () => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
@@ -119,7 +119,9 @@ export function useEditor({ onEditorReady, disabled }: EditorProps) {
   React.useEffect(() => {
     const init = async () => {
       await initializeEditor();
-      isIntersecting && !isIntersected && setIsIntersected(true);
+      if (isIntersecting && !isIntersected) {
+        setIsIntersected(true);
+      }
     };
 
     if (isIntersecting && !disabled && !isIntersected) {

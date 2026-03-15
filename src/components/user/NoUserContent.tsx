@@ -5,16 +5,6 @@ import { FC } from "react";
 import PostSkeleton from "../PostSkeleton";
 import { UserCommentSkeleton } from "./UserComment";
 
-const userProfileMenus = [
-  "posts",
-  "comments",
-  "saved",
-  "questions",
-  "answers",
-  "upvoted",
-  "downvoted",
-] as const;
-
 const menuBasedMessage = {
   posts: "posted",
   comments: "commented on",
@@ -25,7 +15,14 @@ const menuBasedMessage = {
   downvoted: "downvoted",
 };
 
-type UserMenus = (typeof userProfileMenus)[number];
+type UserMenus =
+  | "posts"
+  | "comments"
+  | "saved"
+  | "questions"
+  | "answers"
+  | "upvoted"
+  | "downvoted";
 
 interface NoUserContentProps {
   isUserSelf: boolean;

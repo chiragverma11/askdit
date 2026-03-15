@@ -22,7 +22,7 @@ const Communities: FC<CommunitiesProps> = ({ session, explore }) => {
   const [activeMenu, setActiveMenu] = useState<"Your Communities" | "Explore">(
     explore ? "Explore" : "Your Communities",
   );
-  const [parent, enableAnimations] = useAutoAnimate();
+  const [parent] = useAutoAnimate();
 
   return (
     <div className="flex flex-col gap-5">

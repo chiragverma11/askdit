@@ -3,18 +3,20 @@ import NoAccess from "@/components/user/NoAccess";
 import NoUserContent from "@/components/user/NoUserContent";
 import { getAuthSession } from "@/lib/auth";
 import { getUserIdByUsername, getUserVotedPosts } from "@/lib/prismaQueries";
+import { decodePathParam } from "@/lib/utils";
 import { FC } from "react";
 
 interface UserProfileUpvotedPageProps {
-  params: {
+  params: Promise<{
     username: string;
-  };
+  }>;
 }
 
-const UserProfileUpvotedPage: FC<UserProfileUpvotedPageProps> = async ({
-  params,
-}) => {
-  const { username } = params;
+const UserProfileUpvotedPage: FC<UserProfileUpvotedPageProps> = async (
+  props,
+) => {
+  const params = await props.params;
+  const username = decodePathParam(params.username);
 
   const session = await getAuthSession();
   const userId = await getUserIdByUsername({ username });

@@ -5,7 +5,6 @@ import PopularFeed from "@/components/popular/PopularFeed";
 import { getAuthSession } from "@/lib/auth";
 import { absoluteUrl } from "@/lib/utils";
 import { Metadata } from "next";
-import { FC } from "react";
 
 export const metadata: Metadata = {
   title: "Popular",
@@ -26,9 +25,7 @@ export const metadata: Metadata = {
   },
 };
 
-interface PopularPageProps {}
-
-const PopularPage: FC<PopularPageProps> = async ({}) => {
+const PopularPage = async () => {
   const session = await getAuthSession();
 
   return (

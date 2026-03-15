@@ -5,7 +5,6 @@ import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import { getAuthSession } from "@/lib/auth";
 import { absoluteUrl } from "@/lib/utils";
 import { Metadata } from "next";
-import { FC } from "react";
 
 export const metadata: Metadata = {
   title: "Answer",
@@ -26,9 +25,7 @@ export const metadata: Metadata = {
   },
 };
 
-interface AnswerPageProps {}
-
-const AnswerPage: FC<AnswerPageProps> = async ({}) => {
+const AnswerPage = async () => {
   const session = await getAuthSession();
 
   return (

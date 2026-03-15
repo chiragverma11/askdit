@@ -7,6 +7,7 @@ import {
   FaXTwitter,
 } from "react-icons/fa6";
 import { IoMdMail } from "react-icons/io";
+import type { ReactElement } from "react";
 
 export interface ShareData {
   text?: string;
@@ -17,14 +18,16 @@ export interface ShareData {
 interface IconProps {
   name: SocialIconListKeys;
   data: Required<ShareData>;
-  onClick?: () => any;
+  onClick?: () => void;
 }
 
 const SocialIcon = ({ name, data, onClick }: IconProps) => {
   const { icon, bgColor, handleExternalLinkClick } = SocialIconList[name];
 
   const handleClick = () => {
-    onClick && onClick();
+    if (onClick) {
+      onClick();
+    }
     handleExternalLinkClick(
       encodeURIComponent(data.url),
       data.text,
@@ -45,7 +48,7 @@ const SocialIcon = ({ name, data, onClick }: IconProps) => {
 };
 
 interface IconItem {
-  icon: JSX.Element;
+  icon: ReactElement;
   handleExternalLinkClick: (
     link: string,
     text: string,
@@ -54,25 +57,9 @@ interface IconItem {
   bgColor: string;
 }
 
-const IconList = [
-  "facebook",
-  "x",
-  "whatsapp",
-  "reddit",
-  "telegram",
-  "linkedin",
-  "mail",
-] as const;
-
-export type SocialIconListKeys = (typeof IconList)[number];
-
-type IconListObject = {
-  [key in SocialIconListKeys]: IconItem;
-};
-
 const externalOpen = (URL: string) => window.open(URL, "_blank", "noopener");
 
-export const SocialIconList: IconListObject = {
+export const SocialIconList = {
   facebook: {
     icon: <FaFacebook className="h-8 w-8" />,
     bgColor: "#0076FB",
@@ -120,6 +107,8 @@ export const SocialIconList: IconListObject = {
     handleExternalLinkClick: (l, t) =>
       externalOpen(`mailto:?body=${l}&subject=${t}`),
   },
-};
+} satisfies Record<string, IconItem>;
+
+export type SocialIconListKeys = keyof typeof SocialIconList;
 
 export default SocialIcon;

@@ -6,7 +6,7 @@ import { FC } from "react";
 import { Icons } from "./Icons";
 import { Button } from "./ui/Button";
 
-interface BackButtonProps extends React.ComponentProps<typeof Button> {}
+type BackButtonProps = React.ComponentProps<typeof Button>;
 
 const BackButton: FC<BackButtonProps> = ({ className, children, ...props }) => {
   const router = useRouter();

@@ -11,7 +11,7 @@ import UserModeratorsCard, {
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getUserInfo } from "@/lib/prismaQueries";
-import { absoluteUrl } from "@/lib/utils";
+import { absoluteUrl, decodePathParam, encodePathSegment } from "@/lib/utils";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -19,15 +19,14 @@ import NotFound from "./not-found";
 
 interface UserLayoutProps {
   children: React.ReactNode;
-  params: {
+  params: Promise<{
     username: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({
-  params,
-}: UserLayoutProps): Promise<Metadata> {
-  const username = params.username;
+export async function generateMetadata(props: UserLayoutProps): Promise<Metadata> {
+  const params = await props.params;
+  const username = decodePathParam(params.username);
 
   const user = await db.user.findFirst({
     where: {
@@ -52,7 +51,7 @@ export async function generateMetadata({
     title,
     openGraph: {
       title,
-      url: absoluteUrl(`/u/${username}`),
+      url: absoluteUrl(`/u/${encodePathSegment(username)}`),
       type: "website",
     },
     twitter: {
@@ -62,11 +61,14 @@ export async function generateMetadata({
   };
 }
 
-export default async function UserLayout({
-  children,
-  params,
-}: UserLayoutProps) {
-  const username = params.username;
+export default async function UserLayout(props: UserLayoutProps) {
+  const params = await props.params;
+
+  const {
+    children
+  } = props;
+
+  const username = decodePathParam(params.username);
   const userInfo = await getUserInfo({ username });
 
   if (!userInfo) {
@@ -74,8 +76,8 @@ export default async function UserLayout({
   }
 
   // Redirect if username's case in params is not same as in db
-  if (username !== userInfo.username) {
-    redirect(`/u/${userInfo.username}`);
+  if (userInfo.username && username !== userInfo.username) {
+    redirect(`/u/${encodePathSegment(userInfo.username)}`);
   }
 
   const session = await getAuthSession();

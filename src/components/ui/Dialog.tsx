@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { Slot } from "@radix-ui/react-slot";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -120,30 +121,16 @@ interface DialogItemProps extends React.ComponentPropsWithoutRef<"div"> {
 
 const DialogItem = React.forwardRef<HTMLDivElement, DialogItemProps>(
   ({ asChild, className, children, ...props }, ref) => {
-    if (
-      asChild &&
-      React.isValidElement(children) &&
-      React.Children.count(children) === 1
-    ) {
-      return React.cloneElement(children as React.ReactElement, {
-        ref,
-        className: cn(
-          "flex items-center p-4",
-          className,
-          children.props.className,
-        ),
-        ...props,
-      });
-    }
+    const Component = asChild ? Slot : "div";
 
     return (
-      <div
+      <Component
         className={cn("flex items-center p-4", className)}
         ref={ref}
         {...props}
       >
         {children}
-      </div>
+      </Component>
     );
   },
 );

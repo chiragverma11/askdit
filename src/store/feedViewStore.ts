@@ -9,7 +9,7 @@ interface FeedViewState {
 
 export const useFeedViewStore = create<FeedViewState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       feedViewType: "card",
       setFeedViewType: (newType) => set({ feedViewType: newType }),
     }),

@@ -12,8 +12,7 @@ import { FeedViewType } from "@/types/utilities";
 import { FC } from "react";
 import { Icons } from "./Icons";
 
-interface FeedViewTypeSelectorProps
-  extends React.ComponentPropsWithoutRef<"button"> {}
+type FeedViewTypeSelectorProps = React.ComponentPropsWithoutRef<"button">;
 
 const FeedViewTypeSelector: FC<FeedViewTypeSelectorProps> = ({
   className,

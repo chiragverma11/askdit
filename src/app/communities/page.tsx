@@ -29,10 +29,11 @@ export const metadata: Metadata = {
 };
 
 interface CommunitiesPageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-const CommunitiesPage: FC<CommunitiesPageProps> = async ({ searchParams }) => {
+const CommunitiesPage: FC<CommunitiesPageProps> = async (props) => {
+  const searchParams = await props.searchParams;
   const session = await getAuthSession();
   const { explore } = searchParams;
 

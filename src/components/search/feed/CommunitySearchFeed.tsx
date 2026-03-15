@@ -7,7 +7,7 @@ import { getSearchCommunities } from "@/lib/prismaQueries";
 import { trpc } from "@/lib/trpc";
 import { useIntersection } from "@mantine/hooks";
 import Link from "next/link";
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
 interface CommunitySearchFeedProps {
@@ -21,9 +21,7 @@ const CommunitySearchFeed: FC<CommunitySearchFeedProps> = ({
   userId,
   initialCommunities,
 }) => {
-  const lastPostRef = useRef<HTMLElement>(null);
   const { ref, entry } = useIntersection({
-    root: lastPostRef.current,
     threshold: 0.1,
   });
 

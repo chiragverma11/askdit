@@ -15,6 +15,18 @@ export function absoluteUrl(pathname: string) {
   return new URL(pathname, env.NEXT_PUBLIC_APP_URL);
 }
 
+export function decodePathParam(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+export function encodePathSegment(value: string) {
+  return encodeURIComponent(value);
+}
+
 export function getDefaultCommunityBg({
   communityName,
 }: {
@@ -80,8 +92,17 @@ const formatDistanceLocale = {
   almostXYears: "{{count}} year",
 };
 
-function formatDistance(token: string, count: number, options: any) {
-  options = options || {};
+interface FormatDistanceOptions {
+  addSuffix?: boolean;
+  comparison?: number;
+}
+
+function formatDistance(
+  token: string,
+  count: number,
+  options?: FormatDistanceOptions,
+) {
+  const resolvedOptions = options ?? {};
 
   const result = formatDistanceLocale[
     token as keyof typeof formatDistanceLocale
@@ -89,8 +110,8 @@ function formatDistance(token: string, count: number, options: any) {
 
   const greaterThanOne = count > 1 ? true : false;
 
-  if (options.addSuffix) {
-    if (options.comparison > 0) {
+  if (resolvedOptions.addSuffix) {
+    if ((resolvedOptions.comparison ?? 0) > 0) {
       return "in " + result + (greaterThanOne ? "s" : "");
     } else {
       if (result === "just now") return result;
@@ -114,7 +135,7 @@ export function formatTimeToNow(date: Date): string {
 export const getUrlMetadata = async (url: string) => {
   try {
     return await urlMetadata(url);
-  } catch (error) {
+  } catch {
     return null;
   }
 };
@@ -135,7 +156,7 @@ export const isImageAccessible = async (imageUrl: string) => {
     }
 
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -144,7 +165,7 @@ export const isValidUrl = (url: string) => {
   try {
     new URL(url);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 };
@@ -178,7 +199,7 @@ export const addResolutionToImageUrl = (
   return `${url}?width=${width}&height=${height}`;
 };
 
-type HierarchicalReplies = {
+interface HierarchicalReplies {
   take?: number | undefined;
   include: {
     author: boolean;
@@ -187,7 +208,7 @@ type HierarchicalReplies = {
     _count: { select: { replies: boolean } };
     replies: HierarchicalReplies;
   };
-};
+}
 
 export const createHierarchicalRepliesInclude = ({
   level,
@@ -265,10 +286,15 @@ export const createHierarchicalCommentReplyToSelect = ({
   return select;
 };
 
+interface CommentWithReplyTo {
+  id?: string;
+  replyTo?: CommentWithReplyTo | null;
+}
+
 export const getTopContextParentCommentId = (
-  comment: any,
+  comment: CommentWithReplyTo | null | undefined,
 ): { parentCommentId: string | undefined; findOnContext: number } => {
-  let currentComment = comment;
+  let currentComment: CommentWithReplyTo | null | undefined = comment;
   let findOnContext = 0;
 
   while (currentComment && currentComment.replyTo) {

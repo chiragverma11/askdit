@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
+import { Slot } from "@radix-ui/react-slot";
 
 import { cn } from "@/lib/utils";
 
@@ -115,30 +116,16 @@ interface DrawerItemProps extends React.ComponentPropsWithoutRef<"div"> {
 
 const DrawerItem = React.forwardRef<HTMLDivElement, DrawerItemProps>(
   ({ asChild, className, children, ...props }, ref) => {
-    if (
-      asChild &&
-      React.isValidElement(children) &&
-      React.Children.count(children) === 1
-    ) {
-      return React.cloneElement(children as React.ReactElement, {
-        ref,
-        className: cn(
-          "flex items-center p-4",
-          className,
-          children.props.className,
-        ),
-        ...props,
-      });
-    }
+    const Component = asChild ? Slot : "div";
 
     return (
-      <div
+      <Component
         className={cn("flex items-center p-4", className)}
         ref={ref}
         {...props}
       >
         {children}
-      </div>
+      </Component>
     );
   },
 );

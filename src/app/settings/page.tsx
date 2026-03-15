@@ -7,11 +7,8 @@ import {
   SettingsItem,
 } from "@/components/settings/Settings";
 import { Button } from "@/components/ui/Button";
-import { FC } from "react";
 
-interface AccountSettingsProps {}
-
-const AccountSettings: FC<AccountSettingsProps> = async ({}) => {
+const AccountSettings = async () => {
   return (
     <Settings className="px-4 md:px-0">
       <SettingsHeader>Account Settings</SettingsHeader>

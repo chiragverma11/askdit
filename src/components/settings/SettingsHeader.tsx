@@ -1,12 +1,9 @@
 "use client";
 
 import { useSelectedLayoutSegment } from "next/navigation";
-import { FC } from "react";
 import HorizontalMenu from "../HorizontalMenu";
 
 const settingsMenus = ["Account", "Profile"] as const;
-
-interface SettingsHeaderProps {}
 
 const capitalizeFirstChar = (str: string) => {
   if (!str) {
@@ -15,7 +12,7 @@ const capitalizeFirstChar = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-const SettingsHeader: FC<SettingsHeaderProps> = ({}) => {
+const SettingsHeader = () => {
   const segment = useSelectedLayoutSegment();
 
   const activeMenu = segment ? capitalizeFirstChar(segment) : "Account";
